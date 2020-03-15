@@ -6,13 +6,28 @@
 *           Siobhan O’Dell
 *           Kent Wong
 *  Created On: 11/03/2020
-*  Last revision: 11/03/2020
+*  Last revision: 15/03/2020
 ********************************************/
 
 
 /******* GENERAL FORMATTING *******/
+body{
+  height: 100%;
+}
+
 
 #map{
-  height: 400px;
-  width: 400px;
+  height: 80vh;
+  width: 100%;
+}
+
+#loginLogo{
+  width: 100%;
+  height: auto;
+  max-width: 600px;
+}
+
+#loginForm{
+  height: 100%;
+  width: 100%;
 }

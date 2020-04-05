@@ -15,12 +15,13 @@ body{
   height: 100%;
 }
 
-
+/******* HOME FORMATTING *******/
 #map{
   height: 80vh;
   width: 100%;
 }
 
+/******* LOGIN FORMATTING *******/
 #loginLogo{
   width: 100%;
   height: auto;
@@ -31,3 +32,12 @@ body{
   height: 100%;
   width: 100%;
 }
+
+/******* BOOKSHELF FORMATTING *******/
+.table-hover > tbody > tr:hover {
+  background-color:#D3D3D3;
+}
+
+/******* CHAT FORMATTING *******/
+
+/******* PROFILE FORMATTING TBD *******/

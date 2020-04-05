@@ -6,7 +6,7 @@
 *           Siobhan O’Dell
 *           Kent Wong
 *  Created On: 11/03/2020
-*  Last revision: 15/03/2020
+*  Last revision: 04/04/2020
 ********************************************/ -->
 
 <!DOCTYPE html>
@@ -69,21 +69,32 @@
         <!-- /************ Main Content ************/ -->
         <div class="col-sm-8 text-left">
           <div id="mainContent" class="well">
+
+            <!---------- Main Page Content ----------->
             <div id="map"></div>
-            <button id="testButton" type="button">Add a marker</button>
+            <button id="testButton" class="btn btn-secondary" type="button">Add a marker</button>
+
           </div>
         </div>
         <!-- /******** End of Main Content ********/ -->
 
         <!-- /************** Sidebar **************/ -->
-        <div class="col-sm-4 sidebar">
+        <div id="sidebar" class="col-sm-4 sidebar">
           <div id="sidebarContent" class="well">
 
-            Placeholder Book1
-            <hr>
-            Placeholder Book2
-            <hr>
-            Placeholder Book3
+            <!---------- Main Page Content ----------->
+            <table class="table table-hover text-left" id="booksidebar">
+              <thead>
+                <tr>
+                  <th>Books Around</th>
+                </tr>
+              </thead>
+              <tbody>
+              <!-- /******** Books Added Here ********/ -->
+              </tbody>
+            </table>
+            <!-- DEBUG:  -->
+            <button type="button" class="btn btn-secondary" name="populate" onclick="populateBooksAround()">Populate</button>
 
           </div>
         </div>
@@ -91,6 +102,5 @@
 
       </div>
     </div>
-
   </body>
 </html>

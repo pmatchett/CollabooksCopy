@@ -1,0 +1,64 @@
+/********** SENG513 Final Project **********
+*  Members: Jasmine Cronin
+*           Brandt Davis
+*           Patrick Matchett
+*           Ashley Millette
+*           Siobhan O’Dell
+*           Kent Wong
+*  Created On: 11/03/2020
+*  Last revision: 15/03/2020
+********************************************/
+
+
+/******* GENERAL FORMATTING *******/
+body{
+  height: 100%;
+}
+
+/******* HOME FORMATTING *******/
+#map{
+  height: 80vh;
+  width: 100%;
+}
+
+/******* LOGIN FORMATTING *******/
+#loginLogo{
+  width: 100%;
+  height: auto;
+  max-width: 600px;
+}
+
+#loginForm{
+  height: 100%;
+  width: 100%;
+}
+
+/******* BOOKSHELF FORMATTING *******/
+.table-hover > tbody > tr:hover {
+  background-color:#D3D3D3;
+}
+
+/******* CHAT FORMATTING *******/
+#message-box {
+  width: 85%;
+}
+
+#send-button {
+  width: 10%;
+}
+
+#messages {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+#messages li {
+  padding: 5px 10px;
+}
+
+#messages li:nth-child(odd) {
+  background: #eee;
+}
+
+/******* PROFILE FORMATTING TBD *******/

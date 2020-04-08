@@ -12,6 +12,10 @@
 /*************Global Variables**************/
 let map;
 let bookIcon = 'https://maps.google.com/mapfiles/kml/shapes/library_maps.png';
+//list of markers, needed to keep track of them
+let markers = [];
+let markerIndex = 0;
+let markerId = 0;
 
 /************* Initializations **************/
 function initMap(){
@@ -38,11 +42,22 @@ function addMarker(book){
   marker.addListener("click", function(){
     infoWindow.open(map, marker);
   });
+  markers[markerIndex] = {id:markerId, marker:marker};
+  markerId++;
+  markerIndex++;
 }
 
 
-function removeMarker(){
-
+function removeMarker(id){
+  for(let tempIndex in markers){
+    if(markers[tempIndex].id === id){
+      markers[tempIndex].marker.setMap(null);
+      markers[tempIndex].marker = null
+      markers.splice(tempIndex, 1);
+      markerIndex--;
+      return;
+    }
+  }
 }
 
 function modifyMarker(){

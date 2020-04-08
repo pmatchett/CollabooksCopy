@@ -6,11 +6,12 @@
 *           Siobhan O’Dell
 *           Kent Wong
 *  Created On: 11/03/2020
-*  Last revision: 04/04/2020
+*  Last revision: 07/04/2020
 ********************************************/
 
 /*************Global Variables**************/
 let map;
+let bookIcon = 'https://maps.google.com/mapfiles/kml/shapes/library_maps.png';
 
 /************* Initializations **************/
 function initMap(){
@@ -18,21 +19,43 @@ function initMap(){
       center: {lat: 51.078113, lng: -114.129029},
       zoom: 15
     });
-  let markerPosition = {lat: 51.078113, lng: -114.129029};
-  let marker = new google.maps.Marker({position: markerPosition, map: map});
-  }
+}
 
-$(document).ready(function(){
-  $("#testButton").click(function(){
-    let pos = {lat: 51.079, lng: -114.129029};
-    let marker2 = new google.maps.Marker({position: pos, map: map});
-    let bookInfo = "This is a <b>very good book</b>";
-    let infoWindow = new google.maps.InfoWindow({content: bookInfo});
-    marker2.addListener("click",function(){
-      infoWindow.open(map, marker2);
-    });
+
+/************* Google maps functions ********/
+function addMarker(book){
+  let markerPosition = {lat:book.latitude, lng:book.longitude};
+  let marker = new google.maps.Marker({position:markerPosition, map:map, icon: bookIcon});
+  //This string will change once we know more about what information we want to show
+  let bookInfo = "<b>Title:</b> " + book.title + "<br><b>Author:</b> " + book.author + "<br><b>Status:</b> " + book.status;
+  //Only adding the button to rent a book if it is currently available
+  if(book.status === "in"){
+    //when the button is pressed it will call the function loanHandler with the book identifiers as an argument
+    bookInfo = bookInfo + "<br><button type='button' onclick='loanHandler("+book.ISBN+")' class='loanButton'>Ask to loan</button>";
+    //'loanHandler("+book+")'
+  }
+  let infoWindow = new google.maps.InfoWindow({content: bookInfo});
+  marker.addListener("click", function(){
+    infoWindow.open(map, marker);
   });
-});
+}
+
+
+function removeMarker(){
+
+}
+
+function modifyMarker(){
+
+}
+
+/************* Event Handling functions *****/
+//this function currently has placeholder functionality
+function loanHandler(identifier){
+  console.log("called loan handler");
+  console.log(identifier);
+}
+
 
 /************* Page Navigation **************/
 
@@ -47,6 +70,7 @@ $(document).on('click','.nav li', function (e) {
         <div id="map"></div>
         <button id="testButton" class="btn btn-secondary" type="button">Add a marker</button>
         `);
+        initMap();
       $("#sidebarContent").html(`
         <table class="table table-hover text-left" id="booksidebar">
           <thead>
@@ -150,7 +174,7 @@ $(document).on('click','.nav li', function (e) {
                 <button type="button" id="send-button" class="btn btn-info">Send</button>
                 </form>
             </div>
-        </div>        
+        </div>
         `);
 
       $("#sidebarContent").html("Placeholder for where other chats go");
@@ -182,15 +206,16 @@ function populateShelf()
 
 function populateBooksAround()
 {
-  let books = [{title: "Twilight",author: "Meyer, Stephenie",ISBN: 7387258726782,status: "in"},
-              {title: "New Moon",author: "Meyer, Stephenie",ISBN: 7453545326782,status: "in"},
-              {title: "Eclipse",author: "Meyer, Stephenie",ISBN: 7387547656782,status: "out"},
-              {title: "Breaking Dawn",author: "Meyer, Stephenie",ISBN: 738657877782,status: "in"}];
+  let books = [{title: "Twilight",author: "Meyer, Stephenie",ISBN: 7387258726782,status: "in", latitude:51.078113, longitude:-114.129029},
+              {title: "New Moon",author: "Meyer, Stephenie",ISBN: 7453545326782,status: "in", latitude:51.079, longitude:-114.129029},
+              {title: "Eclipse",author: "Meyer, Stephenie",ISBN: 7387547656782,status: "out", latitude:51.077, longitude:-114.13},
+              {title: "Breaking Dawn",author: "Meyer, Stephenie",ISBN: 738657877782,status: "in", latitude:51.08, longitude:-114.126}];
 
   books.forEach((item, i) => {
     $('#booksidebar > tbody').append($('<tr>').html(
       "<td>" + item.title +"&emsp;||&emsp;"+ item.author +"&emsp;||&emsp;"+ item.status + "</td>"
       ));
+    addMarker(item);
   });
 
 }

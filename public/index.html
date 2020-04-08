@@ -72,33 +72,146 @@
       <div class="row content">
 
         <!-- /************ Main Content ************/ -->
+        <!-- Only one page displayed at a time. -->
         <div class="col-sm-8 text-left">
           <div id="mainContent" class="well">
 
-            <!---------- Main Page Content ----------->
-            <div id="map"></div>
+            <!---------- Main Page Main Content ----------->
+            <div class="HomePage">
+              <div id="map"></div>
+            </div>
+
+            <!---------- Bookshelf Page Main Content ----------->
+            <div class="BookshelfPage">
+              <!---------- Bookshelf Content ----------->
+              <h1> My Bookshelf </h1>
+              <table class="table table-hover" id="bookshelf">
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>ISBN</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                <!-- /******** Books Added Here ********/ -->
+                </tbody>
+              </table>
+              <!-- DEBUG:  -->
+              <button type="button" class="btn btn-secondary" name="populate" onclick="populateShelf()">Populate</button>
+            </div>
+
+            <!---------- Requests Page Main Content ----------->
+            <div class="RequestsPage">
+              <!---------- Chat Window ----------->
+              <ul id="messages"></ul>
+              <div class="row">
+                  <div class="col-lg-12">
+                      <form class="form-inline" action="">
+                      <input type="text" id="message-box" autocomplete="off" class="form-control" placeholder="Enter your message"/>
+                      <button type="button" id="send-button" class="btn btn-info">Send</button>
+                      </form>
+                  </div>
+              </div>
+            </div>
+
+            <!---------- Profile Page Main Content ----------->
+            <div class="ProfilePage">
+              This is a Profile.
+            </div>
 
           </div>
         </div>
         <!-- /******** End of Main Content ********/ -->
 
         <!-- /************** Sidebar **************/ -->
+        <!-- Only one page displayed at a time. -->
         <div id="sidebar" class="col-sm-4 sidebar">
           <div id="sidebarContent" class="well">
 
-            <!---------- Main Page Content ----------->
-            <table class="table table-hover text-left" id="booksidebar">
-              <thead>
-                <tr>
-                  <th>Books Around</th>
-                </tr>
-              </thead>
-              <tbody>
-              <!-- /******** Books Added Here ********/ -->
-              </tbody>
-            </table>
-            <!-- DEBUG:  -->
-            <button type="button" class="btn btn-secondary" name="populate" onclick="populateBooksAround()">Populate</button>
+            <!---------- Main Page Sidebar Content ----------->
+            <div class="HomePage">
+              <table class="table table-hover text-left" id="booksidebar">
+                <thead>
+                  <tr>
+                    <th>Books Around</th>
+                  </tr>
+                </thead>
+                <tbody>
+                <!-- /******** Books Added Here ********/ -->
+                </tbody>
+              </table>
+              <!-- DEBUG:  -->
+              <button type="button" class="btn btn-secondary" name="populate" onclick="populateBooksAround()">Populate</button>
+            </div>
+
+            <!---------- Bookshelf Page Sidebar Content ----------->
+            <div class="BookshelfPage">
+              <!---------- Bookshelf Content ----------->
+              <h1> Add A Book </h1>
+              <form>
+                <div class="form-group row">
+                  <label for="inputTitle" class="col-sm-3 col-form-label">Title</label>
+                  <div class="col-sm-9">
+                    <input id="inputTitle" type="text" class="form-control">
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label for="inputAuthor" class="col-sm-3 col-form-label">Author</label>
+                  <div class="col-sm-9">
+                    <input id="inputAuthor" type="text" class="form-control">
+                    <small id="authorHelpBlock" class="form-text text-muted">
+                      Last name, First name
+                    </small>
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label for="inputGenre" class="col-sm-3 col-form-label">Genre</label>
+                  <div class="col-sm-9">
+                  <select id="inputGenre" class="form-control form-control-sm">
+                    <option>Select Genre...</option>
+                    <option>Fiction</option>
+                    <option>Non-Fiction</option>
+                  </select>
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label for="inputDuration" class="col-sm-3 col-form-label">Duration</label>
+                  <div class="col-sm-9">
+                  <select id="inputDuration" class="form-control form-control-sm">
+                    <option>Select Borrow Duration...</option>
+                    <option>1 Week</option>
+                    <option>2 Weeks</option>
+                    <option>3 Weeks</option>
+                  </select>
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label for="inputISBN" class="col-sm-3 col-form-label">ISBN</label>
+                  <div class="col-sm-9">
+                    <input id="inputISBN" type="number" class="form-control">
+                  </div>
+                </div>
+
+                <button type="submit" class="btn btn-secondary btn-lg">Add</button>
+              </form>
+            </div>
+
+            <!---------- Requests Page Sidebar Content ----------->
+            <div class="RequestsPage">
+              Placeholder for where other chats go
+            </div>
+
+            <!---------- Profile Page Sidebar Content ----------->
+            <div class="ProfilePage">
+              This is a Profile.
+            </div>
 
           </div>
         </div>

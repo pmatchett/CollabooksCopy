@@ -6,7 +6,7 @@
 *           Siobhan O’Dell
 *           Kent Wong
 *  Created On: 11/03/2020
-*  Last revision: 04/04/2020
+*  Last revision: 08/04/2020
 ********************************************/ -->
 
 <!DOCTYPE html>
@@ -99,7 +99,7 @@
                 <!-- /******** Books Added Here ********/ -->
                 </tbody>
               </table>
-              <!-- DEBUG:  -->
+              <!-- DEBUG: Remove once hooked up to DB -->
               <button type="button" class="btn btn-secondary" name="populate" onclick="populateShelf()">Populate</button>
             </div>
 
@@ -133,17 +133,20 @@
 
             <!---------- Main Page Sidebar Content ----------->
             <div class="HomePage">
+              <h2>Books Around</h2>
               <table class="table table-hover text-left" id="booksidebar">
                 <thead>
                   <tr>
-                    <th>Books Around</th>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Status</th>
                   </tr>
                 </thead>
                 <tbody>
                 <!-- /******** Books Added Here ********/ -->
                 </tbody>
               </table>
-              <!-- DEBUG:  -->
+              <!-- DEBUG: Remove once hooked up to DB -->
               <button type="button" class="btn btn-secondary" name="populate" onclick="populateBooksAround()">Populate</button>
             </div>
 
@@ -210,7 +213,7 @@
 
             <!---------- Profile Page Sidebar Content ----------->
             <div class="ProfilePage">
-              This is a Profile.
+              This is a Profile Sidebar.
             </div>
 
           </div>

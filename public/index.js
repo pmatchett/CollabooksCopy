@@ -6,7 +6,7 @@
 *           Siobhan O’Dell
 *           Kent Wong
 *  Created On: 11/03/2020
-*  Last revision: 07/04/2020
+*  Last revision: 08/04/2020
 ********************************************/
 
 /*************Global Variables**************/
@@ -70,7 +70,6 @@ function loanHandler(identifier){
   console.log("called loan handler");
   console.log(identifier);
 }
-
 
 /************* Page Navigation **************/
 
@@ -137,7 +136,9 @@ function populateBooksAround()
 
   books.forEach((item, i) => {
     $('#booksidebar > tbody').append($('<tr>').html(
-      "<td>" + item.title +"&emsp;||&emsp;"+ item.author +"&emsp;||&emsp;"+ item.status + "</td>"
+      "<td>" + item.title + "</td>" +
+      "<td>" + item.author + "</td>" +
+      "<td>" + item.status + "</td>"
       ));
     addMarker(item);
   });

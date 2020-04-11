@@ -86,11 +86,12 @@ function addRecordBook(request,response) {
 }
 // TODO
 // fix the parse error on the JSON
-function addRecordUser(request,response) {
+function addRecordUser(request, response) {
     console.log('into final add record user method');
     console.log(request);
     const rec = request.body;
-    pool.query('INSERT INTO user_table VALUES ($1)',[rec], (error, results) => {
+    console.log(rec);
+    pool.query('INSERT INTO user_table VALUES ($1, $2, $3)', [rec.user_id, rec.user_lon, rec.user_lat], (error, results) => {
         if (error) {
             throw error
         }

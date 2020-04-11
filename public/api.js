@@ -84,7 +84,7 @@ async function apiAddRecordToTable(record, table_name) {
 apiAddRecordToTable(
     {
         "user_id": "110",
-        "user_lon":"64",
-        "user_lat":"-111",
+        "user_lon":64,
+        "user_lat":-111
     }, 'user'
 );

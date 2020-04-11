@@ -9,26 +9,24 @@
  *  Last revision: 07/04/2020
  ********************************************/
 
-// var path = require('path');
 var express = require('express');
 var app = express();
-// var app = require('express')();
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
-
-// var dir = path.join(__dirname, 'public');
+var moment = require("moment");
 
 app.use(express.static('public'));
-
-// app.get('/', function(req, res) {
-//     res.sendFile(__dirname + '/index.html');
-// });
 
 io.on('connection', function(socket) {
     console.log('a user connected');
     socket.on('chat message', function(msg) {
+        var momentTimestamp = moment().format("h:mm:ss a");
+        var chatMessage = {
+            text: msg,
+            timestamp: momentTimestamp
+        }
         // console.log('message: ' + msg);
-        io.emit('chat message', msg);
+        io.emit('chat message', chatMessage);
     });
 
     socket.on('disconnect', function() {

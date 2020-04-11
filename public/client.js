@@ -12,6 +12,7 @@ $(function () {
         return false;
     });
     socket.on('chat message', function(msg) {
-        $('#messages').append($('<li>').text(msg));
+        $('#messages').append($('<li class="list-group-item">').text(msg.timestamp));
+        $('#messages li:last').append($('<div class="msg">').text(msg.text));
     });
 });

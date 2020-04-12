@@ -1,15 +1,16 @@
-/* How to test?
-Debug server.js and let it run until it waits
-Run the api.js with some test call func, it will trigger
+/* Queries corresponding to REST API
 
-WIP
+How to test?
+Debug server.js and let it run until it waits
+Run the api.js with some test call func, it will trigger.
+
+note: postgresql does not accept dynamic SQL queries, they must be dynamically pre-made using pg-format
 
 * */
 
-
-// queries API
-
 const Pool = require('pg').Pool;
+var format = require('pg-format');
+// https://www.npmjs.com/package/pg-format
 
 // should put these into an env
 // make sure to squash/commit to remove this credential history
@@ -71,27 +72,14 @@ function getUserTable(request,response) {
     })
 }
 
-// not failing but not adding; check if table is locked?
+// working
 function addRecordBook(request,response) {
     console.log('into final add record book method');
-    console.log(request);
+    //console.log(request);
     const rec = request.body;
-    pool.query('INSERT INTO book_table VALUES ($1)',[rec], (error, results) => {
-        if (error) {
-            throw error
-        }
-        console.log(results);
-        response.status(201).send('Row added')
-    })
-}
-// TODO
-// fix the parse error on the JSON
-function addRecordUser(request, response) {
-    console.log('into final add record user method');
-    console.log(request);
-    const rec = request.body;
-    console.log(rec);
-    pool.query('INSERT INTO user_table VALUES ($1, $2, $3)', [rec.user_id, rec.user_lon, rec.user_lat], (error, results) => {
+    pool.query('INSERT INTO book_table VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
+        [rec.bookid,rec.title,rec.author, rec.isbn, rec.genre, rec.owner_id, rec.borrowed_by, rec.due_date],
+        (error, results) => {
         if (error) {
             throw error
         }
@@ -100,11 +88,66 @@ function addRecordUser(request, response) {
     })
 }
 
-// update
+// working
+function addRecordUser(request, response) {
+    console.log('into final add record user method');
+    //console.log(request);
+    const rec = request.body;
+    //console.log(rec);
+
+    pool.query('INSERT INTO user_table VALUES ($1, $2, $3)',
+        [rec.user_id, rec.user_lon, rec.user_lat],
+        (error, results) => {
+                    if (error) {
+                        throw error
+                    }
+        console.log(results);
+        response.status(201).send('Row added')
+    })
+}
+
+// working
+function updateRecord(request, response) {
+    console.log('into final update record method');
+    //console.log(request);
+    const rec = request.body;
+    //console.log(rec);
+    let this_sql = format('UPDATE %I SET %I = %L WHERE %I = %L', rec.tablename, rec.cell_d, rec.cell_v, rec.where_d, rec.where_v );
+
+    pool.query(
+        this_sql,
+        (error, results) => {
+            if (error) {
+                throw error
+            }
+            console.log(results);
+            response.status(200).send('Record updated')
+        })
+}
+
+// currently works
+// SELECT <columns> FROM <table> WHERE <condition>
+function getARecord(request,response) {
+
+    const rec = request.query;
+    console.log(rec);
+    let this_sql = format('SELECT * FROM %I WHERE %I = %L', rec.tablename, rec.column_name, rec.value );
+
+    pool.query(this_sql, (error, results) => {
+        if (error) {
+            throw error
+        }
+        console.log(results);
+        response.status(200).json(results.rows)
+    })
+}
+
 module.exports = {
     getBookTable,
     getChatTable,
     getUserTable,
     addRecordBook,
     addRecordUser,
+    updateRecord,
+    getARecord
 };

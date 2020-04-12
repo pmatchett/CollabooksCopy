@@ -47,6 +47,8 @@ app.get('/tables/chattable', db.getChatTable);
 app.get('/tables/usertable', db.getUserTable);
 app.post('/tables/addrecord/book', db.addRecordBook);
 app.post('/tables/addrecord/user', db.addRecordUser);
+app.put('/tables/uprecord/', db.updateRecord);
+app.get('/tables/getrecord/', db.getARecord);
 
 // app.get('/', function(req, res) {
 //     res.sendFile(__dirname + '/index.html');

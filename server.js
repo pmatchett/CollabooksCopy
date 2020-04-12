@@ -18,6 +18,7 @@ const port = 3000;
 
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
+var moment = require("moment");
 
 // var dir = path.join(__dirname, 'public');
 
@@ -50,14 +51,16 @@ app.post('/tables/addrecord/user', db.addRecordUser);
 app.put('/tables/uprecord/', db.updateRecord);
 app.get('/tables/getrecord/', db.getARecord);
 
-// app.get('/', function(req, res) {
-//     res.sendFile(__dirname + '/index.html');
-// });
-
 io.on('connection', function(socket) {
     console.log('a user connected');
     socket.on('chat message', function(msg) {
-        console.log('message: ' + msg);
+        var momentTimestamp = moment().format("h:mm:ss a");
+        var chatMessage = {
+            text: msg,
+            timestamp: momentTimestamp
+        }
+        // console.log('message: ' + msg);
+        io.emit('chat message', chatMessage);
     });
 
     socket.on('disconnect', function() {

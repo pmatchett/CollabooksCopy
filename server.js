@@ -9,13 +9,47 @@
  *  Last revision: 07/04/2020
  ********************************************/
 
-var express = require('express');
-var app = express();
-var http = require('http').createServer(app);
-var io = require('socket.io')(http);
+
+const express = require('express');
+const bodyParser = require('body-parser');
+const app = express();
+const db = require('./queries');
+const port = 3000;
+
+const http = require('http').createServer(app);
+const io = require('socket.io')(http);
 var moment = require("moment");
 
+// var dir = path.join(__dirname, 'public');
+
 app.use(express.static('public'));
+// for postgres api
+app.use(
+    bodyParser.urlencoded({
+        extended: true,
+    }),
+    bodyParser.json({
+        extended: true,
+})
+);
+
+// on a get request, return json
+// simple test localhost:3000/get
+app.get('/get', (request, response) => {
+    response.json({ info: 'postgres node api' })
+});
+
+// DATABASE API END POINTS
+// ADD AN END POINT HERE AND CORRESPONDING CALL IN PUBLIC/api.js
+// EDIT LOGIC/QUERY IN /queries.js
+// as for good practice, the client/front facing should never write or call direct sql
+app.get('/tables/booktable', db.getBookTable);
+app.get('/tables/chattable', db.getChatTable);
+app.get('/tables/usertable', db.getUserTable);
+app.post('/tables/addrecord/book', db.addRecordBook);
+app.post('/tables/addrecord/user', db.addRecordUser);
+app.put('/tables/uprecord/', db.updateRecord);
+app.get('/tables/getrecord/', db.getARecord);
 
 io.on('connection', function(socket) {
     console.log('a user connected');
@@ -35,6 +69,6 @@ io.on('connection', function(socket) {
 });
 
 // NOT app.listen
-http.listen('3000', function() {
-    console.log('listening on *:3000');
+http.listen(port, () => {
+    console.log(`App running on ${port}.`)
 });

@@ -142,6 +142,38 @@ function getARecord(request,response) {
     })
 }
 
+
+// currently works
+// SELECT <columns> FROM <table> WHERE <condition>
+/**
+ *
+ *
+ A 202 (Accepted) status code if the action will likely succeed but has not yet been enacted.
+ A 204 (No Content) status code if the action has been enacted and no further information is to be supplied.
+ A 200 (OK) status code if the action has been enacted and the response message includes a representation describing the status.
+
+ *
+ *
+ * @param request
+ * @param response
+ */
+function delARecord(request,response) {
+
+    const rec = request.body;
+    console.log(rec);
+    let this_sql = format('DELETE FROM %I WHERE %I = %L', rec.tablename, rec.column_name, rec.value );
+
+    pool.query(this_sql, (error, results) => {
+        if (error) {
+            response.status(404);
+            throw error
+        }
+        console.log(results);
+        response.status(200).json(results.rows)
+    })
+}
+
+// export all the queries to be usable
 module.exports = {
     getBookTable,
     getChatTable,
@@ -149,5 +181,6 @@ module.exports = {
     addRecordBook,
     addRecordUser,
     updateRecord,
-    getARecord
+    getARecord,
+    delARecord
 };

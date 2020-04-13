@@ -21,6 +21,7 @@ Any call to an async function must be async itself. i.e.
 
 
  */
+
 const axios = require('axios');
 
 async function apiGetBookTable() {
@@ -90,9 +91,9 @@ async function apiAddRecordToTable(record, table_name) {
  * @param record - type json
  * @returns {Promise<void>}
  */
-function apiUpdateRecord(record) {
+async function apiUpdateRecord(record) {
     params = record;
-    let res = axios.put( 'http://localhost:3000/tables/uprecord/', params);
+    let res = await axios.put( 'http://localhost:3000/tables/uprecord/', params);
     console.log('update record api called with parameter: ' + params);
     console.log(res.data);
 }
@@ -138,6 +139,28 @@ async function apiGetRecord(record) {
 //         });
 // }
 
+/**
+ *
+ *  *  { "tablename" : "friend_table",
+ *    "where_d" : "town",
+ *    "where_v" : "derry",
+ *
+ *    DELETE from friend_table
+ *    WHERE town = derry
+ *
+ *    }
+ *
+ * @param record
+ * @returns {Promise<T>}
+ */
+async function apiDeleteRecord(record) {
+    let paramarg = record;
+    const request_promise = await axios.delete('http://localhost:3000/tables/delrecord', {
+        data: paramarg
+    });
+    console.log('api delete a record called');
+}
+
 
 // remove this test function later
 // all of these calls have been tested to work
@@ -146,6 +169,13 @@ async function testBarrage(){
 
     let test = await apiGetRecord({ tablename: 'book_table', column_name: 'book_id', value: '1000' });
     console.log(test);
+
+    // apiDeleteRecord(
+    //     { "tablename" : "book_table",
+    //         "column_name" : "book_id",
+    //         "value" : "1000",
+    //     }
+    // );
 
 //
 //     apiGetBookTable();

@@ -159,10 +159,12 @@ function getARecord(request,response) {
  */
 function delARecord(request,response) {
 
-    const rec = request.body;
+    console.log(request);
+    const rec = request.query;
     console.log(rec);
-    let this_sql = format('DELETE FROM %I WHERE %I = %L', rec.tablename, rec.column_name, rec.value );
 
+    let this_sql = format('DELETE FROM %I WHERE %I = %L', rec.tablename, rec.columnname, rec.value );
+    console.log(this_sql);
     pool.query(this_sql, (error, results) => {
         if (error) {
             response.status(404);

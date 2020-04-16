@@ -11,11 +11,7 @@
 
 /*************Global Variables**************/
 let map;
-let bookIcon = 'https://maps.google.com/mapfiles/kml/shapes/library_maps.png';
-//list of markers, needed to keep track of them
-let markers = [];
-let markerIndex = 0;
-let markerId = 0;
+let markers = initMarkers();
 
 /************* Initializations **************/
 function initMap(){
@@ -27,41 +23,48 @@ function initMap(){
 
 
 /************* Google maps functions ********/
-function addMarker(book){
-  let markerPosition = {lat:book.latitude, lng:book.longitude};
-  let marker = new google.maps.Marker({position:markerPosition, map:map, icon: bookIcon});
-  //This string will change once we know more about what information we want to show
-  let bookInfo = "<b>Title:</b> " + book.title + "<br><b>Author:</b> " + book.author + "<br><b>Status:</b> " + book.status;
-  //Only adding the button to rent a book if it is currently available
-  if(book.status === "in"){
-    //when the button is pressed it will call the function loanHandler with the book identifiers as an argument
-    bookInfo = bookInfo + "<br><button type='button' onclick='loanHandler("+book.ISBN+")' class='loanButton'>Ask to loan</button>";
-    //'loanHandler("+book+")'
+//creating a closure that will handle all of the marker functions
+function initMarkers(){
+  let bookIcon = 'https://maps.google.com/mapfiles/kml/shapes/library_maps.png';
+  //list of markers, needed to keep track of them
+  let markers = [];
+  let markerId = 0;
+  function addMarker(book){
+    let markerPosition = {lat:book.latitude, lng:book.longitude};
+    let marker = new google.maps.Marker({position:markerPosition, map:map, icon: bookIcon});
+    //This string will change once we know more about what information we want to show
+    let bookInfo = "<b>Title:</b> " + book.title + "<br><b>Author:</b> " + book.author + "<br><b>Status:</b> " + book.status;
+    //Only adding the button to rent a book if it is currently available
+    if(book.status === "in"){
+      //when the button is pressed it will call the function loanHandler with the book identifiers as an argument
+      bookInfo = bookInfo + "<br><button type='button' onclick='loanHandler("+book.ISBN+")' class='loanButton'>Ask to loan</button>";
+      //'loanHandler("+book+")'
+    }
+    let infoWindow = new google.maps.InfoWindow({content: bookInfo});
+    marker.addListener("click", function(){
+      infoWindow.open(map, marker);
+    });
+    markers.push({id:markerId, marker:marker});
+    markerId++;
   }
-  let infoWindow = new google.maps.InfoWindow({content: bookInfo});
-  marker.addListener("click", function(){
-    infoWindow.open(map, marker);
-  });
-  markers[markerIndex] = {id:markerId, marker:marker};
-  markerId++;
-  markerIndex++;
-}
 
 
-function removeMarker(id){
-  for(let tempIndex in markers){
-    if(markers[tempIndex].id === id){
-      markers[tempIndex].marker.setMap(null);
-      markers[tempIndex].marker = null
-      markers.splice(tempIndex, 1);
-      markerIndex--;
-      return;
+  function removeMarker(id){
+    for(let tempIndex in markers){
+      if(markers[tempIndex].id === id){
+        markers[tempIndex].marker.setMap(null);
+        markers[tempIndex].marker = null
+        markers.splice(tempIndex, 1);
+        return;
+      }
     }
   }
-}
 
-function modifyMarker(){
+  function modifyMarker(){
 
+  }
+
+  return {addMarker, removeMarker, modifyMarker}
 }
 
 /************* Event Handling functions *****/
@@ -108,8 +111,9 @@ $(document).on('click','.nav li', function (e) {
 /************* Placeholder Functions **************/
 
 // TODO: connect to database
-function populateShelf()
+async function populateShelf()
 {
+
   let books = [{title: "Twilight",author: "Meyer, Stephenie",ISBN: 7387258726782,status: "in"},
               {title: "New Moon",author: "Meyer, Stephenie",ISBN: 7453545326782,status: "in"},
               {title: "Eclipse",author: "Meyer, Stephenie",ISBN: 7387547656782,status: "out"},
@@ -127,9 +131,13 @@ function populateShelf()
 }
 
 // TODO: connect to database
-function populateBooksAround()
+async function populateBooksAround()
 {
-  let books = [{title: "Twilight",author: "Meyer, Stephenie",ISBN: 7387258726782,status: "in", latitude:51.078113, longitude:-114.129029},
+  const users = await apiGetUserTable();
+  console.log(typeof users);
+  console.log(users);
+  console.log(users[0].user_lon);
+  /*let books = [{title: "Twilight",author: "Meyer, Stephenie",ISBN: 7387258726782,status: "in", latitude:51.078113, longitude:-114.129029},
               {title: "New Moon",author: "Meyer, Stephenie",ISBN: 7453545326782,status: "in", latitude:51.079, longitude:-114.129029},
               {title: "Eclipse",author: "Meyer, Stephenie",ISBN: 7387547656782,status: "out", latitude:51.077, longitude:-114.13},
               {title: "Breaking Dawn",author: "Meyer, Stephenie",ISBN: 738657877782,status: "in", latitude:51.08, longitude:-114.126}];
@@ -140,8 +148,8 @@ function populateBooksAround()
       "<td>" + item.author + "</td>" +
       "<td>" + item.status + "</td>"
       ));
-    addMarker(item);
-  });
+    markers.addMarker(item);
+  });*/
 
 }
 

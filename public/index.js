@@ -111,8 +111,9 @@ $(document).on('click','.nav li', function (e) {
 /************* Placeholder Functions **************/
 
 // TODO: connect to database
-function populateShelf()
+async function populateShelf()
 {
+
   let books = [{title: "Twilight",author: "Meyer, Stephenie",ISBN: 7387258726782,status: "in"},
               {title: "New Moon",author: "Meyer, Stephenie",ISBN: 7453545326782,status: "in"},
               {title: "Eclipse",author: "Meyer, Stephenie",ISBN: 7387547656782,status: "out"},
@@ -133,6 +134,8 @@ function populateShelf()
 async function populateBooksAround()
 {
   const users = await apiGetUserTable();
+  console.log(typeof users);
+  console.log(users);
   console.log(users[0].user_lon);
   /*let books = [{title: "Twilight",author: "Meyer, Stephenie",ISBN: 7387258726782,status: "in", latitude:51.078113, longitude:-114.129029},
               {title: "New Moon",author: "Meyer, Stephenie",ISBN: 7453545326782,status: "in", latitude:51.079, longitude:-114.129029},

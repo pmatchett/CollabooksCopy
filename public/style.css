@@ -33,6 +33,12 @@ body{
   width: 100%;
 }
 
+/*** MAP INFO WINDOW FORMATTING */
+.gm-style-iw{
+  height: 60vh;
+  width: 40%;
+}
+
 /******* LOGIN FORMATTING *******/
 #loginLogo{
   width: 100%;

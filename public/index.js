@@ -10,17 +10,16 @@
 ********************************************/
 
 /*************Global Variables**************/
-let map;
+let collabooksMap;
 let markers = initMarkers();
 
 /************* Initializations **************/
 function initMap(){
-  map = new google.maps.Map(document.getElementById('map'), {
+  collabooksMap = new google.maps.Map(document.getElementById('map'), {
       center: {lat: 51.078113, lng: -114.129029},
-      zoom: 15
+      zoom: 13
     });
 }
-
 
 /************* Google maps functions ********/
 //creating a closure that will handle all of the marker functions
@@ -28,50 +27,80 @@ function initMarkers(){
   let bookIcon = 'https://maps.google.com/mapfiles/kml/shapes/library_maps.png';
   //list of markers, needed to keep track of them
   let markers = [];
-  let markerId = 0;
-  function addMarker(book){
-    let markerPosition = {lat:book.latitude, lng:book.longitude};
-    let marker = new google.maps.Marker({position:markerPosition, map:map, icon: bookIcon});
+  function addUserMarker(user){
+    let markerPosition = {lat:user.user_lon, lng:user.user_lat};
+    let marker = new google.maps.Marker({position:markerPosition, map:collabooksMap, icon: bookIcon});
     //This string will change once we know more about what information we want to show
-    let bookInfo = "<b>Title:</b> " + book.title + "<br><b>Author:</b> " + book.author + "<br><b>Status:</b> " + book.status;
-    //Only adding the button to rent a book if it is currently available
-    if(book.status === "in"){
-      //when the button is pressed it will call the function loanHandler with the book identifiers as an argument
-      bookInfo = bookInfo + "<br><button type='button' onclick='loanHandler("+book.ISBN+")' class='loanButton'>Ask to loan</button>";
-      //'loanHandler("+book+")'
-    }
-    let infoWindow = new google.maps.InfoWindow({content: bookInfo});
+    let userInfo = "<b>User Id:</b> " + user.user_id;
+    let infoWindow = new google.maps.InfoWindow({content: userInfo});
     marker.addListener("click", function(){
       infoWindow.open(map, marker);
     });
-    markers.push({id:markerId, marker:marker});
-    markerId++;
+    markers[user.user_id] = {user: user, marker:marker, infoWindow:infoWindow, books:[]};
   }
 
+  function addBookToUser(userId, book){
+    markers[userId].books.push(book);
+  }
 
-  function removeMarker(id){
-    for(let tempIndex in markers){
-      if(markers[tempIndex].id === id){
-        markers[tempIndex].marker.setMap(null);
-        markers[tempIndex].marker = null
-        markers.splice(tempIndex, 1);
-        return;
-      }
+  function setInfoWindows(){
+    for (markerIndex in markers){
+      updateInfoWindow(markerIndex);
     }
   }
 
-  function modifyMarker(){
-
+  function updateInfoWindow(userId){
+    infoString = "<h4>User:</h4><b>User Id: </b>" + markers[userId].id + "<h4>User's books:</h4>";
+    for(currentBook of markers[userId].books){
+      infoString = infoString + "<hr><b>Title: </b>"+currentBook.title+"<br><b>Author: </b>"+currentBook.author
+                              +"<br><b>Genre: </b>"+currentBook.genre;
+      //Only adding the button to rent a book if it is currently available
+      if(currentBook.borrowed_by === "null"){
+        //when the button is pressed it will call the function loanHandler with the book identifiers as an argument
+        infoString = infoString + "<br><b>Availability:</b> Available"+ "<br><button type='button' onclick='loanHandler("
+                                +currentBook.book_id+")' class='loanButton'>Ask to loan</button>";
+      }
+      else{
+        infoString = infoString + "<br><b>Availability:</b> Unavailable";
+      }
+    }
+    markers[userId].infoWindow.setContent(infoString);
   }
 
-  return {addMarker, removeMarker, modifyMarker}
+  //not fully tested yet
+  function removeMarker(id){
+    markers[id].marker.setMap(null);
+    markers[id].marker = null;
+    markers[id] = undefined;
+  }
+  //not fully tested
+  function modifyBook(userId, newBookInfo){
+    for(let bookToChange of markers[userId].books){
+      if(bookToChange.book_id === newBookInfo.book_id){
+        Object.assign(bookToChange, newBookInfo);
+        break;
+      }
+    }
+    updateInfoWindow(userId);
+  }
+  //not fully tested
+  function removeBook(ownerId, bookId){
+    for(let bookIndex in markers[userId].books){
+      if(markers[userId].books[bookIndex].book_id === bookId){
+        markers[userId].books[bookIndex].splice(bookIndex,1);
+        break;
+      }
+    }
+    updateInfoWindow(userId);
+  }
+
+  return {addUserMarker, addBookToUser, setInfoWindows, removeMarker, modifyBook, removeBook};
 }
 
 /************* Event Handling functions *****/
 //this function currently has placeholder functionality
 function loanHandler(identifier){
-  console.log("called loan handler");
-  console.log(identifier);
+  console.log("called loan handler asking to borrow book#"+identifier);
 }
 
 /************* Page Navigation **************/
@@ -143,9 +172,23 @@ async function populateShelf()
 async function populateBooksAround()
 {
   const users = await apiGetUserTable();
-  console.log(typeof users);
-  console.log(users);
-  console.log(users[0].user_lon);
+  //console.log(typeof users);
+  //console.log(users);
+  for(let userToAdd of users){
+    markers.addUserMarker(userToAdd);
+  }
+
+  const books = await apiGetBookTable();
+  for(let bookToAdd of books){
+    markers.addBookToUser(bookToAdd.owner_id, bookToAdd);
+  }
+
+  markers.setInfoWindows();
+
+  /*let books = [{title: "Twilight",author: "Meyer, Stephenie",ISBN: 7387258726782,status: "in", latitude:51.078113, longitude:-114.129029},
+              {title: "New Moon",author: "Meyer, Stephenie",ISBN: 7453545326782,status: "in", latitude:51.079, longitude:-114.129029},
+              {title: "Eclipse",author: "Meyer, Stephenie",ISBN: 7387547656782,status: "out", latitude:51.077, longitude:-114.13},
+              {title: "Breaking Dawn",author: "Meyer, Stephenie",ISBN: 738657877782,status: "in", latitude:51.08, longitude:-114.126}];
 
   books.forEach((item, i) => {
     $('#booksidebar > tbody').append($('<tr>').html(
@@ -154,7 +197,7 @@ async function populateBooksAround()
       "<td>" + item.status + "</td>"
       ));
     markers.addMarker(item);
-  });
+  });*/
 
 }
 

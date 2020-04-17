@@ -168,12 +168,10 @@ async function populateShelf()
   }
 }
 
-// TODO: connect to database
-async function populateBooksAround()
+async function populateMap()
 {
   const users = await apiGetUserTable();
-  //console.log(typeof users);
-  //console.log(users);
+
   for(let userToAdd of users){
     markers.addUserMarker(userToAdd);
   }
@@ -184,24 +182,28 @@ async function populateBooksAround()
   }
 
   markers.setInfoWindows();
+}
 
-  /*let books = [{title: "Twilight",author: "Meyer, Stephenie",ISBN: 7387258726782,status: "in", latitude:51.078113, longitude:-114.129029},
-              {title: "New Moon",author: "Meyer, Stephenie",ISBN: 7453545326782,status: "in", latitude:51.079, longitude:-114.129029},
-              {title: "Eclipse",author: "Meyer, Stephenie",ISBN: 7387547656782,status: "out", latitude:51.077, longitude:-114.13},
-              {title: "Breaking Dawn",author: "Meyer, Stephenie",ISBN: 738657877782,status: "in", latitude:51.08, longitude:-114.126}];
 
-  books.forEach((item, i) => {
-    $('#booksidebar > tbody').append($('<tr>').html(
-      "<td>" + item.title + "</td>" +
-      "<td>" + item.author + "</td>" +
-      "<td>" + item.status + "</td>"
-      ));
-    markers.addMarker(item);
-  });*/
+async function populateBooksAround()
+{
+  const allBooks = await apiGetBookTable();
 
+//only show 10 books
+  for(let key = 0; key < 10; key++){
+
+  // Beware if you use the below for statement
+  // for(var key in allBooks) {
+    if(allBooks[key].borrowed_by === "null"){
+      $('#booksidebar > tbody').append($('<tr>').html(
+        "<td>" + allBooks[key].title + "</td>" +
+        "<td>" + allBooks[key].author + "</td>"
+        ));
+    }
+  }
 }
 
 // TODO: connect to database
-function removeBook(removeISBN){
-  console.log("Removed " + removeISBN);
+function removeBook(removeKey){
+  console.log("Removed " + removeKey);
 }

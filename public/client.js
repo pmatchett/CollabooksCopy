@@ -69,7 +69,7 @@ $(function () {
     //Populate the bookshelf when the page loads
     // TODO: Is this async? should it be called again or will it update because it is connected to the system? -C
     populateShelf();
-
+    
     //Populate the map when the page loads (moving this to init map for now)
     //populateMap();
 

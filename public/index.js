@@ -138,18 +138,20 @@ $(document).on('click','.nav li', function (e) {
 
 } );
 
-/************* Placeholder Functions **************/
+/************* Bookshelf Functions **************/
 
 async function populateShelf()
 {
   // TODO: Use cookies to keep track of current user?
-  const currentUser = "10";
+  const currentUser = "18";
 
   const allBooks = await apiGetBookTable();
 
   // TODO: this is pretty ugly, can we make it nicer or you just HAVE to get all the books?
   for(var key in allBooks) {
+
     var owner = allBooks[key].owner_id;
+
     if(owner === currentUser){
 
       let status = allBooks[key].borrowed_by;
@@ -163,11 +165,13 @@ async function populateShelf()
         "<td>" + allBooks[key].author + "</td>" +
         "<td>" + allBooks[key].isbn + "</td>" +
         "<td>" + status + "</td>" +
-        '<td><button type="button" class="btn btn-secondary" name="removeBook" onclick="removeBook(' + key + ')">Remove</button></td>'
+        "<td>" + '<button type="button" class="btn btn-secondary" id="removeBookButton" onclick="removeBook(' +allBooks[key].book_id+ ')">Remove</button>' + "</td>"
         ));
     }
   }
 }
+
+/************* Main Page Functions **************/
 
 async function populateMap()
 {
@@ -204,7 +208,18 @@ async function populateBooksAround()
   }
 }
 
-// TODO: connect to database
-function removeBook(removeKey){
-  console.log("Removed " + removeKey);
+async function removeBook(removeKey){
+
+  console.log("removed " + removeKey);
+  let record_to_delete ={
+      "tablename" : "book_table",
+      "column_name" : "book_id",
+      "value" : removeKey,
+  };
+  await apiDeleteRecord(record_to_delete);
+
+  $('#bookshelf tbody').empty();
+
+  //make the new page up to date
+  await populateShelf();
 }

@@ -33,6 +33,22 @@ body{
   width: 100%;
 }
 
+.scrollbar {
+position: relative;
+height: 80vh;
+overflow: auto;
+}
+
+.table-scroll-y {
+display: block;
+}
+
+/*** MAP INFO WINDOW FORMATTING */
+.gm-style-iw{
+  height: 60vh;
+  width: 40%;
+}
+
 /******* LOGIN FORMATTING *******/
 #loginLogo{
   width: 100%;

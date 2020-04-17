@@ -13,6 +13,7 @@ $(function () {
     });
     socket.on('chat message', function(msg) {
         $('#messages').append($('<li class="list-group-item">').text(msg.timestamp));
+        $('#messages li:last').append($('<div class="name">').text(msg.name));
         $('#messages li:last').append($('<div class="msg">').text(msg.text));
     });
 });

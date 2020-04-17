@@ -51,6 +51,17 @@ body{
 }
 
 /******* CHAT FORMATTING *******/
+#message-window {
+/*  position: relative;*/
+  overflow-y: auto;
+  overflow-x: hidden;
+  /*max-width: 85%;*/
+  max-height: 85vh;
+/*  display: flex;*/
+/*  flex-direction: column-reverse;*/
+/*  flex: 1;*/
+}
+
 #message-box {
   width: 85%;
 }
@@ -60,6 +71,11 @@ body{
 }
 
 #messages {
+  /*position: absolute;*/
+  /*bottom: 0;*/
+  /*margin: 0 0 40px;*/
+  /*max-width: 80%;*/
+  /*overflow: auto;*/
   /*list-style-type: none;*/
   /*margin: 0;*/
   /*padding: 0;*/

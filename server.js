@@ -55,9 +55,13 @@ app.delete('/tables/delrecord/', db.delARecord);
 
 io.on('connection', function(socket) {
     console.log('a user connected');
+
+    var username = "User" + Math.floor(Math.random() * 1000);
+
     socket.on('chat message', function(msg) {
         var momentTimestamp = moment().format("h:mm:ss a");
         var chatMessage = {
+            name: username,
             text: msg,
             timestamp: momentTimestamp
         }

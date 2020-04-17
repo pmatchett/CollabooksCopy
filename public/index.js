@@ -19,6 +19,7 @@ function initMap(){
       center: {lat: 51.078113, lng: -114.129029},
       zoom: 13
     });
+    populateMap();
 }
 
 /************* Google maps functions ********/
@@ -50,7 +51,7 @@ function initMarkers(){
   }
 
   function updateInfoWindow(userId){
-    infoString = "<h4>User:</h4><b>User Id: </b>" + markers[userId].id + "<h4>User's books:</h4>";
+    infoString = "<h4>User:</h4><b>User Id: </b>" + userId + "<h4>User's books:</h4>";
     for(currentBook of markers[userId].books){
       infoString = infoString + "<hr><b>Title: </b>"+currentBook.title+"<br><b>Author: </b>"+currentBook.author
                               +"<br><b>Genre: </b>"+currentBook.genre;

@@ -34,6 +34,12 @@
     <!-- Our Javascript -->
     <script src="index.js"></script>
 
+    <!-- Login code -->
+    <script src="login.js"></script>
+
+    <!-- Google Login code -->
+    <script src="login_google.js"></script>
+
   </head>
   <body>
 
@@ -58,8 +64,10 @@
             <label for="passwordInput">Password</label>
             <input type="password" class="form-control form-control-lg" id="passwordInput" placeholder="Password">
           </div>
-            <button type="submit" class="btn btn-primary btn-lg">Sign In</button>
-          </form>
+
+          <a id="submit" type="submit" class="btn btn-primary btn-lg" onclick="auth()">Sign In</a>
+
+        </form>
         </div>
         <!-- /******** End of Form ********/ -->
 

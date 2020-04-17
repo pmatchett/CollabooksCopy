@@ -2,6 +2,7 @@
 // console.log('client.js loaded');
 
 $(function () {
+
     console.log('chat function entered');
     var socket = io();
     $('form').submit(function(e) {
@@ -15,4 +16,9 @@ $(function () {
         $('#messages').append($('<li class="list-group-item">').text(msg.timestamp));
         $('#messages li:last').append($('<div class="msg">').text(msg.text));
     });
+
+    //Populate the bookshelf when the page loads
+    // TODO: Is this async? should it be called again or will it update because it is connected to the system? -C
+    populateShelf();
+
 });

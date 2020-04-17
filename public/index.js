@@ -110,24 +110,33 @@ $(document).on('click','.nav li', function (e) {
 
 /************* Placeholder Functions **************/
 
-// TODO: connect to database
 async function populateShelf()
 {
+  // TODO: Use cookies to keep track of current user?
+  const currentUser = "10";
 
-  let books = [{title: "Twilight",author: "Meyer, Stephenie",ISBN: 7387258726782,status: "in"},
-              {title: "New Moon",author: "Meyer, Stephenie",ISBN: 7453545326782,status: "in"},
-              {title: "Eclipse",author: "Meyer, Stephenie",ISBN: 7387547656782,status: "out"},
-              {title: "Breaking Dawn",author: "Meyer, Stephenie",ISBN: 738657877782,status: "in"}];
+  const allBooks = await apiGetBookTable();
 
-  books.forEach((item, i) => {
-    $('#bookshelf > tbody').append($('<tr>').html(
-      "<td>" + item.title + "</td>" +
-      "<td>" + item.author + "</td>" +
-      "<td>" + item.ISBN + "</td>" +
-      "<td>" + item.status + "</td>" +
-      '<td><button type="button" class="btn btn-secondary" name="removeBook" onclick="removeBook(' + item.ISBN + ')">Remove</button></td>'
-      ));
-  });
+  // TODO: this is pretty ugly, can we make it nicer or you just HAVE to get all the books?
+  for(var key in allBooks) {
+    var owner = allBooks[key].owner_id;
+    if(owner === currentUser){
+
+      let status = allBooks[key].borrowed_by;
+
+      if(status === "null"){
+        status = "None";
+      }
+
+      $('#bookshelf > tbody').append($('<tr>').html(
+        "<td>" + allBooks[key].title + "</td>" +
+        "<td>" + allBooks[key].author + "</td>" +
+        "<td>" + allBooks[key].isbn + "</td>" +
+        "<td>" + status + "</td>" +
+        '<td><button type="button" class="btn btn-secondary" name="removeBook" onclick="removeBook(' + key + ')">Remove</button></td>'
+        ));
+    }
+  }
 }
 
 // TODO: connect to database
@@ -137,10 +146,6 @@ async function populateBooksAround()
   console.log(typeof users);
   console.log(users);
   console.log(users[0].user_lon);
-  /*let books = [{title: "Twilight",author: "Meyer, Stephenie",ISBN: 7387258726782,status: "in", latitude:51.078113, longitude:-114.129029},
-              {title: "New Moon",author: "Meyer, Stephenie",ISBN: 7453545326782,status: "in", latitude:51.079, longitude:-114.129029},
-              {title: "Eclipse",author: "Meyer, Stephenie",ISBN: 7387547656782,status: "out", latitude:51.077, longitude:-114.13},
-              {title: "Breaking Dawn",author: "Meyer, Stephenie",ISBN: 738657877782,status: "in", latitude:51.08, longitude:-114.126}];
 
   books.forEach((item, i) => {
     $('#booksidebar > tbody').append($('<tr>').html(
@@ -149,7 +154,7 @@ async function populateBooksAround()
       "<td>" + item.status + "</td>"
       ));
     markers.addMarker(item);
-  });*/
+  });
 
 }
 

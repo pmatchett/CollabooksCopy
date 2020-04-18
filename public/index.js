@@ -148,7 +148,6 @@ async function populateShelf()
 
   const allBooks = await apiGetBookTable();
 
-  // TODO: this is pretty ugly, can we make it nicer or you just HAVE to get all the books?
   for(var key in allBooks) {
 
     var owner = allBooks[key].owner_id;
@@ -190,18 +189,27 @@ async function populateShelf()
 async function lendABook(){
 
   if($("#lendBookDropdown option").length > 0){
-    //Connect to DB
+
     let bookToLendTitle = $("#lendBookDropdown option:selected" ).text();
     let bookToLend = $("#lendBookDropdown option:selected" ).val();
 
+    //how do i get this?
     let personWhoBorrows = "13";
 
     console.log("lending " + bookToLend + " AKA "+bookToLendTitle+ " to user " + personWhoBorrows);
 
     //Change status in the DB
+    let updateuserrecord = { "tablename" : "book_table",
+        "cell_d" : "borrowed_by",
+        "cell_v" : personWhoBorrows,
+        "where_d" : "book_id",
+        "where_v" : bookToLend,
+    };
+    await apiUpdateRecord(updateuserrecord);
 
     //Update the shelf/map
-    // await populateShelf();
+    await populateShelf();
+    await populateMap();
   }
 }
 

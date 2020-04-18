@@ -174,7 +174,10 @@ async function populateShelf()
 
 /************* Chat Functions **************/
 
-function lendABook(){
+async function lendABook(){
+
+//if lendable books is 0 then disable button
+
   if(!$('#lendButton').hasClass('disabled')){
     //Connect to DB
 
@@ -195,6 +198,9 @@ function lendABook(){
 }
 
 function returnABook(){
+
+  //if returnable books is 0 then disable button
+
   if(!$('#returnButton').hasClass('disabled')){
     //Connect to DB
 

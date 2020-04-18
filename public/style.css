@@ -17,14 +17,17 @@ body{
 
 .BookshelfPage{
   display: none;
+  height: 80vh;
 }
 
 .RequestsPage{
   display: none;
+  height: 80vh;
 }
 
 .AdminPage{
   display: none;
+  height: 80vh;
 }
 
 /******* HOME FORMATTING *******/
@@ -35,7 +38,7 @@ body{
 
 .scrollbar {
 position: relative;
-height: 80vh;
+height: 75vh;
 overflow: auto;
 }
 
@@ -43,7 +46,7 @@ overflow: auto;
 display: block;
 }
 
-/*** MAP INFO WINDOW FORMATTING */
+/** MAP INFO WINDOW FORMATTING **/
 .gm-style-iw{
   max-height: 60vh;
   width: 40%;
@@ -70,34 +73,15 @@ display: block;
 #message-window {
   overflow-y: auto;
   overflow-x: hidden;
-  height: 75vh;
+  height: 100%;
   width: 100%;
-  max-height: 85vh;
-  margin: 15px;
+  max-height: 50vh;
+  margin-bottom: 15px;
 }
 
-#message-box {
-  width: 85%;
-}
-
-#send-button {
-  width: 10%;
-}
-
-#messages {
-  /*position: absolute;*/
-  /*bottom: 0;*/
-  /*margin: 0 0 40px;*/
-  /*max-width: 80%;*/
-  /*overflow: auto;*/
-  max-height: 85vh;
-  /*list-style-type: none;*/
-  /*margin: 0;*/
-  /*padding: 0;*/
-}
-
-#messages li {
-  /*padding: 5px 10px;*/
+.form-group{
+  width: 100%;
+  margin: 5px;
 }
 
 #messages li:nth-child(odd) {
@@ -108,4 +92,20 @@ display: block;
   margin: 10px;
 }
 
-/******* Admin FORMATTING TBD *******/
+#chat-view-window {
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100%;
+  width: 100%;
+}
+
+/******* ADMIN FORMATTING*******/
+
+#admin-message-window {
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100%;
+  width: 100%;
+  max-height: 73vh;
+  margin-bottom: 15px;
+}

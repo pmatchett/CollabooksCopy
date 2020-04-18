@@ -33,7 +33,7 @@ const getUsers = (request, response) => {
         if (error) {
             throw error
         }
-        console.log(results);
+        // console.log(results);
         response.status(200).json(results.rows)
     })
 };
@@ -45,7 +45,7 @@ function getBookTable(request,response) {
         if (error) {
             throw error
         }
-        console.log(results);
+        // console.log(results);
         response.status(200).json(results.rows)
     })
 }
@@ -56,7 +56,7 @@ function getChatTable(request,response) {
         if (error) {
             throw error
         }
-        console.log(results);
+        // console.log(results);
         response.status(200).json(results.rows)
     })
 }
@@ -67,7 +67,7 @@ function getUserTable(request,response) {
         if (error) {
             throw error
         }
-        console.log(results);
+        // console.log(results);
         response.status(200).json(results.rows)
     })
 }
@@ -83,7 +83,7 @@ function addRecordBook(request,response) {
         if (error) {
             throw error
         }
-        console.log(results);
+        // console.log(results);
         response.status(201).send('Row added')
     })
 }
@@ -101,7 +101,7 @@ function addRecordUser(request, response) {
                     if (error) {
                         throw error
                     }
-        console.log(results);
+        // console.log(results);
         response.status(201).send('Row added')
     })
 }
@@ -120,7 +120,7 @@ function updateRecord(request, response) {
             if (error) {
                 throw error
             }
-            console.log(results);
+            // console.log(results);
             response.status(200).send('Record updated')
         })
 }
@@ -137,7 +137,7 @@ function getARecord(request,response) {
         if (error) {
             throw error
         }
-        console.log(results);
+        // console.log(results);
         response.status(200).json(results.rows)
     })
 }
@@ -170,7 +170,7 @@ function delARecord(request,response) {
             response.status(404);
             throw error
         }
-        console.log(results);
+        // console.log(results);
         response.status(200).json(results.rows)
     })
 }

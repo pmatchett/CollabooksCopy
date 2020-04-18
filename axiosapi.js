@@ -32,7 +32,7 @@ async function apiGetChatTable() {
     };
 
     let res = await axios(config);
-    console.log('chat table api called');
+    // console.log('chat table api called');
     console.log(res.status);
     return res.data
 }

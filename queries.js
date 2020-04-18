@@ -52,7 +52,7 @@ function getBookTable(request,response) {
 
 // currently works
 function getChatTable(request,response) {
-    pool.query('SELECT * FROM chat_table ORDER BY user_id ASC', (error, results) => {
+    pool.query('SELECT * FROM chat_table ORDER BY chat_id ASC', (error, results) => {
         if (error) {
             throw error
         }

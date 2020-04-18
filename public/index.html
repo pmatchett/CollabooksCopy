@@ -6,227 +6,72 @@
 *           Siobhan O’Dell
 *           Kent Wong
 *  Created On: 11/03/2020
-*  Last revision: 08/04/2020
+*  Last revision: 15/03/2020
 ********************************************/ -->
 
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
+
     <!-- To set viewport so it can look good on mobile -->
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
     <title>Collabooks</title>
+
     <!-- Bootstrap -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
     <!-- Our CSS -->
     <link rel="stylesheet" type="text/css" href="style.css" >
-    <!-- Google maps API -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA0jKdGvYL9u06FRU55gBhpBL2r9CR9WNw&callback=initMap" async defer></script>
+
+    <!-- Our Javascript -->
+    <script src="index.js"></script>
+
+    <!-- Login code -->
+    <script src="login.js"></script>
+
+     <!-- Database API code -->
+     <script src="ajaxapi.js"></script>
+
   </head>
   <body>
 
-    <!-- /************ Navigation Bar ************/ -->
-    <nav class="navbar navbar-default">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <div class="collapse navbar-collapse" id="myNavbar">
-          <ul class="nav navbar-nav">
-            <li class="active"><a href="#">Home</a></li>
-            <li><a href="#">Bookshelf</a></li>
-            <li><a href="#">Requests</a></li>
-            <li><a href="#">My Profile</a></li>
-          </ul>
-        </div>
+    <div id="loginContainer" class="col-4 container justify-content-center">
+
+      <!-- TODO: Figure out how to float content vertically.  -->
+
+      <!-- /************ Logo ************/ -->
+      <div class="row text-center">
+          <img id="loginLogo" class="img-fluid" src="logo.jpg" alt="Collabooks">
       </div>
-    </nav>
-    <!-- /********* End of Navigation Bar *********/ -->
+      <!-- /******** End of Logo ********/ -->
 
-    <div class="container-fluid text-center">
-      <div class="row content">
-
-        <!-- /************ Main Content ************/ -->
-        <!-- Only one page displayed at a time. -->
-        <div class="col-sm-8 text-left">
-          <div id="mainContent" class="well">
-
-            <!---------- Main Page Main Content ----------->
-            <div class="HomePage">
-
-              <div class="input-group">
-                <label class="sr-only" for="searchInput">Search</label>
-                <input id="searchInput" type="text" class="form-control mb-2 mr-sm-2" placeholder="Search...">
-                <span class="input-group-btn">
-                  <button type="button" class="btn btn-primary btn-md">Search</button>
-                </span>
-              </div>
-
-              <div id="map"></div>
-            </div>
-
-            <!---------- Bookshelf Page Main Content ----------->
-            <div class="BookshelfPage">
-              <!---------- Bookshelf Content ----------->
-              <h1> My Bookshelf </h1>
-              <table class="table table-hover" id="bookshelf">
-                <thead>
-                  <tr>
-                    <th>Title</th>
-                    <th>Author</th>
-                    <th>ISBN</th>
-                    <th>Borrowed By</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                <!-- /******** Books Added Here ********/ -->
-                </tbody>
-              </table>
-              </div>
-
-            <!---------- Requests Page Main Content ----------->
-            <div class="RequestsPage">
-              <!---------- Chat Window ----------->
-              <div class="d-flex align-items-end flex-column" id="message-window" style="height: 80vh;">
-<!--                <div class="row align-items-end">-->
-                  <ul class="list-group list-group-flush" id="messages"></ul>
-                  <div class="row">
-                    <div class="col-lg-12">
-                      <form class="mt-auto form-inline" action="">
-                        <input type="text" id="message-box" autocomplete="off" class="form-control" placeholder="Enter your message"/>
-                        <button type="submit" id="send-button" class="btn btn-info">Send</button>
-                      </form>
-                    </div>
-<!--                  </div>-->
-                </div>
-              </div>
-            </div>
-
-            <!---------- Profile Page Main Content ----------->
-            <div class="ProfilePage">
-              This is a Profile.
-            </div>
-
+      <!-- /************ Form ************/ -->
+      <div class="row text-center">
+        <form id="loginForm" class="well">
+          <div class="form-group text-left">
+            <label for="usernameInput">Username</label>
+            <input type="email" class="form-control form-control-lg" id="usernameInput" aria-describedby="emailHelp" placeholder="Enter email">
           </div>
-        </div>
-        <!-- /******** End of Main Content ********/ -->
-
-        <!-- /************** Sidebar **************/ -->
-        <!-- Only one page displayed at a time. -->
-        <div id="sidebar" class="col-sm-4 sidebar">
-          <div id="sidebarContent" class="well">
-
-            <!---------- Main Page Sidebar Content ----------->
-            <div class="HomePage">
-              <h2>Books Around</h2>
-              <div class="table-scroll-y scrollbar">
-              <table class="table table-hover text-left" id="booksidebar">
-                <thead>
-                  <tr>
-                    <th>Title</th>
-                    <th>Author</th>
-                  </tr>
-                </thead>
-                <tbody>
-                <!-- /******** Books Added Here ********/ -->
-                </tbody>
-              </table>
-              </div>
-            </div>
-
-            <!---------- Bookshelf Page Sidebar Content ----------->
-            <div class="BookshelfPage">
-              <!---------- Bookshelf Content ----------->
-              <h1> Add A Book </h1>
-              <form>
-                <div class="form-group row">
-                  <label for="inputTitle" class="col-sm-3 col-form-label">Title</label>
-                  <div class="col-sm-9">
-                    <input id="inputTitle" type="text" class="form-control">
-                  </div>
-                </div>
-
-                <div class="form-group row">
-                  <label for="inputAuthor" class="col-sm-3 col-form-label">Author</label>
-                  <div class="col-sm-9">
-                    <input id="inputAuthor" type="text" class="form-control">
-                    <small id="authorHelpBlock" class="form-text text-muted">
-                      Last name, First name
-                    </small>
-                  </div>
-                </div>
-
-                <div class="form-group row">
-                  <label for="inputGenre" class="col-sm-3 col-form-label">Genre</label>
-                  <div class="col-sm-9">
-                  <select id="inputGenre" class="form-control form-control-sm">
-                    <option>Select Genre...</option>
-                    <option>Fiction</option>
-                    <option>Non-Fiction</option>
-                  </select>
-                  </div>
-                </div>
-
-                <div class="form-group row">
-                  <label for="inputDuration" class="col-sm-3 col-form-label">Duration</label>
-                  <div class="col-sm-9">
-                  <select id="inputDuration" class="form-control form-control-sm">
-                    <option>Select Borrow Duration...</option>
-                    <option>1 Week</option>
-                    <option>2 Weeks</option>
-                    <option>3 Weeks</option>
-                  </select>
-                  </div>
-                </div>
-
-                <div class="form-group row">
-                  <label for="inputISBN" class="col-sm-3 col-form-label">ISBN</label>
-                  <div class="col-sm-9">
-                    <input id="inputISBN" type="number" class="form-control">
-                  </div>
-                </div>
-
-                <button type="submit" class="btn btn-secondary btn-lg">Add</button>
-              </form>
-            </div>
-
-            <!---------- Requests Page Sidebar Content ----------->
-            <div class="RequestsPage">
-              <div class="d-flex align-items-end flex-column" style="height: 80vh;">
-                <ul class="list-group" id="chat-rooms">
-<!--                  <li class="list-group-item active">chat room 1</li>-->
-<!--                  <li class="list-group-item">Chat room 2</li>-->
-                </ul>
-              </div>
-            </div>
-
-            <!---------- Profile Page Sidebar Content ----------->
-            <div class="ProfilePage">
-              This is a Profile Sidebar.
-            </div>
-
+          <div class="form-group text-left">
+            <label for="passwordInput">Password</label>
+            <input type="password" class="form-control form-control-lg" id="passwordInput" placeholder="Password">
           </div>
-        </div>
-        <!-- /********** End of Sidebar **********/ -->
 
-      </div>
+          <a id="submit" type="submit" class="btn btn-primary btn-lg" onclick="auth()">Sign In</a>
+
+        </form>
+        </div>
+        <!-- /******** End of Form ********/ -->
+
     </div>
-    <!-- jQuery library -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <!-- Latest compiled JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-    <!-- NodeJS server-side code -->
-    <script src="/socket.io/socket.io.js"></script>
-    <!-- Database API code -->
-    <script src="ajaxapi.js"></script>
-    <!-- Client-side code -->
-    <script src="client.js"></script>
-    <!-- Our Javascript -->
-    <script src="index.js"></script>
+
   </body>
 </html>

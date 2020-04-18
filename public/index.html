@@ -73,6 +73,7 @@
             <div class="BookshelfPage">
               <!---------- Bookshelf Content ----------->
               <h1> My Bookshelf </h1>
+              <div class="table-scroll-y scrollbar">
               <table class="table table-hover" id="bookshelf">
                 <thead>
                   <tr>
@@ -88,6 +89,7 @@
                 </tbody>
               </table>
               </div>
+              </div>
 
             <!---------- Requests Page Main Content ----------->
             <div class="RequestsPage">
@@ -96,23 +98,55 @@
                   <ul class="list-group list-group-flush overflow-auto" id="messages"></ul>
               </div>
 
-              <form class="mt-auto form-inline text-center" action="" role="form">
-                  <input type="text" id="message-box" autocomplete="off" class="form-control " placeholder="Enter your message"/>
-                  <button type="submit" id="send-button" class="btn btn-info">Send</button>
-                  <div class="btn-group btn-group" id="bookStateGroup">
-                        <!-- //NEED TO GET THE BOOK ID TO THE ONLCICK METHODS -->
-                      <button type="button" id="lendButton" class="btn btn-primary" onclick="lendABook()" >Lend</button>
-                      <button type="button" id="returnButton" class="btn btn-primary disabled" onclick="returnABook()">Return</button>
+              <form class="form" role="form">
+                <div class="form-group">
+                  <div class="input-group mb-3">
+                    <input type="text" id="message-box" autocomplete="off" class="form-control " placeholder="Enter your message"/>
+                    <div class="input-group-btn">
+                      <button type="submit" id="send-button" class="btn btn-info">Send</button>
+                    </div>
                   </div>
+                </div>
+                <hr>
+                <div class="form-group">
+                  <label for="lendBookDropdown">Your Books:</label>
+                  <div class="input-group">
+                    <select class="form-control" id="lendBookDropdown">
+                    </select>
+                    <div class="input-group-btn">
+                      <button type="button" id="lendButton" class="btn btn-info" onclick="lendABook()" >Lend</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="returnBookDropdown">Returnable Books:</label>
+                  <div class="input-group">
+                    <select class="form-control" id="returnBookDropdown">
+                    </select>
+                    <div class="input-group-btn">
+                    <button type="button" id="returnButton" class="btn btn-info" onclick="returnABook()">Return</button>
+                    </div>
+                  </div>
+                </div>
+
               </form>
             </div>
 
             <!---------- Admin Page Main Content ----------->
             <div class="AdminPage">
               <!---------- Single Chat View ----------->
-              <div class="d-flex align-items-end flex-column-reverse" id="message-window">
+              <div class="d-flex align-items-end flex-column-reverse" id="admin-message-window">
                   <ul class="list-group list-group-flush overflow-auto" id="adminMessages"></ul>
               </div>
+
+              <div class="text-center">
+                <div class="btn-group btn-group-lg" role="group">
+                   <button type="button" id="banFirstUser" class="btn btn-info" onclick="">Ban User A</button>
+                   <button type="button" id="banSecondUser" class="btn btn-info" onclick="">Ban User B</button>
+                </div>
+              </div>
+
             </div>
 
           </div>
@@ -200,12 +234,8 @@
 
             <!---------- Requests Page Sidebar Content ----------->
             <div class="RequestsPage">
-              <!-- <div class="btn-group btn-group-lg" role="group" id="bookStateGroup">
-                  <button type="button" class="btn btn-primary">Lend</button>
-                  <button type="button" class="btn btn-primary" disabled>Return</button>
-              </div> -->
 
-              <div class="d-flex align-items-end flex-column" style="height: 80vh;">
+              <div class="d-flex align-items-end flex-column chat-view-window" style="height: 80vh;">
                 <ul class="list-group" id="chat-rooms">
 <!--                  <li class="list-group-item active">chat room 1</li>-->
 <!--                  <li class="list-group-item">Chat room 2</li>-->
@@ -215,7 +245,7 @@
 
             <!---------- Admin Page Sidebar Content ----------->
             <div class="AdminPage">
-              <div class="d-flex align-items-end flex-column" style="height: 80vh;">
+              <div class="d-flex align-items-end flex-column chat-view-window" style="height: 80vh;">
                 <ul class="list-group" id="admin-chat-rooms">
                 </ul>
               </div>

@@ -148,7 +148,6 @@ async function populateShelf()
 
   const allBooks = await apiGetBookTable();
 
-  // TODO: this is pretty ugly, can we make it nicer or you just HAVE to get all the books?
   for(var key in allBooks) {
 
     var owner = allBooks[key].owner_id;
@@ -168,33 +167,56 @@ async function populateShelf()
         "<td>" + status + "</td>" +
         "<td>" + '<button type="button" class="btn btn-secondary" id="removeBookButton" onclick="removeBook(' +allBooks[key].book_id+ ')">Remove</button>' + "</td>"
         ));
+
+      //also populate books that can be lent in Requests
+      if(allBooks[key].borrowed_by === "null" ){
+        $('#lendBookDropdown').append('<option value=' + allBooks[key].book_id + '>' + allBooks[key].title + '</option>');
+      }
     }
   }
+
+  if($("#lendBookDropdown option").length == 0){
+      $('#lendButton').addClass('disabled');
+  }
+  else{
+      $('#lendButton').removeClass('disabled');
+  }
+
 }
 
 /************* Chat Functions **************/
 
-function lendABook(){
-  if(!$('#lendButton').hasClass('disabled')){
-    //Connect to DB
+async function lendABook(){
 
-    let bookToLend = "345";
+  if($("#lendBookDropdown option").length > 0){
+
+    let bookToLendTitle = $("#lendBookDropdown option:selected" ).text();
+    let bookToLend = $("#lendBookDropdown option:selected" ).val();
+
+    //how do i get this?
     let personWhoBorrows = "13";
-    console.log("lending " + bookToLend + " to user " + personWhoBorrows);
+
+    console.log("lending " + bookToLend + " AKA "+bookToLendTitle+ " to user " + personWhoBorrows);
 
     //Change status in the DB
-
-
-    //Disable button
-    $('#lendButton').addClass('disabled');
-    $('#returnButton').removeClass('disabled');
+    let updateuserrecord = { "tablename" : "book_table",
+        "cell_d" : "borrowed_by",
+        "cell_v" : personWhoBorrows,
+        "where_d" : "book_id",
+        "where_v" : bookToLend,
+    };
+    await apiUpdateRecord(updateuserrecord);
 
     //Update the shelf/map
-    // await populateShelf();
+    await populateShelf();
+    await populateMap();
   }
 }
 
 function returnABook(){
+
+  //if returnable books is 0 then disable button
+
   if(!$('#returnButton').hasClass('disabled')){
     //Connect to DB
 
@@ -203,11 +225,6 @@ function returnABook(){
     console.log("the book " + bookToLend + " has been returned from user " + personWhoBorrows);
 
     //Change status in the DB
-
-
-    //Disable button
-    $('#returnButton').addClass('disabled');
-    $('#lendButton').removeClass('disabled');
 
     //Update the shelf/map
     // await populateShelf();

@@ -19,6 +19,9 @@ const port = 3000;
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 var moment = require("moment");
+// the axios api to use the REST calls to get DB information
+// to use, just call axiosdbcall.apiGetChatTable() for example
+const axiosapicall = require('./axiosapi');
 
 // var dir = path.join(__dirname, 'public');
 

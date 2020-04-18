@@ -143,6 +143,9 @@ $(document).on('click','.nav li', function (e) {
 
 async function populateShelf()
 {
+  $('#bookshelf tbody').empty();
+  $('#lendBookDropdown').empty();
+
   // TODO: Use cookies to keep track of current user?
   const currentUser = "18";
 
@@ -208,6 +211,7 @@ async function lendABook(){
     await apiUpdateRecord(updateuserrecord);
 
     //Update the shelf/map
+    //DOESNT IMMEDIATELY UPDATE :^(
     await populateShelf();
     await populateMap();
   }
@@ -277,8 +281,6 @@ async function removeBook(removeKey){
       "value" : removeKey,
   };
   await apiDeleteRecord(record_to_delete);
-
-  $('#bookshelf tbody').empty();
 
   //make the new page up to date
   await populateShelf();

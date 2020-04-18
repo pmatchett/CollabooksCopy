@@ -134,11 +134,12 @@ io.on('connection', async function(socket) {
             let hist = JSON.stringify(chatrooms[key].history);
             let recordUpdate = {
                 "tablename" : "chat_table",
-                "cell_d" : "chat_id",
-                "cell_v" : key,
-                "where_d" : "chat_history",
-                "where_v" : hist
+                "cell_d" : "chat_history",
+                "cell_v" : hist,
+                "where_d" : "chat_id",
+                "where_v" : key
             };
+            // let update = JSON.stringify(recordUpdate);
             console.log(recordUpdate);
             // construct the new record
             // { "tablename" : "book_table",
@@ -149,10 +150,6 @@ io.on('connection', async function(socket) {
             // }
             await axiosapicall.apiUpdateRecord(recordUpdate);
         }
-        // let str = JSON.stringify(chatrooms[Object.keys(chatrooms)[0]].history);
-        // console.log(str);
-        // push the new message history to the database
-        // probably need to send back the big list of chat rooms
     });
 
     function updateHistory() {

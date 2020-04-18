@@ -18,6 +18,8 @@ $(function () {
     });
 
     socket.on('chat message', function(msg) {
+        // console.log('client chat function called');
+        // console.log(typeof msg.roomID, typeof activeRoom);
         if (msg.roomID === activeRoom) {
             renderMessage(msg.msg);
         }

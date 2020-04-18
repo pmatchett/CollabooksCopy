@@ -51,7 +51,7 @@ function initMarkers(){
   }
 
   function updateInfoWindow(userId){
-    infoString = "<h4>User:</h4><b>User Id: </b>" + userId + "<h4>User's books:</h4>";
+    infoString = "<h4>User:</h4><b>User: </b>" + markers[userId].user.first_name +  " "+markers[userId].user.last_name + "<h4>User's books:</h4>";
     for(currentBook of markers[userId].books){
       infoString = infoString + "<hr><b>Title: </b>"+currentBook.title+"<br><b>Author: </b>"+currentBook.author
                               +"<br><b>Genre: </b>"+currentBook.genre;
@@ -68,31 +68,31 @@ function initMarkers(){
     markers[userId].infoWindow.setContent(infoString);
   }
 
-  //not fully tested yet
+
   function removeMarker(id){
     markers[id].marker.setMap(null);
     markers[id].marker = null;
-    markers[id] = undefined;
+    markers[id] = null;
   }
-  //not fully tested
+
   function modifyBook(userId, newBookInfo){
     for(let bookToChange of markers[userId].books){
-      if(bookToChange.book_id === newBookInfo.book_id){
+      if(parseInt(bookToChange.book_id) === newBookInfo.book_id){
         Object.assign(bookToChange, newBookInfo);
         break;
       }
     }
     updateInfoWindow(userId);
   }
-  //not fully tested
+
   function removeBook(ownerId, bookId){
-    for(let bookIndex in markers[userId].books){
-      if(markers[userId].books[bookIndex].book_id === bookId){
-        markers[userId].books[bookIndex].splice(bookIndex,1);
+    for(let bookIndex in markers[ownerId].books){
+      if(parseInt(markers[ownerId].books[bookIndex].book_id) === bookId){
+        markers[ownerId].books.splice(bookIndex,1);
         break;
       }
     }
-    updateInfoWindow(userId);
+    updateInfoWindow(ownerId);
   }
 
   return {addUserMarker, addBookToUser, setInfoWindows, removeMarker, modifyBook, removeBook};
@@ -101,6 +101,7 @@ function initMarkers(){
 /************* Event Handling functions *****/
 //this function currently has placeholder functionality
 function loanHandler(identifier){
+  bookId = parseInt(identifier);
   console.log("called loan handler asking to borrow book#"+identifier);
 }
 

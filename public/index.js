@@ -172,6 +172,48 @@ async function populateShelf()
   }
 }
 
+/************* Chat Functions **************/
+
+function lendABook(){
+  if(!$('#lendButton').hasClass('disabled')){
+    //Connect to DB
+
+    let bookToLend = "345";
+    let personWhoBorrows = "13";
+    console.log("lending " + bookToLend + " to user " + personWhoBorrows);
+
+    //Change status in the DB
+
+
+    //Disable button
+    $('#lendButton').addClass('disabled');
+    $('#returnButton').removeClass('disabled');
+
+    //Update the shelf/map
+    // await populateShelf();
+  }
+}
+
+function returnABook(){
+  if(!$('#returnButton').hasClass('disabled')){
+    //Connect to DB
+
+    let bookToLend = "345";
+    let personWhoBorrows = "13";
+    console.log("the book " + bookToLend + " has been returned from user " + personWhoBorrows);
+
+    //Change status in the DB
+
+
+    //Disable button
+    $('#returnButton').addClass('disabled');
+    $('#lendButton').removeClass('disabled');
+
+    //Update the shelf/map
+    // await populateShelf();
+  }
+}
+
 /************* Main Page Functions **************/
 
 async function populateMap()

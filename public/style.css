@@ -104,4 +104,8 @@ display: block;
   /*background: #eee;*/
 }
 
+#bookStateGroup{
+  margin: 10px;
+}
+
 /******* Admin FORMATTING TBD *******/

@@ -56,43 +56,11 @@ app.get('/tables/getrecord/', db.getARecord);
 app.delete('/tables/delrecord/', db.delARecord);
 // end of API end points
 
-// will need to populate the list of chatrooms from existing database history
-// var chatrooms = ['chatroom1', 'chatroom2', 'chatroom3'];
-// var chatrooms = [];
-// for (i = 0; i < 3; i++) { //change this to traverse sql query of chat rooms
-//     var room = {
-//         name: 'User' + i,
-//         id: i,
-//         history: [
-//             {
-//                 name: "username test " + i,
-//                 text: "Message 1 for chat room " + i,
-//                 timestamp: 'fake timestamp  1'
-//             },
-//             {
-//                 name: "username test " + i,
-//                 text: "Message 2 for chat room " + i,
-//                 timestamp: 'fake timestamp  2'
-//             },
-//             {
-//                 name: "username test " + i,
-//                 text: "Message 3 for chat room " + i,
-//                 timestamp: 'fake timestamp  3'
-//             },
-//             {
-//                 name: "username test " + i,
-//                 text: "Message 4 for chat room " + i,
-//                 timestamp: 'fake timestamp  4'
-//             }
-//         ]
-//     };
-//     chatrooms.push(room);
-// }
-
 io.on('connection', async function(socket) {
     // console.log('a user connected');
 
-    var username = "user_" + Math.floor(Math.random() * 100);
+    // var username = "user_" + Math.floor(Math.random() * 100);
+    var username = "user_51";
 
     var chatrooms = {};
 
@@ -131,8 +99,8 @@ io.on('connection', async function(socket) {
         chatrooms[room.id] = room;
     }
 
-    for (i = 0; i < chatrooms.length; i++) {
-        socket.join(chatrooms[i].id);
+    for (var key in chatrooms) {
+        socket.join(chatrooms[key].id);
     }
     socket.emit('populate rooms', chatrooms);
 
@@ -159,10 +127,29 @@ io.on('connection', async function(socket) {
         updateHistory();
     });
 
-    socket.on('disconnect', function() {
-        console.log('user disconnected');
-        // push the new message history to the database
-        // probably need to send back the big list of chat rooms
+    socket.on('disconnect', async function() {
+        // console.log('user disconnected');
+        for (var key in chatrooms) {
+            // console.log(key);
+            let hist = JSON.stringify(chatrooms[key].history);
+            let recordUpdate = {
+                "tablename" : "chat_table",
+                "cell_d" : "chat_history",
+                "cell_v" : hist,
+                "where_d" : "chat_id",
+                "where_v" : key
+            };
+            // let update = JSON.stringify(recordUpdate);
+            console.log(recordUpdate);
+            // construct the new record
+            // { "tablename" : "book_table",
+            //     "cell_d" : "title",
+            //     "cell_v" : 'dank memes',
+            //     "where_d" : "book_id",
+            //     "where_v" : "1000",
+            // }
+            await axiosapicall.apiUpdateRecord(recordUpdate);
+        }
     });
 
     function updateHistory() {

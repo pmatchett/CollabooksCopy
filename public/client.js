@@ -28,22 +28,24 @@ $(function () {
 
     socket.on('populate rooms', function(rms) {
         rooms = rms;
+        activeRoom = Object.keys(rooms)[0];
         // console.log('chat rooms populated');
-        $('#chat-rooms').append($('<li class="list-group-item active">').text(rooms[0].name)
-            .attr("id", rooms[0].id));
-        activeRoom = rooms[0].id;
-        rooms[0].history.forEach(function(msg) {
+        // $('#chat-rooms').append($('<li class="list-group-item active">').text(rooms[activeRoom].name)
+        //     .attr("id", rooms[activeRoom].id));
+        console.log(activeRoom);
+        rooms[activeRoom].history.forEach(function(msg) {
             renderMessage(msg);
         });
-        for (i = 1; i < rooms.length; i++) {
-            $('#chat-rooms').append($('<li class="list-group-item">').text(rooms[i].name)
-                .attr("id", rooms[i].id));
+        for (var key in rooms) {
+            $('#chat-rooms').append($('<li class="list-group-item">').text(rooms[key].name)
+                .attr("id", rooms[key].id));
         }
+        $('#' + activeRoom).addClass('active');
         $(".list-group-item").on("click",function(){
             $(".list-group-item.active").removeClass('active');
             $(this).addClass('active');
             activeRoom = $(".list-group-item.active").attr("id");
-            console.log('active room = ' + activeRoom);
+            // console.log('active room = ' + activeRoom);
             $('#messages').empty();
             rooms[parseInt(activeRoom)].history.forEach(function(msg) {
                 renderMessage(msg);

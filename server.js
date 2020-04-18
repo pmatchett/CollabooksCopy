@@ -58,41 +58,79 @@ app.delete('/tables/delrecord/', db.delARecord);
 
 // will need to populate the list of chatrooms from existing database history
 // var chatrooms = ['chatroom1', 'chatroom2', 'chatroom3'];
-var chatrooms = [];
-for (i = 0; i < 3; i++) { //change this to traverse sql query of chat rooms
-    var room = {
-        name: 'User' + i,
-        id: i,
-        history: [
-            {
-                name: "username test " + i,
-                text: "Message 1 for chat room " + i,
-                timestamp: 'fake timestamp  1'
-            },
-            {
-                name: "username test " + i,
-                text: "Message 2 for chat room " + i,
-                timestamp: 'fake timestamp  2'
-            },
-            {
-                name: "username test " + i,
-                text: "Message 3 for chat room " + i,
-                timestamp: 'fake timestamp  3'
-            },
-            {
-                name: "username test " + i,
-                text: "Message 4 for chat room " + i,
-                timestamp: 'fake timestamp  4'
-            }
-        ]
-    };
-    chatrooms.push(room);
-}
+// var chatrooms = [];
+// for (i = 0; i < 3; i++) { //change this to traverse sql query of chat rooms
+//     var room = {
+//         name: 'User' + i,
+//         id: i,
+//         history: [
+//             {
+//                 name: "username test " + i,
+//                 text: "Message 1 for chat room " + i,
+//                 timestamp: 'fake timestamp  1'
+//             },
+//             {
+//                 name: "username test " + i,
+//                 text: "Message 2 for chat room " + i,
+//                 timestamp: 'fake timestamp  2'
+//             },
+//             {
+//                 name: "username test " + i,
+//                 text: "Message 3 for chat room " + i,
+//                 timestamp: 'fake timestamp  3'
+//             },
+//             {
+//                 name: "username test " + i,
+//                 text: "Message 4 for chat room " + i,
+//                 timestamp: 'fake timestamp  4'
+//             }
+//         ]
+//     };
+//     chatrooms.push(room);
+// }
 
-io.on('connection', function(socket) {
-    console.log('a user connected');
+io.on('connection', async function(socket) {
+    // console.log('a user connected');
 
-    var username = "User" + Math.floor(Math.random() * 1000);
+    var username = "user_" + Math.floor(Math.random() * 100);
+
+    var chatrooms = {};
+
+    const allChats = await axiosapicall.apiGetChatTable();
+    // console.log(allChats[0].chat_id);
+    // console.log('chat data retrieved: ' + allChats[0].chat_id);
+    for (var key in allChats) {
+        // console.log(allChats[key].chat_id);
+        // console.log(allChats[key].first_participant_username);
+        // console.log(allChats[key].second_participant_username);
+        var user1 = allChats[key].first_participant_username;
+        // console.log(typeof(username));
+        var user2 = allChats[key].second_participant_username;
+        // console.log(user2);
+        var roomname;
+        // console.log('username = ' + username + ", user1 = " + user1 + ", user2 = " + user2);
+        if (username === user1) {
+            roomname = user2;
+            // console.log(roomname);
+        } else if (username === user2) {
+            roomname = user1;
+        } else {
+            continue;
+        }
+
+        // console.log(roomname);
+
+        var room = {
+            name: roomname,
+            id: allChats[key].chat_id,
+            history: JSON.parse(allChats[key].chat_history)
+        }
+
+        // console.log(room.history);
+
+        chatrooms[room.id] = room;
+    }
+
     for (i = 0; i < chatrooms.length; i++) {
         socket.join(chatrooms[i].id);
     }
@@ -118,6 +156,8 @@ io.on('connection', function(socket) {
 
     socket.on('disconnect', function() {
         console.log('user disconnected');
+        // push the new message history to the database
+        // probably need to send back the big list of chat rooms
     });
 
     function updateHistory() {

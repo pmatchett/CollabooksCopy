@@ -138,7 +138,7 @@ io.on('connection', async function(socket) {
 
     //---ADMIN---
     //Would be ALL chatrooms sent, Not dynamic
-    socket.emit('admin populate rooms', chatrooms);
+    socket.emit('admin populate rooms', allChats);
     //^^^ADMIN^^^
 
     socket.on('chat message', function(msg) {

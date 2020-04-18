@@ -61,21 +61,21 @@ $(function () {
 
     socket.on('admin populate rooms', function(rms) {
         rooms = rms;
-        $('#admin-chat-rooms').append($('<li class="list-group-item active">').text(rooms[0].name)
-            .attr("id", rooms[0].id));
-        activeAdminRoom = rooms[0].id;
-        rooms[0].history.forEach(function(msg) {
+        activeAdminRoom = Object.keys(rooms)[0];
+        console.log(activeAdminRoom);
+        rooms[activeAdminRoom].history.forEach(function(msg) {
             renderAdminMessage(msg);
         });
-        for (i = 1; i < rooms.length; i++) {
-            $('#admin-chat-rooms').append($('<li class="list-group-item">').text(rooms[i].name)
-                .attr("id", rooms[i].id));
+        for (var key in rooms) {
+            $('#admin-chat-rooms').append($('<li class="list-group-item">').text(rooms[key].name)
+                .attr("id", rooms[key].id));
         }
+        $('#' + activeAdminRoom).addClass('active');
         $(".list-group-item").on("click",function(){
             $(".list-group-item.active").removeClass('active');
             $(this).addClass('active');
             activeAdminRoom = $(".list-group-item.active").attr("id");
-            console.log('active room = ' + activeAdminRoom);
+
             $('#adminMessages').empty();
             rooms[parseInt(activeAdminRoom)].history.forEach(function(msg) {
                 renderAdminMessage(msg);

@@ -172,6 +172,40 @@ async function populateShelf()
   }
 }
 
+async function addBook(){
+  let titleInput = $("#inputTitle").val();
+  let authorInput = $("#inputAuthor").val();
+  let isbnInput = $("#inputISBN").val();
+  let genreInput = $("#inputGenre").val();
+  //will need to get current user for owner_id
+  let owner = 90;
+  if (titleInput === "" || authorInput === "" || isbnInput === "" || genreInput === "Select Genre..."){
+    alert("All fields must be entered to add a book");
+    return;
+  }
+  const allBooks = await apiGetBookTable();
+  let maxId = 0;
+  for(let book of allBooks){
+    if(parseInt(book.book_id) > maxId){
+      maxId = parseInt(book.book_id);
+    }
+  }
+  maxId = maxId + 1;
+  console.log(maxId);
+  let bookToAdd = {
+    "book_id":maxId.toString(),
+    "title":titleInput,
+    "author":authorInput,
+    "isbn":isbnInput,
+    "genre":genreInput,
+    "owner_id":owner,
+    "borrowed_by":"null",
+    "due_date":"null"
+  };
+  apiAddRecordToTable(bookToAdd, 'book');
+  alert("book added successfully");
+}
+
 /************* Chat Functions **************/
 
 function lendABook(){

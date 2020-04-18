@@ -98,6 +98,11 @@ io.on('connection', function(socket) {
     }
     socket.emit('populate rooms', chatrooms);
 
+    //---ADMIN---
+    //Would be ALL chatrooms sent, Not dynamic
+    socket.emit('admin populate rooms', chatrooms);
+    //^^^ADMIN^^^
+
     socket.on('chat message', function(msg) {
         var momentTimestamp = moment().format("h:mm:ss a");
         var chatMessage = {

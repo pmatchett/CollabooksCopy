@@ -24,6 +24,7 @@ $(function () {
     });
 
     var activeRoom;
+    var activeAdminRoom;
     var rooms;
 
     socket.on('populate rooms', function(rms) {
@@ -56,6 +57,36 @@ $(function () {
 
     });
 
+    socket.on('admin populate rooms', function(rms) {
+        rooms = rms;
+        $('#admin-chat-rooms').append($('<li class="list-group-item active">').text(rooms[0].name)
+            .attr("id", rooms[0].id));
+        activeAdminRoom = rooms[0].id;
+        rooms[0].history.forEach(function(msg) {
+            renderAdminMessage(msg);
+        });
+        for (i = 1; i < rooms.length; i++) {
+            $('#admin-chat-rooms').append($('<li class="list-group-item">').text(rooms[i].name)
+                .attr("id", rooms[i].id));
+        }
+        $(".list-group-item").on("click",function(){
+            $(".list-group-item.active").removeClass('active');
+            $(this).addClass('active');
+            activeAdminRoom = $(".list-group-item.active").attr("id");
+            console.log('active room = ' + activeAdminRoom);
+            $('#adminMessages').empty();
+            rooms[parseInt(activeAdminRoom)].history.forEach(function(msg) {
+                renderAdminMessage(msg);
+            });
+        });
+    });
+
+    function renderAdminMessage(msg) {
+        $('#adminMessages').append($('<li class="list-group-item">').text(msg.timestamp));
+        $('#adminMessages li:last').append($('<div class="name">').text(msg.name));
+        $('#adminMessages li:last').append($('<div class="msg">').text(msg.text));
+    }
+
     socket.on('update history', function(rms) {
         rooms = rms;
     });
@@ -69,7 +100,7 @@ $(function () {
     //Populate the bookshelf when the page loads
     // TODO: Is this async? should it be called again or will it update because it is connected to the system? -C
     populateShelf();
-    
+
     //Populate the map when the page loads (moving this to init map for now)
     //populateMap();
 

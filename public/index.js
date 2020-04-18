@@ -115,26 +115,26 @@ $(document).on('click','.nav li', function (e) {
       $('.HomePage').show();
       $('.BookshelfPage').hide();
       $('.RequestsPage').hide();
-      $('.ProfilePage').hide();
+      $('.AdminPage').hide();
       initMap();
     }
     else if ($(this).text() === "Bookshelf") {
       $('.HomePage').hide();
       $('.BookshelfPage').show();
       $('.RequestsPage').hide();
-      $('.ProfilePage').hide();
+      $('.AdminPage').hide();
     }
     else if ($(this).text() === "Requests") {
       $('.HomePage').hide();
       $('.BookshelfPage').hide();
       $('.RequestsPage').show();
-      $('.ProfilePage').hide();
+      $('.AdminPage').hide();
     }
-    else if ($(this).text() === "My Profile") {
+    else if ($(this).text() === "Admin") {
       $('.HomePage').hide();
       $('.BookshelfPage').hide();
       $('.RequestsPage').hide();
-      $('.ProfilePage').show();
+      $('.AdminPage').show();
     }
 
 } );

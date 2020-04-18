@@ -23,7 +23,7 @@ body{
   display: none;
 }
 
-.ProfilePage{
+.AdminPage{
   display: none;
 }
 
@@ -104,4 +104,4 @@ display: block;
   /*background: #eee;*/
 }
 
-/******* PROFILE FORMATTING TBD *******/
+/******* Admin FORMATTING TBD *******/

@@ -40,7 +40,7 @@
             <li class="active"><a href="#">Home</a></li>
             <li><a href="#">Bookshelf</a></li>
             <li><a href="#">Requests</a></li>
-            <li><a href="#">My Profile</a></li>
+            <li><a href="#">Admin</a></li>
           </ul>
         </div>
       </div>
@@ -102,9 +102,12 @@
               </form>
             </div>
 
-            <!---------- Profile Page Main Content ----------->
-            <div class="ProfilePage">
-              This is a Profile.
+            <!---------- Admin Page Main Content ----------->
+            <div class="AdminPage">
+              <!---------- Single Chat View ----------->
+              <div class="d-flex align-items-end flex-column-reverse" id="message-window">
+                  <ul class="list-group list-group-flush overflow-auto" id="adminMessages"></ul>
+              </div>
             </div>
 
           </div>
@@ -200,9 +203,12 @@
               </div>
             </div>
 
-            <!---------- Profile Page Sidebar Content ----------->
-            <div class="ProfilePage">
-              This is a Profile Sidebar.
+            <!---------- Admin Page Sidebar Content ----------->
+            <div class="AdminPage">
+              <div class="d-flex align-items-end flex-column" style="height: 80vh;">
+                <ul class="list-group" id="admin-chat-rooms">
+                </ul>
+              </div>
             </div>
 
           </div>

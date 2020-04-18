@@ -37,14 +37,34 @@ async function apiGetChatTable() {
     return res.data
 }
 
+async function apiUpdateRecord(record) {
+    params = record;
+    let res = await axios.put( 'http://localhost:3000/tables/uprecord/', params);
+    console.log('update record api called with parameter: ' + params);
+//    console.log(res.data);
+}
+
+
 // only for testing
 async function testBarrage(){
 
+        apiUpdateRecord(
+
+        { "tablename" : "book_table",
+            "cell_d" : "title",
+            "cell_v" : 'dank memes',
+            "where_d" : "book_id",
+            "where_v" : "1000",
+        }
+    );
+
     let test = await apiGetChatTable();
     console.log(test);
+
 }
 
 // export functions
 module.exports = {
-    apiGetChatTable
+    apiGetChatTable,
+    apiUpdateRecord
 };

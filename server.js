@@ -153,7 +153,7 @@ io.on('connection', async function(socket) {
                 "where_v" : key
             };
             // let update = JSON.stringify(recordUpdate);
-            console.log(recordUpdate);
+            // console.log(recordUpdate);
             // construct the new record
             // { "tablename" : "book_table",
             //     "cell_d" : "title",

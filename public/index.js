@@ -285,21 +285,64 @@ async function populateMap()
   markers.setInfoWindows();
 }
 
-
 async function populateBooksAround()
 {
   const allBooks = await apiGetBookTable();
+  const allUsers = await apiGetUserTable();
 
-//only show 10 books
-  for(let key = 0; key < 10; key++){
+  /*HARDCODED LAT AND LON. GET FROM COOKIES TODO*/
+  const curr_lon = 50.93974967;
+  const curr_lat = -113.9596893;
 
+  //Only show 10 books alternatively allBooks.length
+  for(let key = 0; key < allBooks.length; key++){
+
+    //Get the books owner id from the book table.
+    const owned_by = allBooks[key].owner_id;
+
+    var curr_owner = allUsers.filter(obj => {
+      return obj.user_id == owned_by
+    });
+
+    book_lat = curr_owner[0].user_lat;
+    book_lon = curr_owner[0].user_lon;
+
+    //Calculate the distance, Haversine method, accurate within .5%, then add the property
+    var r = 6371000;
+    var phi_1 = curr_lat * (Math.PI / 180);
+    var phi_2 = book_lat * (Math.PI / 180);
+
+    var delta_phi = (book_lat - curr_lat) * (Math.PI / 180);
+    var delta_lambda = (book_lon - curr_lon) * (Math.PI / 180);
+
+    var a = Math.sin(delta_phi/2.0)**2+ Math.cos(phi_1)*Math.cos(phi_2)* Math.sin(delta_lambda/2.0)**2;
+    var c = 2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+
+    spacingInKilometers = (r*c)/1000;
+    allBooks[key].distance = spacingInKilometers.toFixed(1);
+
+    /*console.log("TEST");
+    console.log(curr_lat);
+    console.log(curr_lon);
+    console.log(book_lat);
+    console.log(book_lon);
+    console.log(spacingInKilometers);*/
+  }
+
+  allBooks.sort(function(a, b){
+    return a.distance-b.distance
+  });
+
+  var nearbyBookCount = 0;
+  for(let key = 0; key < allBooks.length; key++) {
   // Beware if you use the below for statement
   // for(var key in allBooks) {
-    if(allBooks[key].borrowed_by === "null"){
+    if(allBooks[key].borrowed_by === "null" && allBooks[key].distance != 0 && nearbyBookCount <= 20){
       $('#booksidebar > tbody').append($('<tr>').html(
         "<td>" + allBooks[key].title + "</td>" +
-        "<td>" + allBooks[key].author + "</td>"
+        "<td>" + allBooks[key].author + " (" + allBooks[key].distance + "km away)</td>"
         ));
+      nearbyBookCount++;
     }
   }
 }

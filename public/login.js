@@ -9,15 +9,7 @@
 *  Last revision: 04/18/2020
 ********************************************/
 
-
-// Hardcoded dict to store "existing users" 
-// This is just to ensure the authentication logic is valid
-// Later implentation will have DB queries and/or passport.js to communicate
-// with external data, etc.
-var users = {'BillyBob@hello.ca':1234, 'JaneDoe@hi.com':1234};
-
-
-function auth(){
+async function auth(){
         let inputEmail= document.getElementById("usernameInput").value;
         let inputPass = document.getElementById("passwordInput").value;
         
@@ -28,33 +20,37 @@ function auth(){
         // let userStatus = 
      
         let newPage = document.getElementById("submit");
-        r = checkEmail(inputEmail)
-        console.log("r = " + r)
+        emailStatus = await checkEmail(inputEmail)
+        passwordStatus = await passwordMatches(inputEmail, inputPass)
+        activeStatus = await isActiveUser(inputEmail)
+
         // Check if email exists
-        if(checkEmail(inputEmail) === false){
+        if(emailStatus === false){
+            console.log("Email failed")
             loginFailed();
             return;
-        }/*
+        }
         // Check if password matches email
-        else if(!passwordMatches(inputEmail, inputPass)){
+        else if(passwordStatus === false){
+            console.log("password failed")
             loginFailed();
             return;
         }
         // Check if user is blocked
-        else if(!isActiveUser(inputEmail)){
+        else if(activeStatus === false){
+            console.log("active failed")
             loginFailed();
             return;
         }
-        */
+        
         // **** BAD CONVENTION ****
         // on my local system, I renamed login.html to index.html
         // and then I changed index.html to index1.html
         // ************************
         else {
             //alert("SUCCESS")
-            //newPage.setAttribute("href", "index1.html");
+            newPage.setAttribute("href", "index1.html");
         }
-
 }
 
 function loginFailed(){

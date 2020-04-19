@@ -41,16 +41,17 @@ $(function () {
             renderMessage(msg);
         });
         for (var key in rooms) {
-            $('#chat-rooms').append($('<li class="list-group-item">').text(rooms[key].name)
+            $('#chat-rooms').append($('<li class="list-group-item chat-room">').text(rooms[key].name)
                 .attr("id", rooms[key].id));
         }
         $('#' + activeRoom).addClass('active');
-        $(".list-group-item").on("click",function(){
+        $(".chat-room").on("click",function(){
             $(".list-group-item.active").removeClass('active');
             $(this).addClass('active');
             activeRoom = $(".list-group-item.active").attr("id");
             // console.log('active room = ' + activeRoom);
             $('#messages').empty();
+            console.log(activeRoom);
             rooms[parseInt(activeRoom)].history.forEach(function(msg) {
                 renderMessage(msg);
             });
@@ -69,10 +70,11 @@ $(function () {
             renderAdminMessage(msg);
         });
         for (var key in adminRooms) {
-            $('#admin-chat-rooms').append($('<li class="list-group-item">').text(adminRooms[key].name)
+            $('#admin-chat-rooms').append($('<li class="list-group-item chat-room">').text(adminRooms[key].name)
                 .attr("id", adminRooms[key].id));
         }
         $('#' + activeAdminRoom).addClass('active');
+      
         $(".list-group-item").on("click", async function(){
             $(".list-group-item.active").removeClass('active');
             $(this).addClass('active');

@@ -15,8 +15,18 @@ let markers = initMarkers();
 
 /************* Initializations **************/
 function initMap(){
+  let mapCenter;
+  if (document.cookie.split(';').filter((item) => item.trim().startsWith('user_lat')).length &&
+      document.cookie.split(';').filter((item) => item.trim().startsWith('user_lon')).length) {
+        let user_lat = parseFloat(document.cookie.replace(/(?:(?:^|.*;\s*)user_lat\s*\=\s*([^;]*).*$)|^.*$/, "$1"));
+        let user_lon = parseFloat(document.cookie.replace(/(?:(?:^|.*;\s*)user_lon\s*\=\s*([^;]*).*$)|^.*$/, "$1"));
+        mapCenter = {lat:user_lat, lng:user_lon};
+  }
+  else{
+    mapCenter = {lat: 51.078113, lng: -114.129029};
+  }
   collabooksMap = new google.maps.Map(document.getElementById('map'), {
-      center: {lat: 51.078113, lng: -114.129029},
+      center: mapCenter,
       zoom: 13
     });
     populateMap();
@@ -29,7 +39,7 @@ $(document).ready(function(){
   initMap();
 
   //check if admin
-  
+
 
 });
 
@@ -51,6 +61,17 @@ function initMarkers(){
     markers[user.user_id] = {user: user, marker:marker, infoWindow:infoWindow, books:[]};
   }
 
+  function addOwnLocation(user){
+    let markerPosition = {lat:user.user_lon, lng:user.user_lat};
+    let marker = new google.maps.Marker({position:markerPosition, map:collabooksMap});
+    //This string will change once we know more about what information we want to show
+    let userInfo = "<h3>Your Location</h3>";
+    let infoWindow = new google.maps.InfoWindow({content: userInfo});
+    marker.addListener("click", function(){
+      infoWindow.open(map, marker);
+    });
+  }
+
   function addBookToUser(userId, book){
     markers[userId].books.push(book);
   }
@@ -62,7 +83,7 @@ function initMarkers(){
   }
 
   function updateInfoWindow(userId){
-    infoString = "<h4>User:</h4><b>User: </b>" + markers[userId].user.first_name +  " "+markers[userId].user.last_name + "<h4>User's books:</h4>";
+    infoString = "<h4>User: " + markers[userId].user.first_name +  " "+markers[userId].user.last_name + "</h4><h4>User's books:</h4>";
     for(currentBook of markers[userId].books){
       infoString = infoString + "<hr><b>Title: </b>"+currentBook.title+"<br><b>Author: </b>"+currentBook.author
                               +"<br><b>Genre: </b>"+currentBook.genre;
@@ -116,6 +137,9 @@ function initMarkers(){
   // Sets the map on all markers in the array.
   function setMapOnAll(map) {
     for (var i = 1; i < markers.length; i++) {
+      if(markers[i] === undefined || markers[i] === null){
+        continue;
+      }
       markers[i].marker.setMap(map);
     }
   }
@@ -131,8 +155,11 @@ function initMarkers(){
   }
 
   function selectiveHide(searchword){
-      // console.log('the searchword is:'+searchword);
+      //console.log('the searchword is:'+searchword);
       for (var i = 1; i < markers.length; i++) {
+        if(markers[i] === undefined || markers[i] === null){
+          continue;
+        }
         let thismarker = markers[i];
         let bookarray = markers[i].books;
         // console.log(bookarray);
@@ -159,13 +186,16 @@ function initMarkers(){
         if (Boolean(hideme)) {
           thismarker.marker.setMap(null);
         }
+        else{
+          thismarker.marker.setMap(collabooksMap);
+        }
       }
   }
 
 
   return {
     addUserMarker, addBookToUser, setInfoWindows, removeMarker, modifyBook, removeBook, clearMap, deleteMarkers,
-    setMapOnAll, clearMarkers, deleteMarkers, selectiveHide
+    setMapOnAll, clearMarkers, deleteMarkers, selectiveHide, addOwnLocation
   };
 }
 
@@ -375,16 +405,30 @@ async function returnABook(){
 
 async function populateMap()
 {
+  markers.deleteMarkers();
+  let userId = -1;
+  if (document.cookie.split(';').filter((item) => item.trim().startsWith('user_id')).length) {
+    userId = document.cookie.replace(/(?:(?:^|.*;\s*)user_id\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+  }
   const users = await apiGetUserTable();
 
   for(let userToAdd of users){
     // un-comment to see the record structure
     //console.log(userToAdd);
-    markers.addUserMarker(userToAdd);
+    //do not add the currently active user to the map
+    if(userToAdd.user_id === parseInt(userId)){
+      markers.addOwnLocation(userToAdd);
+    }
+    else{
+      markers.addUserMarker(userToAdd);
+    }
   }
 
   const books = await apiGetBookTable();
   for(let bookToAdd of books){
+    if(bookToAdd.owner_id === userId){
+      continue
+    }
     markers.addBookToUser(bookToAdd.owner_id, bookToAdd);
   }
 

@@ -90,6 +90,7 @@ io.on('connection', async function(socket) {
 
         var room = {
             name: roomname,
+            visitorUserId: roomname,
             id: allChats[key].chat_id,
             history: JSON.parse(allChats[key].chat_history)
         }
@@ -113,6 +114,8 @@ io.on('connection', async function(socket) {
 
         var room = {
             name: user1 + " and " + user2,
+            user1Id: user1,
+            user2Id: user2,
             id: allChats[key].chat_id,
             history: JSON.parse(allChats[key].chat_history)
         }

@@ -18,33 +18,40 @@ $(function () {
     });
 
     socket.on('chat message', function(msg) {
+        // console.log('client chat function called');
+        // console.log(typeof msg.roomID, typeof activeRoom);
         if (msg.roomID === activeRoom) {
             renderMessage(msg.msg);
         }
     });
 
     var activeRoom;
+    var activeAdminRoom;
     var rooms;
+    var adminRooms;
 
     socket.on('populate rooms', function(rms) {
         rooms = rms;
+        activeRoom = Object.keys(rooms)[0];
         // console.log('chat rooms populated');
-        $('#chat-rooms').append($('<li class="list-group-item active">').text(rooms[0].name)
-            .attr("id", rooms[0].id));
-        activeRoom = rooms[0].id;
-        rooms[0].history.forEach(function(msg) {
+        // $('#chat-rooms').append($('<li class="list-group-item active">').text(rooms[activeRoom].name)
+        //     .attr("id", rooms[activeRoom].id));
+        console.log(activeRoom);
+        rooms[activeRoom].history.forEach(function(msg) {
             renderMessage(msg);
         });
-        for (i = 1; i < rooms.length; i++) {
-            $('#chat-rooms').append($('<li class="list-group-item">').text(rooms[i].name)
-                .attr("id", rooms[i].id));
+        for (var key in rooms) {
+            $('#chat-rooms').append($('<li class="list-group-item chat-room">').text(rooms[key].name)
+                .attr("id", rooms[key].id));
         }
-        $(".list-group-item").on("click",function(){
+        $('#' + activeRoom).addClass('active');
+        $(".chat-room").on("click",function(){
             $(".list-group-item.active").removeClass('active');
             $(this).addClass('active');
             activeRoom = $(".list-group-item.active").attr("id");
-            console.log('active room = ' + activeRoom);
+            // console.log('active room = ' + activeRoom);
             $('#messages').empty();
+            console.log(activeRoom);
             rooms[parseInt(activeRoom)].history.forEach(function(msg) {
                 renderMessage(msg);
             });
@@ -56,6 +63,36 @@ $(function () {
 
     });
 
+    socket.on('admin populate rooms', function(rms) {
+        adminRooms = rms;
+        activeAdminRoom = Object.keys(adminRooms)[0];
+        console.log(activeAdminRoom);
+        adminRooms[activeAdminRoom].history.forEach(function(msg) {
+            renderAdminMessage(msg);
+        });
+        for (var key in adminRooms) {
+            $('#admin-chat-rooms').append($('<li class="list-group-item chat-room">').text(adminRooms[key].name)
+                .attr("id", adminRooms[key].id));
+        }
+        $('#' + activeAdminRoom).addClass('active');
+        $(".chat-room").on("click",function(){
+            $(".list-group-item.active").removeClass('active');
+            $(this).addClass('active');
+            activeAdminRoom = $(".list-group-item.active").attr("id");
+
+            $('#adminMessages').empty();
+            adminRooms[parseInt(activeAdminRoom)].history.forEach(function(msg) {
+                renderAdminMessage(msg);
+            });
+        });
+    });
+
+    function renderAdminMessage(msg) {
+        $('#adminMessages').append($('<li class="list-group-item">').text(msg.timestamp));
+        $('#adminMessages li:last').append($('<div class="name">').text(msg.name));
+        $('#adminMessages li:last').append($('<div class="msg">').text(msg.text));
+    }
+
     socket.on('update history', function(rms) {
         rooms = rms;
     });
@@ -65,14 +102,4 @@ $(function () {
         $('#messages li:last').append($('<div class="name">').text(msg.name));
         $('#messages li:last').append($('<div class="msg">').text(msg.text));
     }
-
-    //Populate the bookshelf when the page loads
-    // TODO: Is this async? should it be called again or will it update because it is connected to the system? -C
-    populateShelf();
-
-    //Populate the map when the page loads (moving this to init map for now)
-    //populateMap();
-
-    //Populate the books around sidebar when the page loads
-    populateBooksAround();
 });

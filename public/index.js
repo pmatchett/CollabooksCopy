@@ -22,6 +22,13 @@ function initMap(){
     populateMap();
 }
 
+//on document load do
+$(document).ready(function(){
+  populateShelf();
+  populateBooksAround();
+  initMap();
+});
+
 /************* Google maps functions ********/
 //creating a closure that will handle all of the marker functions
 function initMarkers(){
@@ -51,7 +58,7 @@ function initMarkers(){
   }
 
   function updateInfoWindow(userId){
-    infoString = "<h4>User:</h4><b>User Id: </b>" + userId + "<h4>User's books:</h4>";
+    infoString = "<h4>User:</h4><b>User: </b>" + markers[userId].user.first_name +  " "+markers[userId].user.last_name + "<h4>User's books:</h4>";
     for(currentBook of markers[userId].books){
       infoString = infoString + "<hr><b>Title: </b>"+currentBook.title+"<br><b>Author: </b>"+currentBook.author
                               +"<br><b>Genre: </b>"+currentBook.genre;
@@ -68,31 +75,31 @@ function initMarkers(){
     markers[userId].infoWindow.setContent(infoString);
   }
 
-  //not fully tested yet
+
   function removeMarker(id){
     markers[id].marker.setMap(null);
     markers[id].marker = null;
-    markers[id] = undefined;
+    markers[id] = null;
   }
-  //not fully tested
+
   function modifyBook(userId, newBookInfo){
     for(let bookToChange of markers[userId].books){
-      if(bookToChange.book_id === newBookInfo.book_id){
+      if(parseInt(bookToChange.book_id) === newBookInfo.book_id){
         Object.assign(bookToChange, newBookInfo);
         break;
       }
     }
     updateInfoWindow(userId);
   }
-  //not fully tested
+
   function removeBook(ownerId, bookId){
-    for(let bookIndex in markers[userId].books){
-      if(markers[userId].books[bookIndex].book_id === bookId){
-        markers[userId].books[bookIndex].splice(bookIndex,1);
+    for(let bookIndex in markers[ownerId].books){
+      if(parseInt(markers[ownerId].books[bookIndex].book_id) === bookId){
+        markers[ownerId].books.splice(bookIndex,1);
         break;
       }
     }
-    updateInfoWindow(userId);
+    updateInfoWindow(ownerId);
   }
 
   return {addUserMarker, addBookToUser, setInfoWindows, removeMarker, modifyBook, removeBook};
@@ -101,6 +108,7 @@ function initMarkers(){
 /************* Event Handling functions *****/
 //this function currently has placeholder functionality
 function loanHandler(identifier){
+  bookId = parseInt(identifier);
   console.log("called loan handler asking to borrow book#"+identifier);
 }
 
@@ -114,42 +122,46 @@ $(document).on('click','.nav li', function (e) {
       $('.HomePage').show();
       $('.BookshelfPage').hide();
       $('.RequestsPage').hide();
-      $('.ProfilePage').hide();
-      initMap();
+      $('.AdminPage').hide();
     }
     else if ($(this).text() === "Bookshelf") {
       $('.HomePage').hide();
       $('.BookshelfPage').show();
       $('.RequestsPage').hide();
-      $('.ProfilePage').hide();
+      $('.AdminPage').hide();
     }
     else if ($(this).text() === "Requests") {
       $('.HomePage').hide();
       $('.BookshelfPage').hide();
       $('.RequestsPage').show();
-      $('.ProfilePage').hide();
+      $('.AdminPage').hide();
     }
-    else if ($(this).text() === "My Profile") {
+    else if ($(this).text() === "Admin") {
       $('.HomePage').hide();
       $('.BookshelfPage').hide();
       $('.RequestsPage').hide();
-      $('.ProfilePage').show();
+      $('.AdminPage').show();
     }
 
 } );
 
-/************* Placeholder Functions **************/
+/************* Bookshelf Functions **************/
 
 async function populateShelf()
 {
+  $('#bookshelf tbody').empty();
+  $('#lendBookDropdown').empty();
+  $('#returnBookDropdown').empty();
+
   // TODO: Use cookies to keep track of current user?
-  const currentUser = "10";
+  const currentUser = "18";
 
   const allBooks = await apiGetBookTable();
 
-  // TODO: this is pretty ugly, can we make it nicer or you just HAVE to get all the books?
   for(var key in allBooks) {
+
     var owner = allBooks[key].owner_id;
+
     if(owner === currentUser){
 
       let status = allBooks[key].borrowed_by;
@@ -158,16 +170,144 @@ async function populateShelf()
         status = "None";
       }
 
+      //populate the current users bookshelf
       $('#bookshelf > tbody').append($('<tr>').html(
         "<td>" + allBooks[key].title + "</td>" +
         "<td>" + allBooks[key].author + "</td>" +
         "<td>" + allBooks[key].isbn + "</td>" +
         "<td>" + status + "</td>" +
-        '<td><button type="button" class="btn btn-secondary" name="removeBook" onclick="removeBook(' + key + ')">Remove</button></td>'
+        "<td>" + '<button type="button" class="btn btn-secondary" id="removeBookButton" onclick="removeBook(' +allBooks[key].book_id+ ')">Remove</button>' + "</td>"
         ));
+
+      //also populate books that can be returned and lent in Requests
+      if(allBooks[key].borrowed_by === "null" ){
+        $('#lendBookDropdown').append('<option value=' + allBooks[key].book_id + '>' + allBooks[key].title + '</option>');
+      }
+      if(allBooks[key].borrowed_by !== "null" ){
+        $('#returnBookDropdown').append('<option value=' + allBooks[key].book_id + '>' + allBooks[key].title + '</option>');
+      }
     }
   }
+
+  if($("#lendBookDropdown option").length == 0){
+      $('#lendButton').addClass('disabled');
+  }else{
+      $('#lendButton').removeClass('disabled');
+  }
+
+  if($("#returnBookDropdown option").length == 0){
+      $('#returnButton').addClass('disabled');
+  }else{
+      $('#returnButton').removeClass('disabled');
+  }
+
 }
+
+async function removeBook(removeKey){
+
+  console.log("removed " + removeKey);
+  let record_to_delete ={
+      "tablename" : "book_table",
+      "column_name" : "book_id",
+      "value" : removeKey,
+  };
+  await apiDeleteRecord(record_to_delete);
+
+  //make the new page up to date
+  populateShelf();
+}
+
+async function addBook(){
+  let titleInput = $("#inputTitle").val();
+  let authorInput = $("#inputAuthor").val();
+  let isbnInput = $("#inputISBN").val();
+  let genreInput = $("#inputGenre").val();
+  //will need to get current user for owner_id
+  let owner = 90;
+  if (titleInput === "" || authorInput === "" || isbnInput === "" || genreInput === "Select Genre..."){
+    alert("All fields must be entered to add a book");
+    return;
+  }
+  const allBooks = await apiGetBookTable();
+  //getting the next Id for the book, since the DB is kind of weird it has to be done this way
+  let maxId = 0;
+  for(let book of allBooks){
+    if(parseInt(book.book_id) > maxId){
+      maxId = parseInt(book.book_id);
+    }
+  }
+  maxId = maxId + 1;
+  let bookToAdd = {
+    "bookid":maxId,
+    "title":titleInput,
+    "author":authorInput,
+    "isbn":isbnInput,
+    "genre":genreInput,
+    "owner_id":owner,
+    "borrowed_by":"null",
+    "due_date":"null"
+  };
+  apiAddRecordToTable(bookToAdd, 'book');
+  $("#inputTitle").val("");
+  $("#inputAuthor").val("");
+  $("#inputISBN").val("");
+  $("#inputGenre").val("Select Genre...");
+
+  $('#errorMessage').text("The book " + titleInput + " was added successfully!");
+  $('#alertDialog').modal('show');
+}
+
+/************* Chat Functions **************/
+
+async function lendABook(){
+
+  if($("#lendBookDropdown option").length > 0){
+
+    let bookToLendTitle = $("#lendBookDropdown option:selected" ).text();
+    let bookToLend = $("#lendBookDropdown option:selected" ).val();
+
+    //TODO: how do i get this?
+    let personWhoBorrows = "13";
+
+    //Change status in the DB
+    let updateuserrecord = { "tablename" : "book_table",
+        "cell_d" : "borrowed_by",
+        "cell_v" : personWhoBorrows,
+        "where_d" : "book_id",
+        "where_v" : bookToLend
+    };
+    await apiUpdateRecord(updateuserrecord);
+
+    //Update the shelf/map
+    //DOESNT IMMEDIATELY UPDATE :^(
+    populateShelf();
+    populateMap();
+  }
+}
+
+async function returnABook(){
+
+  if($("#returnBookDropdown option").length > 0){
+
+    let bookToReturnTitle = $("#returnBookDropdown option:selected" ).text();
+    let bookToReturn = $("#returnBookDropdown option:selected" ).val();
+
+    //Change status in the DB
+    let updateuserrecord = { "tablename" : "book_table",
+        "cell_d" : "borrowed_by",
+        "cell_v" : "null",
+        "where_d" : "book_id",
+        "where_v" : bookToReturn
+    };
+    await apiUpdateRecord(updateuserrecord);
+
+    //Update the shelf/map
+    populateShelf();
+    populateMap();
+  }
+}
+
+/************* Main Page Functions **************/
 
 async function populateMap()
 {
@@ -185,26 +325,64 @@ async function populateMap()
   markers.setInfoWindows();
 }
 
-
 async function populateBooksAround()
 {
   const allBooks = await apiGetBookTable();
+  const allUsers = await apiGetUserTable();
 
-//only show 10 books
-  for(let key = 0; key < 10; key++){
+  /*HARDCODED LAT AND LON. GET FROM COOKIES TODO*/
+  const curr_lon = 50.93974967;
+  const curr_lat = -113.9596893;
 
+  //Only show 10 books alternatively allBooks.length
+  for(let key = 0; key < allBooks.length; key++){
+
+    //Get the books owner id from the book table.
+    const owned_by = allBooks[key].owner_id;
+
+    var curr_owner = allUsers.filter(obj => {
+      return obj.user_id == owned_by
+    });
+
+    book_lat = curr_owner[0].user_lat;
+    book_lon = curr_owner[0].user_lon;
+
+    //Calculate the distance, Haversine method, accurate within .5%, then add the property
+    var r = 6371000;
+    var phi_1 = curr_lat * (Math.PI / 180);
+    var phi_2 = book_lat * (Math.PI / 180);
+
+    var delta_phi = (book_lat - curr_lat) * (Math.PI / 180);
+    var delta_lambda = (book_lon - curr_lon) * (Math.PI / 180);
+
+    var a = Math.sin(delta_phi/2.0)**2+ Math.cos(phi_1)*Math.cos(phi_2)* Math.sin(delta_lambda/2.0)**2;
+    var c = 2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+
+    spacingInKilometers = (r*c)/1000;
+    allBooks[key].distance = spacingInKilometers.toFixed(1);
+
+    /*console.log("TEST");
+    console.log(curr_lat);
+    console.log(curr_lon);
+    console.log(book_lat);
+    console.log(book_lon);
+    console.log(spacingInKilometers);*/
+  }
+
+  allBooks.sort(function(a, b){
+    return a.distance-b.distance
+  });
+
+  var nearbyBookCount = 0;
+  for(let key = 0; key < allBooks.length; key++) {
   // Beware if you use the below for statement
   // for(var key in allBooks) {
-    if(allBooks[key].borrowed_by === "null"){
+    if(allBooks[key].borrowed_by === "null" && allBooks[key].distance != 0 && nearbyBookCount <= 20){
       $('#booksidebar > tbody').append($('<tr>').html(
         "<td>" + allBooks[key].title + "</td>" +
-        "<td>" + allBooks[key].author + "</td>"
+        "<td>" + allBooks[key].author + " (" + allBooks[key].distance + "km away)</td>"
         ));
+      nearbyBookCount++;
     }
   }
-}
-
-// TODO: connect to database
-function removeBook(removeKey){
-  console.log("Removed " + removeKey);
 }

@@ -19,6 +19,9 @@ const port = 3000;
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 var moment = require("moment");
+// the axios api to use the REST calls to get DB information
+// to use, just call axiosdbcall.apiGetChatTable() for example
+const axiosapicall = require('./axiosapi');
 
 // var dir = path.join(__dirname, 'public');
 
@@ -53,47 +56,71 @@ app.get('/tables/getrecord/', db.getARecord);
 app.delete('/tables/delrecord/', db.delARecord);
 // end of API end points
 
-// will need to populate the list of chatrooms from existing database history
-// var chatrooms = ['chatroom1', 'chatroom2', 'chatroom3'];
-var chatrooms = [];
-for (i = 0; i < 3; i++) { //change this to traverse sql query of chat rooms
-    var room = {
-        name: 'User' + i,
-        id: i,
-        history: [
-            {
-                name: "username test " + i,
-                text: "Message 1 for chat room " + i,
-                timestamp: 'fake timestamp  1'
-            },
-            {
-                name: "username test " + i,
-                text: "Message 2 for chat room " + i,
-                timestamp: 'fake timestamp  2'
-            },
-            {
-                name: "username test " + i,
-                text: "Message 3 for chat room " + i,
-                timestamp: 'fake timestamp  3'
-            },
-            {
-                name: "username test " + i,
-                text: "Message 4 for chat room " + i,
-                timestamp: 'fake timestamp  4'
-            }
-        ]
-    };
-    chatrooms.push(room);
-}
+io.on('connection', async function(socket) {
+    // console.log('a user connected');
 
-io.on('connection', function(socket) {
-    console.log('a user connected');
+    // var username = "user_" + Math.floor(Math.random() * 100);
+    var username = "user_51";
 
-    var username = "User" + Math.floor(Math.random() * 1000);
-    for (i = 0; i < chatrooms.length; i++) {
-        socket.join(chatrooms[i].id);
+    var chatrooms = {};
+
+    const allChats = await axiosapicall.apiGetChatTable();
+    // console.log(allChats[0].chat_id);
+    // console.log('chat data retrieved: ' + allChats[0].chat_id);
+    for (var key in allChats) {
+        // console.log(allChats[key].chat_id);
+        // console.log(allChats[key].first_participant_username);
+        // console.log(allChats[key].second_participant_username);
+        var user1 = allChats[key].first_participant_username;
+        // console.log(typeof(username));
+        var user2 = allChats[key].second_participant_username;
+        // console.log(user2);
+        var roomname;
+        // console.log('username = ' + username + ", user1 = " + user1 + ", user2 = " + user2);
+        if (username === user1) {
+            roomname = user2;
+            // console.log(roomname);
+        } else if (username === user2) {
+            roomname = user1;
+        } else {
+            continue;
+        }
+
+        // console.log(roomname);
+
+        var room = {
+            name: roomname,
+            id: allChats[key].chat_id,
+            history: JSON.parse(allChats[key].chat_history)
+        }
+
+        // console.log(room.history);
+
+        chatrooms[room.id] = room;
+    }
+
+    for (var key in chatrooms) {
+        socket.join(chatrooms[key].id);
     }
     socket.emit('populate rooms', chatrooms);
+
+    //---ADMIN---
+    var adminChatrooms = {};
+    for (var key in allChats) {
+
+        var user1 = allChats[key].first_participant_username;
+        var user2 = allChats[key].second_participant_username;
+
+        var room = {
+            name: user1 + " and " + user2,
+            id: allChats[key].chat_id,
+            history: JSON.parse(allChats[key].chat_history)
+        }
+        adminChatrooms[room.id] = room;
+    }
+
+    socket.emit('admin populate rooms', adminChatrooms);
+    //^^^ADMIN^^^
 
     socket.on('chat message', function(msg) {
         var momentTimestamp = moment().format("h:mm:ss a");
@@ -113,8 +140,29 @@ io.on('connection', function(socket) {
         updateHistory();
     });
 
-    socket.on('disconnect', function() {
-        console.log('user disconnected');
+    socket.on('disconnect', async function() {
+        // console.log('user disconnected');
+        for (var key in chatrooms) {
+            // console.log(key);
+            let hist = JSON.stringify(chatrooms[key].history);
+            let recordUpdate = {
+                "tablename" : "chat_table",
+                "cell_d" : "chat_history",
+                "cell_v" : hist,
+                "where_d" : "chat_id",
+                "where_v" : key
+            };
+            // let update = JSON.stringify(recordUpdate);
+            // console.log(recordUpdate);
+            // construct the new record
+            // { "tablename" : "book_table",
+            //     "cell_d" : "title",
+            //     "cell_v" : 'dank memes',
+            //     "where_d" : "book_id",
+            //     "where_v" : "1000",
+            // }
+            await axiosapicall.apiUpdateRecord(recordUpdate);
+        }
     });
 
     function updateHistory() {

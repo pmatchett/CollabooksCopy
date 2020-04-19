@@ -49,6 +49,7 @@ app.get('/get', (request, response) => {
 app.get('/tables/booktable', db.getBookTable);
 app.get('/tables/chattable', db.getChatTable);
 app.get('/tables/usertable', db.getUserTable);
+app.post('/tables/addrecord/chat', db.addRecordChat);
 app.post('/tables/addrecord/book', db.addRecordBook);
 app.post('/tables/addrecord/user', db.addRecordUser);
 app.put('/tables/uprecord/', db.updateRecord);

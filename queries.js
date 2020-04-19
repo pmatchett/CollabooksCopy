@@ -88,7 +88,6 @@ function addRecordBook(request,response) {
     })
 }
 
-// working
 function addRecordUser(request, response) {
     console.log('into final add record user method');
     //console.log(request);
@@ -106,7 +105,22 @@ function addRecordUser(request, response) {
     })
 }
 
-// working
+function addRecordChat(request, response) {
+    //console.log(request);
+    const rec = request.body;
+    //console.log(rec);
+
+    pool.query('INSERT INTO chat_table VALUES ($1, $2, $3, $4)',
+        [rec.chatid, rec.firstpname, rec.secondpname, rec.hist],
+        (error, results) => {
+            if (error) {
+                throw error
+            }
+            // console.log(results);
+            response.status(201).send('Row added')
+        })
+}
+
 function updateRecord(request, response) {
     console.log('into final update record method');
     //console.log(request);
@@ -204,5 +218,6 @@ module.exports = {
     updateRecord,
     getARecord,
     delARecord,
-    getUserLookUp
+    getUserLookUp,
+    addRecordChat
 };

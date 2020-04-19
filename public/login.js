@@ -13,6 +13,8 @@ async function auth(){
         let inputEmail= document.getElementById("usernameInput").value;
         let inputPass = document.getElementById("passwordInput").value;
         
+        // These variables will be utilized once I tidy up this
+        // code
 
         // let userID = 
         // let userEmail = 
@@ -48,38 +50,41 @@ async function auth(){
         // and then I changed index.html to index1.html
         // ************************
         else {
-            //alert("SUCCESS")
-            let signInCookie = document.cookie;
-            userID = await getUserID(inputEmail);
-            console.log(userID);
-            //signInCookie = 
+            alert("Login was successful, please click the button again to sign in")
+            await buildCookies(inputEmail)
+            console.log(document.cookie)
             newPage.setAttribute("href", "index1.html");
         }
 }
 
-function loginFailed(){
+async function loginFailed(){
     alert("INCORRECT LOGIN INFORMATION\nPlease try again")
     let newPage = document.getElementById("submit");
     newPage.setAttribute("href", "index.html");
 }
 
-async function getUserID(inputEmail) {
+async function getRecord(inputEmail) {
     let get_user_record = {tablename: 'user_table', 
                            column_name: 'email',
                            value: inputEmail};
 
     let result = await apiGetRecord(get_user_record);
-    console.log(result)
-    // This Line is what Im using to check the values
-    console.log(result[0])
-    console.log(result.length)
+    //console.log(result[0]);
+    //console.log(result[0].user_id)
+    return result[0]
+}
 
-    if(result.length === 0){
-        return false;
-    }
-    else {
-        return true;
-    }
+async function buildCookies(inputEmail){
+    let record = await getRecord(inputEmail);
+    console.log(record)
+    
+    let userID = record.user_id;
+    let userLat = record.user_lon;
+    let userLon = record.user_lat;
+
+    document.cookie = "user_id=" + userID + ";";
+    document.cookie = "user_lat=" + userLat + ";";
+    document.cookie = "user_lon=" + userLon + ";";
 }
 
 async function checkEmail(inputEmail) {

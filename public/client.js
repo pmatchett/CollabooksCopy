@@ -73,29 +73,16 @@ $(function () {
                 .attr("id", adminRooms[key].id));
         }
         $('#' + activeAdminRoom).addClass('active');
-        $(".list-group-item").on("click",function(){
+        $(".list-group-item").on("click", async function(){
             $(".list-group-item.active").removeClass('active');
             $(this).addClass('active');
             activeAdminRoom = $(".list-group-item.active").attr("id");
-
-            //check if user1 is banned
-
+            
             const statusU1 = await checkIfNotBanned((adminRooms[parseInt(activeAdminRoom)].user1Id).replace("user_",""));
             const statusU2 = await checkIfNotBanned((adminRooms[parseInt(activeAdminRoom)].user2Id).replace("user_",""));
 
-
             $('#banFirstUser').text( statusU1 + " " + adminRooms[parseInt(activeAdminRoom)].user1Id);
             $('#banSecondUser').text( statusU2 + " " + adminRooms[parseInt(activeAdminRoom)].user2Id);
-
-
-            // //check if user2 is banned
-            // if(checkIfNotBanned((adminRooms[parseInt(activeAdminRoom)].user2Id).replace("user_",""))){
-            //   $('#banSecondUser').text("Ban " + adminRooms[parseInt(activeAdminRoom)].user2Id);
-            //   console.log("U2 NOT BANNED");
-            // }else{
-            //   $('#banSecondUser').text("Unban " + adminRooms[parseInt(activeAdminRoom)].user2Id);
-            //   console.log("U2 BANNED");
-            // }
 
             //associate the users id as a value
             $('#banFirstUser').val((adminRooms[parseInt(activeAdminRoom)].user1Id).replace("user_",""));

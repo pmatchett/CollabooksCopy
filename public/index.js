@@ -410,8 +410,6 @@ async function banUserA()
   //if the user is not banned
   if($('#banFirstUser').text().search("Unban") === -1){
 
-    console.log("User with the Id of " + idToBan + ". Has been banned!");
-
     //Change status in the DB
     let updateuserrecord = { "tablename" : "user_table",
         "cell_d" : "status",
@@ -425,8 +423,6 @@ async function banUserA()
     //update the screen
     $('#banFirstUser').text("Unban user_" + idToBan);
   }else{
-
-    console.log("User with the Id of " + idToBan + ". Has been unbanned!");
 
     //Change status in the DB
     let updateuserrecord = { "tablename" : "user_table",
@@ -446,9 +442,34 @@ async function banUserA()
 async function banUserB()
 {
   let idToBan = $(banSecondUser).val();
-  console.log("User with the Id of " + idToBan + ". Has been banned!");
 
-  const allUsers = await apiGetUserTable();
-  console.log(allUsers);
+  //if the user is not banned
+  if($('#banSecondUser').text().search("Unban") === -1){
 
+    //Change status in the DB
+    let updateuserrecord = { "tablename" : "user_table",
+        "cell_d" : "status",
+        "cell_v" : 'banned',
+        "where_d" : "user_id",
+        "where_v" : parseInt(idToBan),
+    };
+
+    await apiUpdateRecord(updateuserrecord);
+
+    //update the screen
+    $('#banSecondUser').text("Unban user_" + idToBan);
+  }else{
+    //Change status in the DB
+    let updateuserrecord = { "tablename" : "user_table",
+        "cell_d" : "status",
+        "cell_v" : 'active',
+        "where_d" : "user_id",
+        "where_v" : idToBan,
+    };
+
+    await apiUpdateRecord(updateuserrecord);
+
+    //update the screen
+    $('#banSecondUser').text("Ban user_" + idToBan);
+  }
 }

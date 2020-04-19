@@ -12,6 +12,7 @@
 /*************Global Variables**************/
 let collabooksMap;
 let markers = initMarkers();
+let admin = false;
 
 /************* Initializations **************/
 function initMap(){
@@ -28,8 +29,16 @@ $(document).ready(function(){
   populateBooksAround();
   initMap();
 
-  //check if admin
-
+  //check if admin, show admin tab if they are
+  if (document.cookie.split(';').filter((item) => item.trim().startsWith('user_type=')).length) {
+      let userType = document.cookie.replace(/(?:(?:^|.*;\s*)user_type\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+      if(userType === "admin"){
+        admin = true;
+        $("a:hidden").show();
+      }else{
+        admin = false;
+      }
+  }
 
 });
 

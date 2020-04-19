@@ -217,6 +217,44 @@ async function removeBook(removeKey){
   populateShelf();
 }
 
+async function addBook(){
+  let titleInput = $("#inputTitle").val();
+  let authorInput = $("#inputAuthor").val();
+  let isbnInput = $("#inputISBN").val();
+  let genreInput = $("#inputGenre").val();
+  //will need to get current user for owner_id
+  let owner = 90;
+  if (titleInput === "" || authorInput === "" || isbnInput === "" || genreInput === "Select Genre..."){
+    alert("All fields must be entered to add a book");
+    return;
+  }
+  const allBooks = await apiGetBookTable();
+  //getting the next Id for the book, since the DB is kind of weird it has to be done this way
+  let maxId = 0;
+  for(let book of allBooks){
+    if(parseInt(book.book_id) > maxId){
+      maxId = parseInt(book.book_id);
+    }
+  }
+  maxId = maxId + 1;
+  let bookToAdd = {
+    "bookid":maxId,
+    "title":titleInput,
+    "author":authorInput,
+    "isbn":isbnInput,
+    "genre":genreInput,
+    "owner_id":owner,
+    "borrowed_by":"null",
+    "due_date":"null"
+  };
+  apiAddRecordToTable(bookToAdd, 'book');
+  $("#inputTitle").val("");
+  $("#inputAuthor").val("");
+  $("#inputISBN").val("");
+  $("#inputGenre").val("Select Genre...");
+  alert("book added successfully");
+}
+
 /************* Chat Functions **************/
 
 async function lendABook(){

@@ -39,10 +39,7 @@ $(document).ready(function(){
   populateBooksAround();
   initMap();
 
-<<<<<<< HEAD
-  //check if admin
 
-=======
   //check if admin, show admin tab if they are
   if (document.cookie.split(';').filter((item) => item.trim().startsWith('user_type=')).length) {
       let userType = document.cookie.replace(/(?:(?:^|.*;\s*)user_type\s*\=\s*([^;]*).*$)|^.*$/, "$1");
@@ -53,7 +50,6 @@ $(document).ready(function(){
         admin = false;
       }
   }
->>>>>>> a6dcc73266b269bcfcdf2f46410a1609a2af2f20
 
 });
 

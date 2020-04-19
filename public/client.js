@@ -3,11 +3,18 @@
 
 $(function () {
 
-    console.log('chat function entered');
+    // console.log('chat function entered');
     var socket = io();
 
+    if (document.cookie.split(';').filter((item) => item.trim().startsWith('user_id=')).length) {
+        // console.log('The cookie "username" exists (ES6)')
+        let userID = document.cookie.replace(/(?:(?:^|.*;\s*)user_id\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+        // console.log(test);
+        socket.emit('login', userID);
+    }
+
     $('form').submit(function(e) {
-        console.log('form submission successful');
+        // console.log('form submission successful');
         e.preventDefault();
         socket.emit('chat message', {
             text: $('#message-box').val(),
@@ -36,7 +43,7 @@ $(function () {
         // console.log('chat rooms populated');
         // $('#chat-rooms').append($('<li class="list-group-item active">').text(rooms[activeRoom].name)
         //     .attr("id", rooms[activeRoom].id));
-        console.log(activeRoom);
+        // console.log(activeRoom);
         rooms[activeRoom].history.forEach(function(msg) {
             renderMessage(msg);
         });
@@ -51,7 +58,7 @@ $(function () {
             activeRoom = $(".list-group-item.active").attr("id");
             // console.log('active room = ' + activeRoom);
             $('#messages').empty();
-            console.log(activeRoom);
+            // console.log(activeRoom);
             rooms[parseInt(activeRoom)].history.forEach(function(msg) {
                 renderMessage(msg);
             });

@@ -60,9 +60,13 @@ io.on('connection', async function(socket) {
     // console.log('a user connected');
 
     // var username = "user_" + Math.floor(Math.random() * 100);
-    var username = "user_51";
-
+    var username = "user_";
     var chatrooms = {};
+
+    socket.on('login', function(userID) {
+        username += userID;
+        console.log(username);
+    });
 
     const allChats = await axiosapicall.apiGetChatTable();
     // console.log(allChats[0].chat_id);

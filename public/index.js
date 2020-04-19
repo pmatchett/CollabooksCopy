@@ -12,6 +12,7 @@
 /*************Global Variables**************/
 let collabooksMap;
 let markers = initMarkers();
+let chat = chatFunctions();
 
 /************* Initializations **************/
 function initMap(){
@@ -29,7 +30,7 @@ $(document).ready(function(){
   initMap();
 
   //check if admin
-  
+
 
 });
 
@@ -70,7 +71,7 @@ function initMarkers(){
       if(currentBook.borrowed_by === "null"){
         //when the button is pressed it will call the function loanHandler with the book identifiers as an argument
         infoString = infoString + "<br><b>Availability:</b> Available"+ "<br><button type='button' onclick='loanHandler("
-                                +currentBook.book_id+")' class='loanButton'>Ask to loan</button>";
+                                +currentBook.owner_id+")' class='loanButton'>Ask to loan</button>";
       }
       else{
         infoString = infoString + "<br><b>Availability:</b> Unavailable";
@@ -172,8 +173,14 @@ function initMarkers(){
 /************* Event Handling functions *****/
 //this function currently has placeholder functionality
 function loanHandler(identifier){
-  bookId = parseInt(identifier);
+  let ownerId = identifier;
+  let currentId = document.cookie.replace(/(?:(?:^|.*;\s*)user_id\s*\=\s*([^;]*).*$)|^.*$/, "$1");;
+  $('.HomePage').hide();
+  $('.BookshelfPage').hide();
+  $('.RequestsPage').show();
+  $('.AdminPage').hide();
   console.log("called loan handler asking to borrow book#"+identifier);
+  chat.addRoom(currentId, ownerId);
 }
 
 /************* Page Navigation **************/

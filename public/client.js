@@ -1,7 +1,7 @@
 // var socket = io();
 // console.log('client.js loaded');
 
-$(function () {
+function chatFunctions() {
 
     console.log('chat function entered');
     var socket = io();
@@ -74,12 +74,12 @@ $(function () {
                 .attr("id", adminRooms[key].id));
         }
         $('#' + activeAdminRoom).addClass('active');
-      
+
         $(".list-group-item").on("click", async function(){
             $(".list-group-item.active").removeClass('active');
             $(this).addClass('active');
             activeAdminRoom = $(".list-group-item.active").attr("id");
-            
+
             const statusU1 = await checkIfNotBanned((adminRooms[parseInt(activeAdminRoom)].user1Id).replace("user_",""));
             const statusU2 = await checkIfNotBanned((adminRooms[parseInt(activeAdminRoom)].user2Id).replace("user_",""));
 
@@ -112,4 +112,9 @@ $(function () {
         $('#messages li:last').append($('<div class="name">').text(msg.name));
         $('#messages li:last').append($('<div class="msg">').text(msg.text));
     }
-});
+    function addRoom(currentUser, otherUser){
+      socket.emit("createRoom", {userOne:currentUser, userTwo:otherUser});
+    }
+
+    return {addRoom};
+}

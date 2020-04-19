@@ -168,6 +168,20 @@ io.on('connection', async function(socket) {
         }
     });
 
+    socket.on("createRoom", async function(users){
+      user1 = "user_"+users.userOne;
+      user2 = "user_"+users.userTwo;
+      //if a chat already exists for these users
+      for(chat of allChats){
+        if((chat.first_participant_username === user1 && chat.second_participant_username === user2)||
+            (chat.first_participant_username === user2 && chat.second_participant_username === user1)){
+              return;
+        }
+      }
+      //call the DB here
+
+    });
+
     function updateHistory() {
         io.emit('update history', chatrooms);
     }

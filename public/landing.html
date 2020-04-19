@@ -40,7 +40,7 @@
             <li class="active"><a href="#">Home</a></li>
             <li><a href="#">Bookshelf</a></li>
             <li><a href="#">Requests</a></li>
-            <li><a href="#">My Profile</a></li>
+            <li><a href="#">Admin</a></li>
           </ul>
         </div>
       </div>
@@ -60,9 +60,9 @@
 
               <div class="input-group">
                 <label class="sr-only" for="searchInput">Search</label>
-                <input id="searchInput" type="text" class="form-control mb-2 mr-sm-2" placeholder="Search...">
+                <input type="search" id="searchInput" type="text" class="form-control mb-2 mr-sm-2" placeholder="Search...">
                 <span class="input-group-btn">
-                  <button type="button" class="btn btn-primary btn-md">Search</button>
+                  <button type="button" class="btn btn-primary btn-md" onclick="searchQuery()">Search</button>
                 </span>
               </div>
 
@@ -73,6 +73,7 @@
             <div class="BookshelfPage">
               <!---------- Bookshelf Content ----------->
               <h1> My Bookshelf </h1>
+              <div class="table-scroll-y scrollbar">
               <table class="table table-hover" id="bookshelf">
                 <thead>
                   <tr>
@@ -88,28 +89,64 @@
                 </tbody>
               </table>
               </div>
+              </div>
 
             <!---------- Requests Page Main Content ----------->
             <div class="RequestsPage">
               <!---------- Chat Window ----------->
-              <div class="d-flex align-items-end flex-column" id="message-window" style="height: 80vh;">
-<!--                <div class="row align-items-end">-->
-                  <ul class="list-group list-group-flush" id="messages"></ul>
-                  <div class="row">
-                    <div class="col-lg-12">
-                      <form class="mt-auto form-inline" action="">
-                        <input type="text" id="message-box" autocomplete="off" class="form-control" placeholder="Enter your message"/>
-                        <button type="submit" id="send-button" class="btn btn-info">Send</button>
-                      </form>
-                    </div>
-<!--                  </div>-->
-                </div>
+              <div class="d-flex align-items-end flex-column-reverse" id="message-window">
+                  <ul class="list-group list-group-flush overflow-auto" id="messages"></ul>
               </div>
+
+              <form class="form" role="form">
+                <div class="form-group">
+                  <div class="input-group mb-3">
+                    <input type="text" id="message-box" autocomplete="off" class="form-control " placeholder="Enter your message"/>
+                    <div class="input-group-btn">
+                      <button type="submit" id="send-button" class="btn btn-info">Send</button>
+                    </div>
+                  </div>
+                </div>
+                <hr>
+                <div class="form-group">
+                  <label for="lendBookDropdown">Your Books:</label>
+                  <div class="input-group">
+                    <select class="form-control" id="lendBookDropdown">
+                    </select>
+                    <div class="input-group-btn">
+                      <button type="button" id="lendButton" class="btn btn-info" onclick="lendABook()" >Lend</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="returnBookDropdown">Returnable Books:</label>
+                  <div class="input-group">
+                    <select class="form-control" id="returnBookDropdown">
+                    </select>
+                    <div class="input-group-btn">
+                    <button type="button" id="returnButton" class="btn btn-info" onclick="returnABook()">Return</button>
+                    </div>
+                  </div>
+                </div>
+
+              </form>
             </div>
 
-            <!---------- Profile Page Main Content ----------->
-            <div class="ProfilePage">
-              This is a Profile.
+            <!---------- Admin Page Main Content ----------->
+            <div class="AdminPage">
+              <!---------- Single Chat View ----------->
+              <div class="d-flex align-items-end flex-column-reverse" id="admin-message-window">
+                  <ul class="list-group list-group-flush overflow-auto" id="adminMessages"></ul>
+              </div>
+
+              <div class="text-center">
+                <div class="btn-group btn-group-lg" role="group">
+                   <button type="button" id="banFirstUser" class="btn btn-info" value="" onclick="banUserA()">Ban User A</button>
+                   <button type="button" id="banSecondUser" class="btn btn-info" value="" onclick="banUserB()">Ban User B</button>
+                </div>
+              </div>
+
             </div>
 
           </div>
@@ -172,7 +209,7 @@
                   </div>
                 </div>
 
-                <div class="form-group row">
+                <!--<div class="form-group row">
                   <label for="inputDuration" class="col-sm-3 col-form-label">Duration</label>
                   <div class="col-sm-9">
                   <select id="inputDuration" class="form-control form-control-sm">
@@ -182,7 +219,7 @@
                     <option>3 Weeks</option>
                   </select>
                   </div>
-                </div>
+                </div>-->
 
                 <div class="form-group row">
                   <label for="inputISBN" class="col-sm-3 col-form-label">ISBN</label>
@@ -191,13 +228,13 @@
                   </div>
                 </div>
 
-                <button type="submit" class="btn btn-secondary btn-lg">Add</button>
+                <button type="button" class="btn btn-secondary btn-lg" onclick="addBook()">Add</button>
               </form>
             </div>
 
             <!---------- Requests Page Sidebar Content ----------->
             <div class="RequestsPage">
-              <div class="d-flex align-items-end flex-column" style="height: 80vh;">
+              <div id="chat-view-window" class="d-flex align-items-end flex-column" style="height: 80vh;">
                 <ul class="list-group" id="chat-rooms">
 <!--                  <li class="list-group-item active">chat room 1</li>-->
 <!--                  <li class="list-group-item">Chat room 2</li>-->
@@ -205,9 +242,12 @@
               </div>
             </div>
 
-            <!---------- Profile Page Sidebar Content ----------->
-            <div class="ProfilePage">
-              This is a Profile Sidebar.
+            <!---------- Admin Page Sidebar Content ----------->
+            <div class="AdminPage">
+              <div id="chat-view-window" class="d-flex align-items-end flex-column" style="height: 80vh;">
+                <ul class="list-group" id="admin-chat-rooms">
+                </ul>
+              </div>
             </div>
 
           </div>
@@ -216,6 +256,27 @@
 
       </div>
     </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="alertDialog" tabindex="-1" role="dialog" aria-labelledby="alertDialogLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="alertDialogLabel">New Book Added</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div id="errorMessage" class="modal-body">
+            Placeholder Message
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- jQuery library -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <!-- Latest compiled JavaScript -->

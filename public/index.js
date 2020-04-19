@@ -29,7 +29,7 @@ $(document).ready(function(){
   initMap();
 
   //check if admin
-  
+
 
 });
 
@@ -329,9 +329,7 @@ async function lendABook(){
 
     let bookToLendTitle = $("#lendBookDropdown option:selected" ).text();
     let bookToLend = $("#lendBookDropdown option:selected" ).val();
-
-    //TODO: how do i get this?
-    let personWhoBorrows = "13";
+    let personWhoBorrows = $("#lendButton").val();
 
     //Change status in the DB
     let updateuserrecord = { "tablename" : "book_table",

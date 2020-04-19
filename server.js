@@ -62,7 +62,6 @@ io.on('connection', async function(socket) {
 
     // To build the chat history for the current user
     var username = "user_";
-    // var userrealname = "";
     var chatrooms = {};
 
     // Get the user_id from the client's cookie and create the username
@@ -94,10 +93,11 @@ io.on('connection', async function(socket) {
         var record = {
             "user_id_value" : userid
         }
+
+        // Get user's real name for the chat room list
         var result = await axiosapicall.apiGetUserLookUp(record);
         let firstname = result[0].first_name;
         let lastname = result[0].last_name;
-
         var realname = firstname + " " + lastname;
 
         // Build the chat room object
@@ -146,6 +146,7 @@ io.on('connection', async function(socket) {
         // Get timestamp
         var momentTimestamp = moment().format("h:mm:ss a");
 
+        // Get real name of user for message rendering
         var userid = username.substring(5);
         var record = {
             "user_id_value" : userid
@@ -153,7 +154,6 @@ io.on('connection', async function(socket) {
         var result = await axiosapicall.apiGetUserLookUp(record);
         let firstname = result[0].first_name;
         let lastname = result[0].last_name;
-
         var realname = firstname + " " + lastname;
 
         // Build chat message object

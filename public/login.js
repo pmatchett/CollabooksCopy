@@ -51,7 +51,7 @@ async function auth(){
         else {
             alert("Login was successful!\nPlease click the \"Sign In\" button again to complete sign in");
             await buildCookies(userID, userLat, userLon, userType);
-            newPage.setAttribute("href", "index1.html");
+            newPage.setAttribute("href", "landing.html");
         }
 }
 

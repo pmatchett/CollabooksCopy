@@ -25,256 +25,34 @@
   </head>
   <body>
 
-    <!-- /************ Navigation Bar ************/ -->
-    <nav class="navbar navbar-default">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <div class="collapse navbar-collapse" id="myNavbar">
-          <ul class="nav navbar-nav">
-            <li class="active"><a href="#">Home</a></li>
-            <li><a href="#">Bookshelf</a></li>
-            <li><a href="#">Requests</a></li>
-            <li><a href="#">Admin</a></li>
-          </ul>
-        </div>
+    <div id="loginContainer" class="col-4 container justify-content-center">
+
+      <!-- TODO: Figure out how to float content vertically.  -->
+
+      <!-- /************ Logo ************/ -->
+      <div class="row text-center">
+          <img id="loginLogo" class="img-fluid" src="logo.jpg" alt="Collabooks">
       </div>
-    </nav>
-    <!-- /********* End of Navigation Bar *********/ -->
+      <!-- /******** End of Logo ********/ -->
 
-    <div class="container-fluid text-center">
-      <div class="row content">
-
-        <!-- /************ Main Content ************/ -->
-        <!-- Only one page displayed at a time. -->
-        <div class="col-sm-8 text-left">
-          <div id="mainContent" class="well">
-
-            <!---------- Main Page Main Content ----------->
-            <div class="HomePage">
-
-              <div class="input-group">
-                <label class="sr-only" for="searchInput">Search</label>
-                <input type="search" id="searchInput" type="text" class="form-control mb-2 mr-sm-2" placeholder="Search...">
-                <span class="input-group-btn">
-                  <button type="button" class="btn btn-primary btn-md" onclick="searchQuery()">Search</button>
-                </span>
-              </div>
-
-              <div id="map"></div>
-            </div>
-
-            <!---------- Bookshelf Page Main Content ----------->
-            <div class="BookshelfPage">
-              <!---------- Bookshelf Content ----------->
-              <h1> My Bookshelf </h1>
-              <div class="table-scroll-y scrollbar">
-              <table class="table table-hover" id="bookshelf">
-                <thead>
-                  <tr>
-                    <th>Title</th>
-                    <th>Author</th>
-                    <th>ISBN</th>
-                    <th>Borrowed By</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                <!-- /******** Books Added Here ********/ -->
-                </tbody>
-              </table>
-              </div>
-              </div>
-
-            <!---------- Requests Page Main Content ----------->
-            <div class="RequestsPage">
-              <!---------- Chat Window ----------->
-              <div class="d-flex align-items-end flex-column-reverse" id="message-window">
-                  <ul class="list-group list-group-flush overflow-auto" id="messages"></ul>
-              </div>
-
-              <form class="form" role="form">
-                <div class="form-group">
-                  <div class="input-group mb-3">
-                    <input type="text" id="message-box" autocomplete="off" class="form-control " placeholder="Enter your message"/>
-                    <div class="input-group-btn">
-                      <button type="submit" id="send-button" class="btn btn-info">Send</button>
-                    </div>
-                  </div>
-                </div>
-                <hr>
-                <div class="form-group">
-                  <label for="lendBookDropdown">Your Books:</label>
-                  <div class="input-group">
-                    <select class="form-control" id="lendBookDropdown">
-                    </select>
-                    <div class="input-group-btn">
-                      <button type="button" id="lendButton" class="btn btn-info" onclick="lendABook()" >Lend</button>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label for="returnBookDropdown">Returnable Books:</label>
-                  <div class="input-group">
-                    <select class="form-control" id="returnBookDropdown">
-                    </select>
-                    <div class="input-group-btn">
-                    <button type="button" id="returnButton" class="btn btn-info" onclick="returnABook()">Return</button>
-                    </div>
-                  </div>
-                </div>
-
-              </form>
-            </div>
-
-            <!---------- Admin Page Main Content ----------->
-            <div class="AdminPage">
-              <!---------- Single Chat View ----------->
-              <div class="d-flex align-items-end flex-column-reverse" id="admin-message-window">
-                  <ul class="list-group list-group-flush overflow-auto" id="adminMessages"></ul>
-              </div>
-
-              <div class="text-center">
-                <div class="btn-group btn-group-lg" role="group">
-                   <button type="button" id="banFirstUser" class="btn btn-info" onclick="">Ban User A</button>
-                   <button type="button" id="banSecondUser" class="btn btn-info" onclick="">Ban User B</button>
-                </div>
-              </div>
-
-            </div>
-
+      <!-- /************ Form ************/ -->
+      <div class="row text-center">
+        <form id="loginForm" class="well">
+          <div class="form-group text-left">
+            <label for="usernameInput">Username</label>
+            <input type="email" class="form-control form-control-lg" id="usernameInput" aria-describedby="emailHelp" placeholder="Enter email">
           </div>
+          <div class="form-group text-left">
+            <label for="passwordInput">Password</label>
+            <input type="password" class="form-control form-control-lg" id="passwordInput" placeholder="Password">
+          </div>
+
+          <a id="submit" type="submit" class="btn btn-primary btn-lg" onclick="auth()">Sign In</a>
+
+        </form>
         </div>
-        <!-- /******** End of Main Content ********/ -->
+        <!-- /******** End of Form ********/ -->
 
-        <!-- /************** Sidebar **************/ -->
-        <!-- Only one page displayed at a time. -->
-        <div id="sidebar" class="col-sm-4 sidebar">
-          <div id="sidebarContent" class="well">
-
-            <!---------- Main Page Sidebar Content ----------->
-            <div class="HomePage">
-              <h2>Books Around</h2>
-              <div class="table-scroll-y scrollbar">
-              <table class="table table-hover text-left" id="booksidebar">
-                <thead>
-                  <tr>
-                    <th>Title</th>
-                    <th>Author</th>
-                  </tr>
-                </thead>
-                <tbody>
-                <!-- /******** Books Added Here ********/ -->
-                </tbody>
-              </table>
-              </div>
-            </div>
-
-            <!---------- Bookshelf Page Sidebar Content ----------->
-            <div class="BookshelfPage">
-              <!---------- Bookshelf Content ----------->
-              <h1> Add A Book </h1>
-              <form>
-                <div class="form-group row">
-                  <label for="inputTitle" class="col-sm-3 col-form-label">Title</label>
-                  <div class="col-sm-9">
-                    <input id="inputTitle" type="text" class="form-control">
-                  </div>
-                </div>
-
-                <div class="form-group row">
-                  <label for="inputAuthor" class="col-sm-3 col-form-label">Author</label>
-                  <div class="col-sm-9">
-                    <input id="inputAuthor" type="text" class="form-control">
-                    <small id="authorHelpBlock" class="form-text text-muted">
-                      Last name, First name
-                    </small>
-                  </div>
-                </div>
-
-                <div class="form-group row">
-                  <label for="inputGenre" class="col-sm-3 col-form-label">Genre</label>
-                  <div class="col-sm-9">
-                  <select id="inputGenre" class="form-control form-control-sm">
-                    <option>Select Genre...</option>
-                    <option>Fiction</option>
-                    <option>Non-Fiction</option>
-                  </select>
-                  </div>
-                </div>
-
-                <!--<div class="form-group row">
-                  <label for="inputDuration" class="col-sm-3 col-form-label">Duration</label>
-                  <div class="col-sm-9">
-                  <select id="inputDuration" class="form-control form-control-sm">
-                    <option>Select Borrow Duration...</option>
-                    <option>1 Week</option>
-                    <option>2 Weeks</option>
-                    <option>3 Weeks</option>
-                  </select>
-                  </div>
-                </div>-->
-
-                <div class="form-group row">
-                  <label for="inputISBN" class="col-sm-3 col-form-label">ISBN</label>
-                  <div class="col-sm-9">
-                    <input id="inputISBN" type="number" class="form-control">
-                  </div>
-                </div>
-
-                <button type="button" class="btn btn-secondary btn-lg" onclick="addBook()">Add</button>
-              </form>
-            </div>
-
-            <!---------- Requests Page Sidebar Content ----------->
-            <div class="RequestsPage">
-              <div id="chat-view-window" class="d-flex align-items-end flex-column" style="height: 80vh;">
-                <ul class="list-group" id="chat-rooms">
-<!--                  <li class="list-group-item active">chat room 1</li>-->
-<!--                  <li class="list-group-item">Chat room 2</li>-->
-                </ul>
-              </div>
-            </div>
-
-            <!---------- Admin Page Sidebar Content ----------->
-            <div class="AdminPage">
-              <div id="chat-view-window" class="d-flex align-items-end flex-column" style="height: 80vh;">
-                <ul class="list-group" id="admin-chat-rooms">
-                </ul>
-              </div>
-            </div>
-
-          </div>
-        </div>
-        <!-- /********** End of Sidebar **********/ -->
-
-      </div>
-    </div>
-
-    <!-- Modal -->
-    <div class="modal fade" id="alertDialog" tabindex="-1" role="dialog" aria-labelledby="alertDialogLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="alertDialogLabel">New Book Added</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div id="errorMessage" class="modal-body">
-            Placeholder Message
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
-          </div>
-        </div>
-      </div>
     </div>
 
     <!-- jQuery library -->
@@ -287,6 +65,8 @@
     <script src="ajaxapi.js"></script>
     <!-- Client-side code -->
     <script src="client.js"></script>
+    <!-- Login code -->
+    <script src="login.js"></script>
     <!-- Our Javascript -->
     <script src="index.js"></script>
   </body>

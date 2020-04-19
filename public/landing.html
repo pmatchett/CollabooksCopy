@@ -6,47 +6,24 @@
 *           Siobhan O’Dell
 *           Kent Wong
 *  Created On: 11/03/2020
-*  Last revision: 15/03/2020
+*  Last revision: 08/04/2020
 ********************************************/ -->
 
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
-
     <!-- To set viewport so it can look good on mobile -->
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
     <title>Collabooks</title>
-
     <!-- Bootstrap -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-
-    <!-- jQuery library -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-
-    <!-- Latest compiled JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-
     <!-- Our CSS -->
     <link rel="stylesheet" type="text/css" href="style.css" >
-
-    <!-- Our Javascript -->
-    <script src="index.js"></script>
-
-    <!-- Login code -->
-    <script src="login.js"></script>
-
-     <!-- Database API code -->
-     <script src="ajaxapi.js"></script>
-
+    <!-- Google maps API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA0jKdGvYL9u06FRU55gBhpBL2r9CR9WNw&callback=initMap" async defer></script>
   </head>
   <body>
-
-
-    <div id="loginContainer" class="col-4 container justify-content-center">
-
-      <!-- TODO: Figure out how to float content vertically.  -->
 
     <!-- /************ Navigation Bar ************/ -->
     <nav class="navbar navbar-default">
@@ -63,7 +40,7 @@
             <li class="active"><a href="#">Home</a></li>
             <li><a href="#">Bookshelf</a></li>
             <li><a href="#">Requests</a></li>
-            <li><a href="#">Admin</a></li>
+            <li><a href="#">My Profile</a></li>
           </ul>
         </div>
       </div>
@@ -96,7 +73,6 @@
             <div class="BookshelfPage">
               <!---------- Bookshelf Content ----------->
               <h1> My Bookshelf </h1>
-              <div class="table-scroll-y scrollbar">
               <table class="table table-hover" id="bookshelf">
                 <thead>
                   <tr>
@@ -112,64 +88,28 @@
                 </tbody>
               </table>
               </div>
-              </div>
 
             <!---------- Requests Page Main Content ----------->
             <div class="RequestsPage">
               <!---------- Chat Window ----------->
-              <div class="d-flex align-items-end flex-column-reverse" id="message-window">
-                  <ul class="list-group list-group-flush overflow-auto" id="messages"></ul>
+              <div class="d-flex align-items-end flex-column" id="message-window" style="height: 80vh;">
+<!--                <div class="row align-items-end">-->
+                  <ul class="list-group list-group-flush" id="messages"></ul>
+                  <div class="row">
+                    <div class="col-lg-12">
+                      <form class="mt-auto form-inline" action="">
+                        <input type="text" id="message-box" autocomplete="off" class="form-control" placeholder="Enter your message"/>
+                        <button type="submit" id="send-button" class="btn btn-info">Send</button>
+                      </form>
+                    </div>
+<!--                  </div>-->
+                </div>
               </div>
-
-              <form class="form" role="form">
-                <div class="form-group">
-                  <div class="input-group mb-3">
-                    <input type="text" id="message-box" autocomplete="off" class="form-control " placeholder="Enter your message"/>
-                    <div class="input-group-btn">
-                      <button type="submit" id="send-button" class="btn btn-info">Send</button>
-                    </div>
-                  </div>
-                </div>
-                <hr>
-                <div class="form-group">
-                  <label for="lendBookDropdown">Your Books:</label>
-                  <div class="input-group">
-                    <select class="form-control" id="lendBookDropdown">
-                    </select>
-                    <div class="input-group-btn">
-                      <button type="button" id="lendButton" class="btn btn-info" onclick="lendABook()" >Lend</button>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label for="returnBookDropdown">Returnable Books:</label>
-                  <div class="input-group">
-                    <select class="form-control" id="returnBookDropdown">
-                    </select>
-                    <div class="input-group-btn">
-                    <button type="button" id="returnButton" class="btn btn-info" onclick="returnABook()">Return</button>
-                    </div>
-                  </div>
-                </div>
-
-              </form>
             </div>
 
-            <!---------- Admin Page Main Content ----------->
-            <div class="AdminPage">
-              <!---------- Single Chat View ----------->
-              <div class="d-flex align-items-end flex-column-reverse" id="admin-message-window">
-                  <ul class="list-group list-group-flush overflow-auto" id="adminMessages"></ul>
-              </div>
-
-              <div class="text-center">
-                <div class="btn-group btn-group-lg" role="group">
-                   <button type="button" id="banFirstUser" class="btn btn-info" onclick="">Ban User A</button>
-                   <button type="button" id="banSecondUser" class="btn btn-info" onclick="">Ban User B</button>
-                </div>
-              </div>
-
+            <!---------- Profile Page Main Content ----------->
+            <div class="ProfilePage">
+              This is a Profile.
             </div>
 
           </div>
@@ -232,7 +172,7 @@
                   </div>
                 </div>
 
-                <!--<div class="form-group row">
+                <div class="form-group row">
                   <label for="inputDuration" class="col-sm-3 col-form-label">Duration</label>
                   <div class="col-sm-9">
                   <select id="inputDuration" class="form-control form-control-sm">
@@ -242,7 +182,7 @@
                     <option>3 Weeks</option>
                   </select>
                   </div>
-                </div>-->
+                </div>
 
                 <div class="form-group row">
                   <label for="inputISBN" class="col-sm-3 col-form-label">ISBN</label>
@@ -251,13 +191,13 @@
                   </div>
                 </div>
 
-                <button type="button" class="btn btn-secondary btn-lg" onclick="addBook()">Add</button>
+                <button type="submit" class="btn btn-secondary btn-lg">Add</button>
               </form>
             </div>
 
             <!---------- Requests Page Sidebar Content ----------->
             <div class="RequestsPage">
-              <div id="chat-view-window" class="d-flex align-items-end flex-column" style="height: 80vh;">
+              <div class="d-flex align-items-end flex-column" style="height: 80vh;">
                 <ul class="list-group" id="chat-rooms">
 <!--                  <li class="list-group-item active">chat room 1</li>-->
 <!--                  <li class="list-group-item">Chat room 2</li>-->
@@ -265,60 +205,17 @@
               </div>
             </div>
 
-            <!---------- Admin Page Sidebar Content ----------->
-            <div class="AdminPage">
-              <div id="chat-view-window" class="d-flex align-items-end flex-column" style="height: 80vh;">
-                <ul class="list-group" id="admin-chat-rooms">
-                </ul>
-              </div>
+            <!---------- Profile Page Sidebar Content ----------->
+            <div class="ProfilePage">
+              This is a Profile Sidebar.
             </div>
 
-      <!-- /************ Logo ************/ -->
-      <div class="row text-center">
-          <img id="loginLogo" class="img-fluid" src="logo.jpg" alt="Collabooks">
-      </div>
-      <!-- /******** End of Logo ********/ -->
-
-      <!-- /************ Form ************/ -->
-      <div class="row text-center">
-        <form id="loginForm" class="well">
-          <div class="form-group text-left">
-            <label for="usernameInput">Username</label>
-            <input type="email" class="form-control form-control-lg" id="usernameInput" aria-describedby="emailHelp" placeholder="Enter email">
-          </div>
-          <div class="form-group text-left">
-            <label for="passwordInput">Password</label>
-            <input type="password" class="form-control form-control-lg" id="passwordInput" placeholder="Password">
-          </div>
-
-          <a id="submit" type="submit" class="btn btn-primary btn-lg" onclick="auth()">Sign In</a>
-
-        </form>
-        </div>
-        <!-- /******** End of Form ********/ -->
-
-    </div>
-
-    <!-- Modal -->
-    <div class="modal fade" id="alertDialog" tabindex="-1" role="dialog" aria-labelledby="alertDialogLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="alertDialogLabel">New Book Added</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div id="errorMessage" class="modal-body">
-            Placeholder Message
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
           </div>
         </div>
+        <!-- /********** End of Sidebar **********/ -->
+
       </div>
     </div>
-
     <!-- jQuery library -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <!-- Latest compiled JavaScript -->

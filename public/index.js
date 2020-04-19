@@ -252,7 +252,9 @@ async function addBook(){
   $("#inputAuthor").val("");
   $("#inputISBN").val("");
   $("#inputGenre").val("Select Genre...");
-  alert("book added successfully");
+
+  $('#errorMessage').text("The book " + titleInput + " was added successfully!");
+  $('#alertDialog').modal('show');
 }
 
 /************* Chat Functions **************/

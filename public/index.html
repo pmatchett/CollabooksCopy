@@ -1,13 +1,23 @@
-<!-- /********** SENG513 Final Project **********
-*  Members: Jasmine Cronin
-*           Brandt Davis
-*           Patrick Matchett
-*           Ashley Millette
-*           Siobhan O’Dell
-*           Kent Wong
-*  Created On: 11/03/2020
-*  Last revision: 19/04/2020
-********************************************/ -->
+<!-- /************************** SENG513 Final Project ***************************
+       _____ ____  _      _               ____   ____   ____  _  __ _____
+     / ____/ __ \| |    | |        /\   |  _ \ / __ \ / __ \| |/ // ____|
+    | |   | |  | | |    | |       /  \  | |_) | |  | | |  | | ' /| (___
+    | |   | |  | | |    | |      / /\ \ |  _ <| |  | | |  | |  <  \___ \
+    | |___| |__| | |____| |____ / ____ \| |_) | |__| | |__| | . \ ____) |
+    \_____\____/|______|______/_/    \_|____/ \____/ \____/|_|\_|_____/
+
+            ______......-----~~~~~~~--..__   __..--~~~~~~~-----......______
+          //   Members:                   `V'                            \\
+        //        Jasmine Cronin          |           Ashley Millette    \\
+      //       Brandt Davis              |         Siobhan O’Dell        \\
+    //     Patrick Matchett             |        Kent Wong               \\
+  //_______......------~~~~~~~~--..__  | __..--~~~~~~~~-----......_______\\
+//_______..........------~~~~~~...__\ | /__...~~~~~~------........_______\\
+===================================\\|//===================================
+                                  `----`
+                          Created On: 11/03/2020
+                        Last revision: 19/04/2020
+****************************************************************************/ -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -41,37 +51,56 @@
     <script src="ajaxapi.js"></script>
 
 </head>
-<body>
+  <body>
+    <div id="loginContainer" class="col-4 container justify-content-center">
 
-<div id="loginContainer" class="col-4 container justify-content-center">
+        <!-- TODO: Figure out how to float content vertically.  -->
 
-    <!-- TODO: Figure out how to float content vertically.  -->
+        <!-- /************ Logo ************/ -->
+        <div class="row text-center">
+            <img id="loginLogo" class="img-fluid" src="logo.jpg" alt="Collabooks">
+        </div>
+        <!-- /******** End of Logo ********/ -->
 
-    <!-- /************ Logo ************/ -->
-    <div class="row text-center">
-        <img id="loginLogo" class="img-fluid" src="logo.jpg" alt="Collabooks">
+        <!-- /************ Form ************/ -->
+        <div class="row text-center">
+            <form id="loginForm" class="well">
+                <div class="form-group text-left">
+                    <label for="usernameInput">Username</label>
+                    <input type="email" class="form-control form-control-lg" id="usernameInput" aria-describedby="emailHelp" placeholder="Enter email">
+                </div>
+                <div class="form-group text-left">
+                    <label for="passwordInput">Password</label>
+                    <input type="password" class="form-control form-control-lg" id="passwordInput" placeholder="Password">
+                </div>
+
+                <a id="submit" type="submit" class="btn btn-primary btn-lg" onclick="auth()">Sign In</a>
+
+            </form>
+        </div>
+        <!-- /******** End of Form ********/ -->
+
     </div>
-    <!-- /******** End of Logo ********/ -->
 
-    <!-- /************ Form ************/ -->
-    <div class="row text-center">
-        <form id="loginForm" class="well">
-            <div class="form-group text-left">
-                <label for="usernameInput">Username</label>
-                <input type="email" class="form-control form-control-lg" id="usernameInput" aria-describedby="emailHelp" placeholder="Enter email">
-            </div>
-            <div class="form-group text-left">
-                <label for="passwordInput">Password</label>
-                <input type="password" class="form-control form-control-lg" id="passwordInput" placeholder="Password">
-            </div>
-
-            <a id="submit" type="submit" class="btn btn-primary btn-lg" onclick="auth()">Sign In</a>
-
-        </form>
+    <!-- Modal -->
+    <div class="modal fade" id="loginAlertDialog" tabindex="-1" role="dialog" aria-labelledby="loginAlertDialogLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="loginAlertDialogLabel">Login Failure</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div id="loginAlertMessage" class="modal-body">
+            Message
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
     </div>
-    <!-- /******** End of Form ********/ -->
 
-</div>
-
-</body>
+  </body>
 </html>

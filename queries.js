@@ -175,6 +175,25 @@ function delARecord(request,response) {
     })
 }
 
+/**
+ * look up a user on the user_table providing the user_id
+ * @param request
+ * @param response
+ */
+function getUserLookUp(request, response) {
+    const rec = request.query;
+    // console.log(rec);
+    let this_sql = format('SELECT first_name, last_name FROM user_table WHERE user_id = %L',  rec.user_id_value );
+
+    pool.query(this_sql, (error, results) => {
+        if (error) {
+            throw error
+        }
+        // console.log(results);
+        response.status(200).json(results.rows)
+    })
+}
+
 // export all the queries to be usable
 module.exports = {
     getBookTable,
@@ -184,5 +203,6 @@ module.exports = {
     addRecordUser,
     updateRecord,
     getARecord,
-    delARecord
+    delARecord,
+    getUserLookUp
 };

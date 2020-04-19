@@ -61,10 +61,11 @@ io.on('connection', async function(socket) {
 
     // To build the chat history for the current user
     var username = "user_";
+    // var userrealname = "";
     var chatrooms = {};
 
     // Get the user_id from the client's cookie and create the username
-    socket.on('login', function(userID) {
+    socket.on('login', async function(userID) {
         username += userID;
     });
 
@@ -87,9 +88,21 @@ io.on('connection', async function(socket) {
             continue;
         }
 
+        // Get user ids for user table
+        var userid = roomname.substring(5);
+        var record = {
+            "user_id_value" : userid
+        }
+        var result = await axiosapicall.apiGetUserLookUp(record);
+        let firstname = result[0].first_name;
+        let lastname = result[0].last_name;
+
+        var realname = firstname + " " + lastname;
+
         // Build the chat room object
         var room = {
             name: roomname,
+            roomLabel: realname,
             visitorUserId: roomname,
             id: allChats[key].chat_id,
             history: JSON.parse(allChats[key].chat_history)
@@ -128,13 +141,24 @@ io.on('connection', async function(socket) {
     //^^^ADMIN^^^
 
     // When user submits text through the chat box
-    socket.on('chat message', function(msg) {
+    socket.on('chat message', async function(msg) {
         // Get timestamp
         var momentTimestamp = moment().format("h:mm:ss a");
+
+        var userid = username.substring(5);
+        var record = {
+            "user_id_value" : userid
+        }
+        var result = await axiosapicall.apiGetUserLookUp(record);
+        let firstname = result[0].first_name;
+        let lastname = result[0].last_name;
+
+        var realname = firstname + " " + lastname;
 
         // Build chat message object
         var chatMessage = {
             name: username,
+            messageLabel: realname,
             text: msg.text,
             timestamp: momentTimestamp
         }

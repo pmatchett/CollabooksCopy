@@ -59,7 +59,7 @@ $(function () {
 
         // Set the ids of all the html tags for the chat rooms
         for (var key in rooms) {
-            $('#chat-rooms').append($('<li class="list-group-item chat-room">').text(rooms[key].name)
+            $('#chat-rooms').append($('<li class="list-group-item chat-room">').text(rooms[key].roomLabel)
                 .attr("id", rooms[key].id));
         }
 
@@ -88,7 +88,7 @@ $(function () {
     // Render a chat message object
     function renderMessage(msg) {
         $('#messages').append($('<li class="list-group-item">').text(msg.timestamp));
-        $('#messages li:last').append($('<div class="name">').text(msg.name));
+        $('#messages li:last').append($('<div class="name">').text(msg.messageLabel));
         $('#messages li:last').append($('<div class="msg">').text(msg.text));
     }
 

@@ -27,6 +27,10 @@ $(document).ready(function(){
   populateShelf();
   populateBooksAround();
   initMap();
+
+  //check if admin
+  
+
 });
 
 /************* Google maps functions ********/

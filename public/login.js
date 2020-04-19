@@ -46,12 +46,12 @@ async function auth(){
         
         // **** BAD CONVENTION ****
         // on my local system, I renamed login.html to index.html
-        // and then I changed index.html to index1.html
+        // and then I changed index.html to landing.html
         // ************************
         else {
             alert("Login was successful!\nPlease click the \"Sign In\" button again to complete sign in");
             await buildCookies(userID, userLat, userLon, userType);
-            newPage.setAttribute("href", "index1.html");
+            newPage.setAttribute("href", "landing.html");
         }
 }
 

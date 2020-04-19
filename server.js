@@ -54,6 +54,7 @@ app.post('/tables/addrecord/user', db.addRecordUser);
 app.put('/tables/uprecord/', db.updateRecord);
 app.get('/tables/getrecord/', db.getARecord);
 app.delete('/tables/delrecord/', db.delARecord);
+app.get('/tables/useridlookup/', db.getUserLookUp);
 // end of API end points
 
 io.on('connection', async function(socket) {

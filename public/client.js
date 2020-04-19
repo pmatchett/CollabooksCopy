@@ -66,6 +66,8 @@ $(function () {
         // Renders a selection highlight on the active room, from Bootstrap
         $('#' + activeRoom).addClass('active');
 
+        $('#lendButton').val((rooms[parseInt(activeRoom)].visitorUserId).replace("user_",""));
+
         // Change the active room based on what the user clicks on
         $(".chat-room").on("click",function(){
             $(".list-group-item.active").removeClass('active');
@@ -77,6 +79,8 @@ $(function () {
             rooms[parseInt(activeRoom)].history.forEach(function(msg) {
                 renderMessage(msg);
             });
+
+            $('#lendButton').val((rooms[parseInt(activeRoom)].visitorUserId).replace("user_",""));
         });
 
     });
@@ -99,12 +103,12 @@ $(function () {
                 .attr("id", adminRooms[key].id));
         }
         $('#' + activeAdminRoom).addClass('active');
-      
+
         $(".list-group-item").on("click", async function(){
             $(".list-group-item.active").removeClass('active');
             $(this).addClass('active');
             activeAdminRoom = $(".list-group-item.active").attr("id");
-            
+
             const statusU1 = await checkIfNotBanned((adminRooms[parseInt(activeAdminRoom)].user1Id).replace("user_",""));
             const statusU2 = await checkIfNotBanned((adminRooms[parseInt(activeAdminRoom)].user2Id).replace("user_",""));
 

@@ -44,27 +44,44 @@ async function apiUpdateRecord(record) {
 //    console.log(res.data);
 }
 
+/**
+ * End User API call to look up a user on the user_table providjng only a userid
+ * @param userid
+ * @returns {Promise<T>}
+ */
+async function apiGetUserLookUp(userid){
+    let paramarg = userid;
+    const request_promise = await axios.get('http://localhost:3000/tables/useridlookup/', {
+        params: paramarg
+    });
+    return request_promise.data;
+}
+
 
 // only for testing
 async function testBarrage(){
+    //     apiUpdateRecord(
+    //
+    //     { "tablename" : "book_table",
+    //         "cell_d" : "title",
+    //         "cell_v" : 'dank memes',
+    //         "where_d" : "book_id",
+    //         "where_v" : "1000",
+    //     }
+    // );
+    //
+    // let test = await apiGetChatTable();
+    // console.log(test);
 
-        apiUpdateRecord(
-
-        { "tablename" : "book_table",
-            "cell_d" : "title",
-            "cell_v" : 'dank memes',
-            "where_d" : "book_id",
-            "where_v" : "1000",
-        }
-    );
-
-    let test = await apiGetChatTable();
-    console.log(test);
+    // recordtest = {"user_id_value" : 54};
+    // result = await apiGetUserLookUp(recordtest);
+    // console.log(result)
 
 }
 
 // export functions
 module.exports = {
     apiGetChatTable,
-    apiUpdateRecord
+    apiUpdateRecord,
+    apiGetUserLookUp
 };

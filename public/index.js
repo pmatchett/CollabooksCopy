@@ -184,6 +184,7 @@ async function addBook(){
     return;
   }
   const allBooks = await apiGetBookTable();
+  //getting the next Id for the book, since the DB is kind of weird it has to be done this way
   let maxId = 0;
   for(let book of allBooks){
     if(parseInt(book.book_id) > maxId){
@@ -191,9 +192,8 @@ async function addBook(){
     }
   }
   maxId = maxId + 1;
-  console.log(maxId);
   let bookToAdd = {
-    "book_id":maxId.toString(),
+    "bookid":maxId,
     "title":titleInput,
     "author":authorInput,
     "isbn":isbnInput,
@@ -203,6 +203,10 @@ async function addBook(){
     "due_date":"null"
   };
   apiAddRecordToTable(bookToAdd, 'book');
+  $("#inputTitle").val("");
+  $("#inputAuthor").val("");
+  $("#inputISBN").val("");
+  $("#inputGenre").val("Select Genre...");
   alert("book added successfully");
 }
 

@@ -62,27 +62,27 @@ $(function () {
     });
 
     socket.on('admin populate rooms', function(rms) {
-        rooms = rms;
-        activeAdminRoom = Object.keys(rooms)[0];
-        console.log(activeAdminRoom);
-        rooms[activeAdminRoom].history.forEach(function(msg) {
-            renderAdminMessage(msg);
-        });
-        for (var key in rooms) {
-            $('#admin-chat-rooms').append($('<li class="list-group-item">').text(rooms[key].name)
-                .attr("id", rooms[key].id));
-        }
-        $('#' + activeAdminRoom).addClass('active');
-        $(".list-group-item").on("click",function(){
-            $(".list-group-item.active").removeClass('active');
-            $(this).addClass('active');
-            activeAdminRoom = $(".list-group-item.active").attr("id");
-
-            $('#adminMessages').empty();
-            rooms[parseInt(activeAdminRoom)].history.forEach(function(msg) {
-                renderAdminMessage(msg);
-            });
-        });
+        // rooms = rms;
+        // activeAdminRoom = Object.keys(rooms)[0];
+        // console.log(activeAdminRoom);
+        // rooms[activeAdminRoom].history.forEach(function(msg) {
+        //     renderAdminMessage(msg);
+        // });
+        // for (var key in rooms) {
+        //     $('#admin-chat-rooms').append($('<li class="list-group-item">').text(rooms[key].name)
+        //         .attr("id", rooms[key].id));
+        // }
+        // $('#' + activeAdminRoom).addClass('active');
+        // $(".list-group-item").on("click",function(){
+        //     $(".list-group-item.active").removeClass('active');
+        //     $(this).addClass('active');
+        //     activeAdminRoom = $(".list-group-item.active").attr("id");
+        //
+        //     $('#adminMessages').empty();
+        //     rooms[parseInt(activeAdminRoom)].history.forEach(function(msg) {
+        //         renderAdminMessage(msg);
+        //     });
+        // });
     });
 
     function renderAdminMessage(msg) {
@@ -100,14 +100,4 @@ $(function () {
         $('#messages li:last').append($('<div class="name">').text(msg.name));
         $('#messages li:last').append($('<div class="msg">').text(msg.text));
     }
-
-    //Populate the bookshelf when the page loads
-    // TODO: Is this async? should it be called again or will it update because it is connected to the system? -C
-    populateShelf();
-
-    //Populate the map when the page loads (moving this to init map for now)
-    //populateMap();
-
-    //Populate the books around sidebar when the page loads
-    populateBooksAround();
 });

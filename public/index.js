@@ -22,6 +22,12 @@ function initMap(){
     populateMap();
 }
 
+$(document).ready(function(){
+  populateShelf();
+  populateBooksAround();
+  initMap();
+});
+
 /************* Google maps functions ********/
 //creating a closure that will handle all of the marker functions
 function initMarkers(){
@@ -145,6 +151,7 @@ async function populateShelf()
 {
   $('#bookshelf tbody').empty();
   $('#lendBookDropdown').empty();
+  $('#returnBookDropdown').empty();
 
   // TODO: Use cookies to keep track of current user?
   const currentUser = "18";
@@ -171,9 +178,12 @@ async function populateShelf()
         "<td>" + '<button type="button" class="btn btn-secondary" id="removeBookButton" onclick="removeBook(' +allBooks[key].book_id+ ')">Remove</button>' + "</td>"
         ));
 
-      //also populate books that can be lent in Requests
+      //also populate books that can be returned and lent in Requests
       if(allBooks[key].borrowed_by === "null" ){
         $('#lendBookDropdown').append('<option value=' + allBooks[key].book_id + '>' + allBooks[key].title + '</option>');
+      }
+      if(allBooks[key].borrowed_by !== "null" ){
+        $('#returnBookDropdown').append('<option value=' + allBooks[key].book_id + '>' + allBooks[key].title + '</option>');
       }
     }
   }
@@ -183,6 +193,13 @@ async function populateShelf()
   }
   else{
       $('#lendButton').removeClass('disabled');
+  }
+
+  if($("#returnBookDropdown option").length == 0){
+      $('#returnButton').addClass('disabled');
+  }
+  else{
+      $('#returnButton').removeClass('disabled');
   }
 
 }
@@ -206,32 +223,39 @@ async function lendABook(){
         "cell_d" : "borrowed_by",
         "cell_v" : personWhoBorrows,
         "where_d" : "book_id",
-        "where_v" : bookToLend,
+        "where_v" : bookToLend
     };
     await apiUpdateRecord(updateuserrecord);
 
     //Update the shelf/map
     //DOESNT IMMEDIATELY UPDATE :^(
-    await populateShelf();
-    await populateMap();
+    populateShelf();
+    populateMap();
   }
 }
 
-function returnABook(){
+async function returnABook(){
 
-  //if returnable books is 0 then disable button
-
-  if(!$('#returnButton').hasClass('disabled')){
+  if($("#returnBookDropdown option").length > 0){
     //Connect to DB
 
-    let bookToLend = "345";
-    let personWhoBorrows = "13";
-    console.log("the book " + bookToLend + " has been returned from user " + personWhoBorrows);
+    let bookToReturnTitle = $("#returnBookDropdown option:selected" ).text();
+    let bookToReturn = $("#returnBookDropdown option:selected" ).val();
+
+    console.log("the book " + bookToReturn + " has been returned -> " + bookToReturnTitle);
 
     //Change status in the DB
+    let updateuserrecord = { "tablename" : "book_table",
+        "cell_d" : "borrowed_by",
+        "cell_v" : "null",
+        "where_d" : "book_id",
+        "where_v" : bookToReturn
+    };
+    await apiUpdateRecord(updateuserrecord);
 
     //Update the shelf/map
-    // await populateShelf();
+    populateShelf();
+    populateMap();
   }
 }
 

@@ -1,78 +1,96 @@
-// var socket = io();
-// console.log('client.js loaded');
+/********** SENG513 Final Project **********
+ *  Members: Jasmine Cronin
+ *           Brandt Davis
+ *           Patrick Matchett
+ *           Ashley Millette
+ *           Siobhan O’Dell
+ *           Kent Wong
+ *  Created On: 06/04/2020
+ *  Last revision: 19/04/2020
+ ********************************************/
 
 $(function () {
 
-    // console.log('chat function entered');
     var socket = io();
+    var activeRoom; // ID of active rendered chat room
+    var activeAdminRoom; // Same, but admin view
+    var rooms; // List of chat room objects
+    var adminRooms; // Same, but admin view
 
+    // If a user's cookie exists, extract their user_id and send it to the server
     if (document.cookie.split(';').filter((item) => item.trim().startsWith('user_id=')).length) {
-        // console.log('The cookie "username" exists (ES6)')
         let userID = document.cookie.replace(/(?:(?:^|.*;\s*)user_id\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-        // console.log(test);
         socket.emit('login', userID);
     }
 
+    // When the user submits a message through the chat box, send the message and chat room ID to the server
     $('form').submit(function(e) {
-        // console.log('form submission successful');
-        e.preventDefault();
+        e.preventDefault(); // To prevent page refresh
+
         socket.emit('chat message', {
             text: $('#message-box').val(),
             roomID: activeRoom
         });
+
+        // Reset the text box contents
         $('#message-box').val('');
         return false;
     });
 
+    // Render the message object sent back from the server
+    // But only if the chat room ID is the one the user has active
     socket.on('chat message', function(msg) {
-        // console.log('client chat function called');
-        // console.log(typeof msg.roomID, typeof activeRoom);
         if (msg.roomID === activeRoom) {
             renderMessage(msg.msg);
         }
     });
 
-    var activeRoom;
-    var activeAdminRoom;
-    var rooms;
-    var adminRooms;
-
+    // Render the given list of chat rooms and chat message history
     socket.on('populate rooms', function(rms) {
         rooms = rms;
+
+        // Set the active room to the first room in the list
         activeRoom = Object.keys(rooms)[0];
-        // console.log('chat rooms populated');
-        // $('#chat-rooms').append($('<li class="list-group-item active">').text(rooms[activeRoom].name)
-        //     .attr("id", rooms[activeRoom].id));
-        // console.log(activeRoom);
+
+        // Render message history for the active room
         rooms[activeRoom].history.forEach(function(msg) {
             renderMessage(msg);
         });
+
+        // Set the ids of all the html tags for the chat rooms
         for (var key in rooms) {
             $('#chat-rooms').append($('<li class="list-group-item chat-room">').text(rooms[key].name)
                 .attr("id", rooms[key].id));
         }
+
+        // Renders a selection highlight on the active room, from Bootstrap
         $('#' + activeRoom).addClass('active');
+
         $('#lendButton').val((rooms[parseInt(activeRoom)].visitorUserId).replace("user_",""));
 
+        // Change the active room based on what the user clicks on
         $(".chat-room").on("click",function(){
             $(".list-group-item.active").removeClass('active');
             $(this).addClass('active');
             activeRoom = $(".list-group-item.active").attr("id");
-            // console.log('active room = ' + activeRoom);
+
+            // Empty the message list and re-render with different history
             $('#messages').empty();
-            // console.log(activeRoom);
             rooms[parseInt(activeRoom)].history.forEach(function(msg) {
                 renderMessage(msg);
             });
 
             $('#lendButton').val((rooms[parseInt(activeRoom)].visitorUserId).replace("user_",""));
-            // populate chat message history for this chat room
-            // should set a variable to track the active chat room id
-            // so when messages are sent, they get sent to only that chat room
-            // need to set id when populating the list of chat rooms
         });
 
     });
+
+    // Render a chat message object
+    function renderMessage(msg) {
+        $('#messages').append($('<li class="list-group-item">').text(msg.timestamp));
+        $('#messages li:last').append($('<div class="name">').text(msg.name));
+        $('#messages li:last').append($('<div class="msg">').text(msg.text));
+    }
 
     socket.on('admin populate rooms',function(rms) {
         adminRooms = rms;
@@ -114,13 +132,9 @@ $(function () {
         $('#adminMessages li:last').append($('<div class="msg">').text(msg.text));
     }
 
+    // Update the chat histories to the current one sent from the server
     socket.on('update history', function(rms) {
         rooms = rms;
     });
 
-    function renderMessage(msg) {
-        $('#messages').append($('<li class="list-group-item">').text(msg.timestamp));
-        $('#messages li:last').append($('<div class="name">').text(msg.name));
-        $('#messages li:last').append($('<div class="msg">').text(msg.text));
-    }
 });

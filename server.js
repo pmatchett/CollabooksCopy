@@ -6,7 +6,7 @@
  *           Siobhan O’Dell
  *           Kent Wong
  *  Created On: 06/04/2020
- *  Last revision: 07/04/2020
+ *  Last revision: 19/04/2020
  ********************************************/
 
 
@@ -15,17 +15,17 @@ const bodyParser = require('body-parser');
 const app = express();
 const db = require('./queries');
 const port = 3000;
-
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
+
 var moment = require("moment");
+
 // the axios api to use the REST calls to get DB information
 // to use, just call axiosdbcall.apiGetChatTable() for example
 const axiosapicall = require('./axiosapi');
 
-// var dir = path.join(__dirname, 'public');
+app.use(express.static('public')); // serving static web pages, .css, .html files
 
-app.use(express.static('public'));
 // for postgres api
 app.use(
     bodyParser.urlencoded({
@@ -58,41 +58,36 @@ app.get('/tables/useridlookup/', db.getUserLookUp);
 // end of API end points
 
 io.on('connection', async function(socket) {
-    // console.log('a user connected');
 
-    // var username = "user_" + Math.floor(Math.random() * 100);
+    // To build the chat history for the current user
     var username = "user_";
     var chatrooms = {};
 
+    // Get the user_id from the client's cookie and create the username
     socket.on('login', function(userID) {
         username += userID;
-        console.log(username);
     });
 
+    // Get the table containing chat histories
     const allChats = await axiosapicall.apiGetChatTable();
-    // console.log(allChats[0].chat_id);
-    // console.log('chat data retrieved: ' + allChats[0].chat_id);
+
     for (var key in allChats) {
-        // console.log(allChats[key].chat_id);
-        // console.log(allChats[key].first_participant_username);
-        // console.log(allChats[key].second_participant_username);
+
         var user1 = allChats[key].first_participant_username;
-        // console.log(typeof(username));
         var user2 = allChats[key].second_participant_username;
-        // console.log(user2);
-        var roomname;
-        // console.log('username = ' + username + ", user1 = " + user1 + ", user2 = " + user2);
+
+        var roomname; // Name of chat room to be displayed
+
+        // Get all chats that the current user has participated in
         if (username === user1) {
             roomname = user2;
-            // console.log(roomname);
         } else if (username === user2) {
             roomname = user1;
         } else {
             continue;
         }
 
-        // console.log(roomname);
-
+        // Build the chat room object
         var room = {
             name: roomname,
             visitorUserId: roomname,
@@ -100,14 +95,16 @@ io.on('connection', async function(socket) {
             history: JSON.parse(allChats[key].chat_history)
         }
 
-        // console.log(room.history);
-
+        // Add the chat room to the chat room dictionary
         chatrooms[room.id] = room;
     }
 
+    // Join the user to all their chats
     for (var key in chatrooms) {
         socket.join(chatrooms[key].id);
     }
+
+    // Tell the client to render the list of chat rooms and their message history
     socket.emit('populate rooms', chatrooms);
 
     //---ADMIN---
@@ -130,28 +127,39 @@ io.on('connection', async function(socket) {
     socket.emit('admin populate rooms', adminChatrooms);
     //^^^ADMIN^^^
 
+    // When user submits text through the chat box
     socket.on('chat message', function(msg) {
+        // Get timestamp
         var momentTimestamp = moment().format("h:mm:ss a");
+
+        // Build chat message object
         var chatMessage = {
             name: username,
             text: msg.text,
             timestamp: momentTimestamp
         }
+
+        // Add chat message to the history for the room the message was sent in
         chatrooms[msg.roomID].history.push(chatMessage);
+
+        // Only store the latest 200 messages for each room
         if (chatrooms[msg.roomID].history.length > 200) chatrooms[msg.roomID].history.shift();
-        // console.log('message: ' + msg);
+
+        // Emit the message object to all users in the chat room for rendering
         io.to(msg.roomID).emit('chat message', {
                 msg: chatMessage,
                 roomID: msg.roomID
             }
         );
+
+        // Resend the chat record to the client
         updateHistory();
     });
 
     socket.on('disconnect', async function() {
-        // console.log('user disconnected');
+
+        // Parse the message history and write to the database
         for (var key in chatrooms) {
-            // console.log(key);
             let hist = JSON.stringify(chatrooms[key].history);
             let recordUpdate = {
                 "tablename" : "chat_table",
@@ -160,19 +168,11 @@ io.on('connection', async function(socket) {
                 "where_d" : "chat_id",
                 "where_v" : key
             };
-            // let update = JSON.stringify(recordUpdate);
-            // console.log(recordUpdate);
-            // construct the new record
-            // { "tablename" : "book_table",
-            //     "cell_d" : "title",
-            //     "cell_v" : 'dank memes',
-            //     "where_d" : "book_id",
-            //     "where_v" : "1000",
-            // }
             await axiosapicall.apiUpdateRecord(recordUpdate);
         }
     });
 
+    // Resent the chat record to the client
     function updateHistory() {
         io.emit('update history', chatrooms);
     }

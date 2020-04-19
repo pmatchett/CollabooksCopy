@@ -99,15 +99,11 @@ display: block;
   margin: 5px;
 }
 
-#messages li:nth-child(odd) {
-  /*background: #eee;*/
-}
-
 #bookStateGroup{
   margin: 10px;
 }
 
-#chat-view-window {
+#chat-view-window, #chat-view-window-admin {
   overflow-y: auto;
   overflow-x: hidden;
   height: 100%;

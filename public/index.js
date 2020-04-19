@@ -102,7 +102,74 @@ function initMarkers(){
     updateInfoWindow(ownerId);
   }
 
-  return {addUserMarker, addBookToUser, setInfoWindows, removeMarker, modifyBook, removeBook};
+  function clearMap(){
+    console.log('inside internal market clearMap');
+    for (let i=1; i < markers.length; i++) {
+        markers[i].marker = null;
+    }
+  }
+
+  // Sets the map on all markers in the array.
+  function setMapOnAll(map) {
+    for (var i = 1; i < markers.length; i++) {
+      markers[i].marker.setMap(map);
+    }
+  }
+
+  function clearMarkers() {
+    setMapOnAll(null);
+  }
+
+// Deletes all markers in the array by removing references to them.
+  function deleteMarkers() {
+    clearMarkers();
+    markers = [];
+  }
+
+
+  function selectiveHide(searchword){
+      console.log('the searchword is:'+searchword);
+      for (var i = 1; i < markers.length; i++) {
+        let thismarker = markers[i];
+        let bookarray = markers[i].books;
+        // console.log(bookarray);
+        let showme = false;
+
+        bookarray.forEach(function(arrayItem){
+              //console.log(arrayItem)
+              let bookrecord = arrayItem;
+              let bookrecordvalues = Object.values(bookrecord);
+              //console.log(typeof bookrecordvalues)
+              //console.log(bookrecordvalues);
+              for (const val of bookrecordvalues) {
+                if (val.toLowerCase().includes(searchword.toLowerCase() ) ) {
+                  console.log(val);
+                  console.log('True!');
+                  showme = true;
+                  //
+                } else {
+                  //console.log(val+': this val does not have the search word');
+                  //console.log('False!')
+                  //markerid = hide
+                }
+              }
+        });
+
+        console.log('the bool value is:'+showme);
+        if (Boolean(showme)) {
+          thismarker.marker.setMap(map);
+        } else {
+          thismarker.marker.setMap(null);
+        }
+
+      }
+  }
+
+
+  return {
+    addUserMarker, addBookToUser, setInfoWindows, removeMarker, modifyBook, removeBook, clearMap, deleteMarkers,
+    setMapOnAll, clearMarkers, deleteMarkers, selectiveHide
+  };
 }
 
 /************* Event Handling functions *****/
@@ -312,6 +379,7 @@ async function populateMap()
   const users = await apiGetUserTable();
 
   for(let userToAdd of users){
+    console.log(userToAdd);
     markers.addUserMarker(userToAdd);
   }
 
@@ -340,4 +408,11 @@ async function populateBooksAround()
         ));
     }
   }
+}
+
+function searchQuery(){
+  console.log('lol');
+  let query = document.getElementById('searchInput').value;
+  console.log(query);
+  markers.selectiveHide(query);
 }

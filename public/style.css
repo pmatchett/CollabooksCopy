@@ -1,13 +1,23 @@
-/********** SENG513 Final Project **********
-*  Members: Jasmine Cronin
-*           Brandt Davis
-*           Patrick Matchett
-*           Ashley Millette
-*           Siobhan O’Dell
-*           Kent Wong
-*  Created On: 11/03/2020
-*  Last revision: 08/04/2020
-********************************************/
+/************************** SENG513 Final Project ***************************
+       _____ ____  _      _               ____   ____   ____  _  __ _____
+     / ____/ __ \| |    | |        /\   |  _ \ / __ \ / __ \| |/ // ____|
+    | |   | |  | | |    | |       /  \  | |_) | |  | | |  | | ' /| (___
+    | |   | |  | | |    | |      / /\ \ |  _ <| |  | | |  | |  <  \___ \
+    | |___| |__| | |____| |____ / ____ \| |_) | |__| | |__| | . \ ____) |
+    \_____\____/|______|______/_/    \_|____/ \____/ \____/|_|\_|_____/
+
+            ______......-----~~~~~~~--..__   __..--~~~~~~~-----......______
+          //   Members:                   `V'                            \\
+        //        Jasmine Cronin          |           Ashley Millette    \\
+      //       Brandt Davis              |         Siobhan O’Dell        \\
+    //     Patrick Matchett             |        Kent Wong               \\
+  //_______......------~~~~~~~~--..__  | __..--~~~~~~~~-----......_______\\
+//_______..........------~~~~~~...__\ | /__...~~~~~~------........_______\\
+===================================\\|//===================================
+                                  `----`
+                          Created On: 11/03/2020
+                        Last revision: 19/04/2020
+****************************************************************************/
 
 
 /******* GENERAL FORMATTING *******/
@@ -35,10 +45,6 @@ input[type=search]::-webkit-search-cancel-button {
 }
 
 /******* HOME FORMATTING *******/
-#map{
-  height: 80vh;
-  width: 100%;
-}
 
 .scrollbar {
 position: relative;
@@ -50,10 +56,16 @@ overflow: auto;
 display: block;
 }
 
-/** MAP INFO WINDOW FORMATTING **/
+/******* MAP FORMATTING *******/
+
 .gm-style-iw{
   max-height: 60vh;
   width: 40%;
+}
+
+#map{
+  height: 80vh;
+  width: 100%;
 }
 
 /******* LOGIN FORMATTING *******/

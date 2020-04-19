@@ -30,6 +30,10 @@ body{
   height: 80vh;
 }
 
+input[type=search]::-webkit-search-cancel-button {
+  -webkit-appearance: searchfield-cancel-button;
+}
+
 /******* HOME FORMATTING *******/
 #map{
   height: 80vh;

@@ -126,14 +126,13 @@ function initMarkers(){
     markers = [];
   }
 
-
   function selectiveHide(searchword){
-      console.log('the searchword is:'+searchword);
+      // console.log('the searchword is:'+searchword);
       for (var i = 1; i < markers.length; i++) {
         let thismarker = markers[i];
         let bookarray = markers[i].books;
         // console.log(bookarray);
-        let showme = false;
+        let hideme = true;
 
         bookarray.forEach(function(arrayItem){
               //console.log(arrayItem)
@@ -143,25 +142,19 @@ function initMarkers(){
               //console.log(bookrecordvalues);
               for (const val of bookrecordvalues) {
                 if (val.toLowerCase().includes(searchword.toLowerCase() ) ) {
-                  console.log(val);
-                  console.log('True!');
-                  showme = true;
+                  //console.log(val);
+                  hideme = false;
                   //
                 } else {
                   //console.log(val+': this val does not have the search word');
-                  //console.log('False!')
                   //markerid = hide
                 }
               }
         });
-
-        console.log('the bool value is:'+showme);
-        if (Boolean(showme)) {
-          thismarker.marker.setMap(map);
-        } else {
+        // console.log('the bool value is:'+hideme);
+        if (Boolean(hideme)) {
           thismarker.marker.setMap(null);
         }
-
       }
   }
 
@@ -379,7 +372,8 @@ async function populateMap()
   const users = await apiGetUserTable();
 
   for(let userToAdd of users){
-    console.log(userToAdd);
+    // un-comment to see the record structure
+    //console.log(userToAdd);
     markers.addUserMarker(userToAdd);
   }
 
@@ -411,8 +405,13 @@ async function populateBooksAround()
 }
 
 function searchQuery(){
-  console.log('lol');
   let query = document.getElementById('searchInput').value;
-  console.log(query);
+  // console.log(query);
   markers.selectiveHide(query);
 }
+
+// this function will be executed on click of X (clear button)
+$('input[type=search]').on('search', function () {
+  populateMap();
+
+});

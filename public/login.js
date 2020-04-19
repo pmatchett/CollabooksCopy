@@ -49,6 +49,10 @@ async function auth(){
         // ************************
         else {
             //alert("SUCCESS")
+            let signInCookie = document.cookie;
+            userID = await getUserID(inputEmail);
+            console.log(userID);
+            //signInCookie = 
             newPage.setAttribute("href", "index1.html");
         }
 }
@@ -57,6 +61,25 @@ function loginFailed(){
     alert("INCORRECT LOGIN INFORMATION\nPlease try again")
     let newPage = document.getElementById("submit");
     newPage.setAttribute("href", "index.html");
+}
+
+async function getUserID(inputEmail) {
+    let get_user_record = {tablename: 'user_table', 
+                           column_name: 'email',
+                           value: inputEmail};
+
+    let result = await apiGetRecord(get_user_record);
+    console.log(result)
+    // This Line is what Im using to check the values
+    console.log(result[0])
+    console.log(result.length)
+
+    if(result.length === 0){
+        return false;
+    }
+    else {
+        return true;
+    }
 }
 
 async function checkEmail(inputEmail) {

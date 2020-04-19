@@ -6,12 +6,13 @@
 *           Siobhan O’Dell
 *           Kent Wong
 *  Created On: 11/03/2020
-*  Last revision: 08/04/2020
+*  Last revision: 19/04/2020
 ********************************************/
 
 /*************Global Variables**************/
 let collabooksMap;
 let markers = initMarkers();
+let admin = false;
 
 /************* Initializations **************/
 function initMap(){
@@ -38,8 +39,21 @@ $(document).ready(function(){
   populateBooksAround();
   initMap();
 
+<<<<<<< HEAD
   //check if admin
 
+=======
+  //check if admin, show admin tab if they are
+  if (document.cookie.split(';').filter((item) => item.trim().startsWith('user_type=')).length) {
+      let userType = document.cookie.replace(/(?:(?:^|.*;\s*)user_type\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+      if(userType === "admin"){
+        admin = true;
+        $("a:hidden").show();
+      }else{
+        admin = false;
+      }
+  }
+>>>>>>> a6dcc73266b269bcfcdf2f46410a1609a2af2f20
 
 });
 
@@ -241,66 +255,75 @@ $(document).on('click','.nav li', function (e) {
 
 /************* Bookshelf Functions **************/
 
+/**Populate the bookshelf with the users books**/
 async function populateShelf()
 {
+  // Empty all the components that require the users books
   $('#bookshelf tbody').empty();
   $('#lendBookDropdown').empty();
   $('#returnBookDropdown').empty();
 
-  // TODO: Use cookies to keep track of current user?
-  const currentUser = "18";
+  // If a user's cookie exists, extract their user_id
+  if (document.cookie.split(';').filter((item) => item.trim().startsWith('user_id=')).length) {
 
-  const allBooks = await apiGetBookTable();
+      let currentUser = document.cookie.replace(/(?:(?:^|.*;\s*)user_id\s*\=\s*([^;]*).*$)|^.*$/, "$1");
 
-  for(var key in allBooks) {
+      const allBooks = await apiGetBookTable();
 
-    var owner = allBooks[key].owner_id;
+      // For every book, check if it is owned by the current user
+      for(var key in allBooks) {
 
-    if(owner === currentUser){
+        var owner = allBooks[key].owner_id;
 
-      let status = allBooks[key].borrowed_by;
+        // If it is the current users book
+        if(owner === currentUser){
 
-      if(status === "null"){
-        status = "None";
+          // Check if the book is borrowed
+          let status = allBooks[key].borrowed_by;
+          if(status === "null"){
+            status = "None";
+          }
+
+          // Populate the current users bookshelf
+          $('#bookshelf > tbody').append($('<tr>').html(
+            "<td>" + allBooks[key].title + "</td>" +
+            "<td>" + allBooks[key].author + "</td>" +
+            "<td>" + allBooks[key].isbn + "</td>" +
+            "<td>" + status + "</td>" +
+            "<td>" + '<button type="button" class="btn btn-secondary" id="removeBookButton" onclick="removeBook(' +allBooks[key].book_id+ ')">Remove</button>' + "</td>"
+            ));
+
+          // Also populate books that can be returned and lent in Requests
+          if(allBooks[key].borrowed_by === "null" ){
+            $('#lendBookDropdown').append('<option value=' + allBooks[key].book_id + '>' + allBooks[key].title + '</option>');
+          }
+          if(allBooks[key].borrowed_by !== "null" ){
+            $('#returnBookDropdown').append('<option value=' + allBooks[key].book_id + '>' + allBooks[key].title + '</option>');
+          }
+        }
       }
-
-      //populate the current users bookshelf
-      $('#bookshelf > tbody').append($('<tr>').html(
-        "<td>" + allBooks[key].title + "</td>" +
-        "<td>" + allBooks[key].author + "</td>" +
-        "<td>" + allBooks[key].isbn + "</td>" +
-        "<td>" + status + "</td>" +
-        "<td>" + '<button type="button" class="btn btn-secondary" id="removeBookButton" onclick="removeBook(' +allBooks[key].book_id+ ')">Remove</button>' + "</td>"
-        ));
-
-      //also populate books that can be returned and lent in Requests
-      if(allBooks[key].borrowed_by === "null" ){
-        $('#lendBookDropdown').append('<option value=' + allBooks[key].book_id + '>' + allBooks[key].title + '</option>');
-      }
-      if(allBooks[key].borrowed_by !== "null" ){
-        $('#returnBookDropdown').append('<option value=' + allBooks[key].book_id + '>' + allBooks[key].title + '</option>');
-      }
-    }
   }
 
+  // Check to make sure the user has books to lend
   if($("#lendBookDropdown option").length == 0){
       $('#lendButton').addClass('disabled');
   }else{
       $('#lendButton').removeClass('disabled');
   }
 
+  // Check to make sure the user has books to be returned
   if($("#returnBookDropdown option").length == 0){
       $('#returnButton').addClass('disabled');
   }else{
       $('#returnButton').removeClass('disabled');
   }
-
 }
 
+/**Remove a book from the users bookshelf**/
 async function removeBook(removeKey){
 
   console.log("removed " + removeKey);
-  let record_to_delete ={
+  let record_to_delete = {
       "tablename" : "book_table",
       "column_name" : "book_id",
       "value" : removeKey,
@@ -312,43 +335,53 @@ async function removeBook(removeKey){
 }
 
 async function addBook(){
-  let titleInput = $("#inputTitle").val();
-  let authorInput = $("#inputAuthor").val();
-  let isbnInput = $("#inputISBN").val();
-  let genreInput = $("#inputGenre").val();
-  //will need to get current user for owner_id
-  let owner = 90;
-  if (titleInput === "" || authorInput === "" || isbnInput === "" || genreInput === "Select Genre..."){
-    alert("All fields must be entered to add a book");
-    return;
-  }
-  const allBooks = await apiGetBookTable();
-  //getting the next Id for the book, since the DB is kind of weird it has to be done this way
-  let maxId = 0;
-  for(let book of allBooks){
-    if(parseInt(book.book_id) > maxId){
-      maxId = parseInt(book.book_id);
-    }
-  }
-  maxId = maxId + 1;
-  let bookToAdd = {
-    "bookid":maxId,
-    "title":titleInput,
-    "author":authorInput,
-    "isbn":isbnInput,
-    "genre":genreInput,
-    "owner_id":owner,
-    "borrowed_by":"null",
-    "due_date":"null"
-  };
-  apiAddRecordToTable(bookToAdd, 'book');
-  $("#inputTitle").val("");
-  $("#inputAuthor").val("");
-  $("#inputISBN").val("");
-  $("#inputGenre").val("Select Genre...");
+  // If a user's cookie exists, extract their user_id
+  if (document.cookie.split(';').filter((item) => item.trim().startsWith('user_id=')).length) {
 
-  $('#errorMessage').text("The book " + titleInput + " was added successfully!");
-  $('#alertDialog').modal('show');
+      let owner = document.cookie.replace(/(?:(?:^|.*;\s*)user_id\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+      let titleInput = $("#inputTitle").val();
+      let authorInput = $("#inputAuthor").val();
+      let isbnInput = $("#inputISBN").val();
+      let genreInput = $("#inputGenre").val();
+
+      if (titleInput === "" || authorInput === "" || isbnInput === "" || genreInput === "Select Genre..."){
+        alert("All fields must be entered to add a book");
+        return;
+      }
+      const allBooks = await apiGetBookTable();
+      //getting the next Id for the book, since the DB is kind of weird it has to be done this way
+      let maxId = 0;
+      for(let book of allBooks){
+        if(parseInt(book.book_id) > maxId){
+          maxId = parseInt(book.book_id);
+        }
+      }
+
+      maxId = maxId + 1;
+
+      let bookToAdd = {
+        "bookid":maxId,
+        "title":titleInput,
+        "author":authorInput,
+        "isbn":isbnInput,
+        "genre":genreInput,
+        "owner_id":owner,
+        "borrowed_by":"null",
+        "due_date":"null"
+      };
+
+      apiAddRecordToTable(bookToAdd, 'book');
+      $("#inputTitle").val("");
+      $("#inputAuthor").val("");
+      $("#inputISBN").val("");
+      $("#inputGenre").val("Select Genre...");
+
+      //make the new page up to date
+      populateShelf();
+
+      $('#errorMessage').text("The book " + titleInput + " was added successfully!");
+      $('#alertDialog').modal('show');
+    }
 }
 
 /************* Chat Functions **************/
@@ -359,9 +392,7 @@ async function lendABook(){
 
     let bookToLendTitle = $("#lendBookDropdown option:selected" ).text();
     let bookToLend = $("#lendBookDropdown option:selected" ).val();
-
-    //TODO: how do i get this?
-    let personWhoBorrows = "13";
+    let personWhoBorrows = $("#lendButton").val();
 
     //Change status in the DB
     let updateuserrecord = { "tablename" : "book_table",

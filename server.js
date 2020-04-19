@@ -105,8 +105,21 @@ io.on('connection', async function(socket) {
     socket.emit('populate rooms', chatrooms);
 
     //---ADMIN---
-    //Would be ALL chatrooms sent, Not dynamic
-    socket.emit('admin populate rooms', allChats);
+    var adminChatrooms = {};
+    for (var key in allChats) {
+
+        var user1 = allChats[key].first_participant_username;
+        var user2 = allChats[key].second_participant_username;
+
+        var room = {
+            name: user1 + " and " + user2,
+            id: allChats[key].chat_id,
+            history: JSON.parse(allChats[key].chat_history)
+        }
+        adminChatrooms[room.id] = room;
+    }
+
+    socket.emit('admin populate rooms', adminChatrooms);
     //^^^ADMIN^^^
 
     socket.on('chat message', function(msg) {

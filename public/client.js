@@ -28,6 +28,7 @@ $(function () {
     var activeRoom;
     var activeAdminRoom;
     var rooms;
+    var adminRooms;
 
     socket.on('populate rooms', function(rms) {
         rooms = rms;
@@ -62,27 +63,27 @@ $(function () {
     });
 
     socket.on('admin populate rooms', function(rms) {
-        // rooms = rms;
-        // activeAdminRoom = Object.keys(rooms)[0];
-        // console.log(activeAdminRoom);
-        // rooms[activeAdminRoom].history.forEach(function(msg) {
-        //     renderAdminMessage(msg);
-        // });
-        // for (var key in rooms) {
-        //     $('#admin-chat-rooms').append($('<li class="list-group-item">').text(rooms[key].name)
-        //         .attr("id", rooms[key].id));
-        // }
-        // $('#' + activeAdminRoom).addClass('active');
-        // $(".list-group-item").on("click",function(){
-        //     $(".list-group-item.active").removeClass('active');
-        //     $(this).addClass('active');
-        //     activeAdminRoom = $(".list-group-item.active").attr("id");
-        //
-        //     $('#adminMessages').empty();
-        //     rooms[parseInt(activeAdminRoom)].history.forEach(function(msg) {
-        //         renderAdminMessage(msg);
-        //     });
-        // });
+        adminRooms = rms;
+        activeAdminRoom = Object.keys(adminRooms)[0];
+        console.log(activeAdminRoom);
+        adminRooms[activeAdminRoom].history.forEach(function(msg) {
+            renderAdminMessage(msg);
+        });
+        for (var key in adminRooms) {
+            $('#admin-chat-rooms').append($('<li class="list-group-item">').text(adminRooms[key].name)
+                .attr("id", adminRooms[key].id));
+        }
+        $('#' + activeAdminRoom).addClass('active');
+        $(".list-group-item").on("click",function(){
+            $(".list-group-item.active").removeClass('active');
+            $(this).addClass('active');
+            activeAdminRoom = $(".list-group-item.active").attr("id");
+
+            $('#adminMessages').empty();
+            adminRooms[parseInt(activeAdminRoom)].history.forEach(function(msg) {
+                renderAdminMessage(msg);
+            });
+        });
     });
 
     function renderAdminMessage(msg) {

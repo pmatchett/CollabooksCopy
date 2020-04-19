@@ -22,6 +22,7 @@ function initMap(){
     populateMap();
 }
 
+//on document load do
 $(document).ready(function(){
   populateShelf();
   populateBooksAround();
@@ -122,7 +123,6 @@ $(document).on('click','.nav li', function (e) {
       $('.BookshelfPage').hide();
       $('.RequestsPage').hide();
       $('.AdminPage').hide();
-      initMap();
     }
     else if ($(this).text() === "Bookshelf") {
       $('.HomePage').hide();
@@ -170,6 +170,7 @@ async function populateShelf()
         status = "None";
       }
 
+      //populate the current users bookshelf
       $('#bookshelf > tbody').append($('<tr>').html(
         "<td>" + allBooks[key].title + "</td>" +
         "<td>" + allBooks[key].author + "</td>" +
@@ -190,18 +191,30 @@ async function populateShelf()
 
   if($("#lendBookDropdown option").length == 0){
       $('#lendButton').addClass('disabled');
-  }
-  else{
+  }else{
       $('#lendButton').removeClass('disabled');
   }
 
   if($("#returnBookDropdown option").length == 0){
       $('#returnButton').addClass('disabled');
-  }
-  else{
+  }else{
       $('#returnButton').removeClass('disabled');
   }
 
+}
+
+async function removeBook(removeKey){
+
+  console.log("removed " + removeKey);
+  let record_to_delete ={
+      "tablename" : "book_table",
+      "column_name" : "book_id",
+      "value" : removeKey,
+  };
+  await apiDeleteRecord(record_to_delete);
+
+  //make the new page up to date
+  populateShelf();
 }
 
 /************* Chat Functions **************/
@@ -213,10 +226,8 @@ async function lendABook(){
     let bookToLendTitle = $("#lendBookDropdown option:selected" ).text();
     let bookToLend = $("#lendBookDropdown option:selected" ).val();
 
-    //how do i get this?
+    //TODO: how do i get this?
     let personWhoBorrows = "13";
-
-    console.log("lending " + bookToLend + " AKA "+bookToLendTitle+ " to user " + personWhoBorrows);
 
     //Change status in the DB
     let updateuserrecord = { "tablename" : "book_table",
@@ -237,12 +248,9 @@ async function lendABook(){
 async function returnABook(){
 
   if($("#returnBookDropdown option").length > 0){
-    //Connect to DB
 
     let bookToReturnTitle = $("#returnBookDropdown option:selected" ).text();
     let bookToReturn = $("#returnBookDropdown option:selected" ).val();
-
-    console.log("the book " + bookToReturn + " has been returned -> " + bookToReturnTitle);
 
     //Change status in the DB
     let updateuserrecord = { "tablename" : "book_table",
@@ -294,18 +302,4 @@ async function populateBooksAround()
         ));
     }
   }
-}
-
-async function removeBook(removeKey){
-
-  console.log("removed " + removeKey);
-  let record_to_delete ={
-      "tablename" : "book_table",
-      "column_name" : "book_id",
-      "value" : removeKey,
-  };
-  await apiDeleteRecord(record_to_delete);
-
-  //make the new page up to date
-  await populateShelf();
 }

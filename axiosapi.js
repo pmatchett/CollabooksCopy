@@ -57,6 +57,10 @@ async function apiGetUserLookUp(userid){
     return request_promise.data;
 }
 
+async function apiAddRecordChatTable(record) {
+    params = record;
+    let res = await axios.post('http://localhost:3000/tables/addrecord/chat', params);
+}
 
 // only for testing
 async function testBarrage(){
@@ -77,11 +81,22 @@ async function testBarrage(){
     // result = await apiGetUserLookUp(recordtest);
     // console.log(result)
 
+    // [rec.chatid, rec.firstpname, rec.secondpname, rec.hist],
+    // testrecord = {
+    //     "chatid":"1300",
+    //     "firstpname": "user_50",
+    //     "secondpname" : "user_90",
+    //     "hist":"testing"
+    // }
+    // apiAddRecordChatTable(testrecord)
+
+
 }
 
 // export functions
 module.exports = {
     apiGetChatTable,
     apiUpdateRecord,
-    apiGetUserLookUp
+    apiGetUserLookUp,
+    apiAddRecordChatTable
 };

@@ -16,8 +16,18 @@ let admin = false;
 
 /************* Initializations **************/
 function initMap(){
+  let mapCenter;
+  if (document.cookie.split(';').filter((item) => item.trim().startsWith('user_lat')).length &&
+      document.cookie.split(';').filter((item) => item.trim().startsWith('user_lon')).length) {
+        let user_lat = parseFloat(document.cookie.replace(/(?:(?:^|.*;\s*)user_lat\s*\=\s*([^;]*).*$)|^.*$/, "$1"));
+        let user_lon = parseFloat(document.cookie.replace(/(?:(?:^|.*;\s*)user_lon\s*\=\s*([^;]*).*$)|^.*$/, "$1"));
+        mapCenter = {lat:user_lat, lng:user_lon};
+  }
+  else{
+    mapCenter = {lat: 51.078113, lng: -114.129029};
+  }
   collabooksMap = new google.maps.Map(document.getElementById('map'), {
-      center: {lat: 51.078113, lng: -114.129029},
+      center: mapCenter,
       zoom: 13
     });
     populateMap();
@@ -28,6 +38,7 @@ $(document).ready(function(){
   populateShelf();
   populateBooksAround();
   initMap();
+
 
   //check if admin, show admin tab if they are
   if (document.cookie.split(';').filter((item) => item.trim().startsWith('user_type=')).length) {
@@ -60,6 +71,17 @@ function initMarkers(){
     markers[user.user_id] = {user: user, marker:marker, infoWindow:infoWindow, books:[]};
   }
 
+  function addOwnLocation(user){
+    let markerPosition = {lat:user.user_lon, lng:user.user_lat};
+    let marker = new google.maps.Marker({position:markerPosition, map:collabooksMap});
+    //This string will change once we know more about what information we want to show
+    let userInfo = "<h3>Your Location</h3>";
+    let infoWindow = new google.maps.InfoWindow({content: userInfo});
+    marker.addListener("click", function(){
+      infoWindow.open(map, marker);
+    });
+  }
+
   function addBookToUser(userId, book){
     markers[userId].books.push(book);
   }
@@ -71,7 +93,7 @@ function initMarkers(){
   }
 
   function updateInfoWindow(userId){
-    infoString = "<h4>User:</h4><b>User: </b>" + markers[userId].user.first_name +  " "+markers[userId].user.last_name + "<h4>User's books:</h4>";
+    infoString = "<h4>User: " + markers[userId].user.first_name +  " "+markers[userId].user.last_name + "</h4><h4>User's books:</h4>";
     for(currentBook of markers[userId].books){
       infoString = infoString + "<hr><b>Title: </b>"+currentBook.title+"<br><b>Author: </b>"+currentBook.author
                               +"<br><b>Genre: </b>"+currentBook.genre;
@@ -125,6 +147,9 @@ function initMarkers(){
   // Sets the map on all markers in the array.
   function setMapOnAll(map) {
     for (var i = 1; i < markers.length; i++) {
+      if(markers[i] === undefined || markers[i] === null){
+        continue;
+      }
       markers[i].marker.setMap(map);
     }
   }
@@ -140,8 +165,11 @@ function initMarkers(){
   }
 
   function selectiveHide(searchword){
-      // console.log('the searchword is:'+searchword);
+      //console.log('the searchword is:'+searchword);
       for (var i = 1; i < markers.length; i++) {
+        if(markers[i] === undefined || markers[i] === null){
+          continue;
+        }
         let thismarker = markers[i];
         let bookarray = markers[i].books;
         // console.log(bookarray);
@@ -168,13 +196,16 @@ function initMarkers(){
         if (Boolean(hideme)) {
           thismarker.marker.setMap(null);
         }
+        else{
+          thismarker.marker.setMap(collabooksMap);
+        }
       }
   }
 
 
   return {
     addUserMarker, addBookToUser, setInfoWindows, removeMarker, modifyBook, removeBook, clearMap, deleteMarkers,
-    setMapOnAll, clearMarkers, deleteMarkers, selectiveHide
+    setMapOnAll, clearMarkers, deleteMarkers, selectiveHide, addOwnLocation
   };
 }
 
@@ -220,66 +251,75 @@ $(document).on('click','.nav li', function (e) {
 
 /************* Bookshelf Functions **************/
 
+/**Populate the bookshelf with the users books**/
 async function populateShelf()
 {
+  // Empty all the components that require the users books
   $('#bookshelf tbody').empty();
   $('#lendBookDropdown').empty();
   $('#returnBookDropdown').empty();
 
-  // TODO: Use cookies to keep track of current user?
-  const currentUser = "18";
+  // If a user's cookie exists, extract their user_id
+  if (document.cookie.split(';').filter((item) => item.trim().startsWith('user_id=')).length) {
 
-  const allBooks = await apiGetBookTable();
+      let currentUser = document.cookie.replace(/(?:(?:^|.*;\s*)user_id\s*\=\s*([^;]*).*$)|^.*$/, "$1");
 
-  for(var key in allBooks) {
+      const allBooks = await apiGetBookTable();
 
-    var owner = allBooks[key].owner_id;
+      // For every book, check if it is owned by the current user
+      for(var key in allBooks) {
 
-    if(owner === currentUser){
+        var owner = allBooks[key].owner_id;
 
-      let status = allBooks[key].borrowed_by;
+        // If it is the current users book
+        if(owner === currentUser){
 
-      if(status === "null"){
-        status = "None";
+          // Check if the book is borrowed
+          let status = allBooks[key].borrowed_by;
+          if(status === "null"){
+            status = "None";
+          }
+
+          // Populate the current users bookshelf
+          $('#bookshelf > tbody').append($('<tr>').html(
+            "<td>" + allBooks[key].title + "</td>" +
+            "<td>" + allBooks[key].author + "</td>" +
+            "<td>" + allBooks[key].isbn + "</td>" +
+            "<td>" + status + "</td>" +
+            "<td>" + '<button type="button" class="btn btn-secondary" id="removeBookButton" onclick="removeBook(' +allBooks[key].book_id+ ')">Remove</button>' + "</td>"
+            ));
+
+          // Also populate books that can be returned and lent in Requests
+          if(allBooks[key].borrowed_by === "null" ){
+            $('#lendBookDropdown').append('<option value=' + allBooks[key].book_id + '>' + allBooks[key].title + '</option>');
+          }
+          if(allBooks[key].borrowed_by !== "null" ){
+            $('#returnBookDropdown').append('<option value=' + allBooks[key].book_id + '>' + allBooks[key].title + '</option>');
+          }
+        }
       }
-
-      //populate the current users bookshelf
-      $('#bookshelf > tbody').append($('<tr>').html(
-        "<td>" + allBooks[key].title + "</td>" +
-        "<td>" + allBooks[key].author + "</td>" +
-        "<td>" + allBooks[key].isbn + "</td>" +
-        "<td>" + status + "</td>" +
-        "<td>" + '<button type="button" class="btn btn-secondary" id="removeBookButton" onclick="removeBook(' +allBooks[key].book_id+ ')">Remove</button>' + "</td>"
-        ));
-
-      //also populate books that can be returned and lent in Requests
-      if(allBooks[key].borrowed_by === "null" ){
-        $('#lendBookDropdown').append('<option value=' + allBooks[key].book_id + '>' + allBooks[key].title + '</option>');
-      }
-      if(allBooks[key].borrowed_by !== "null" ){
-        $('#returnBookDropdown').append('<option value=' + allBooks[key].book_id + '>' + allBooks[key].title + '</option>');
-      }
-    }
   }
 
+  // Check to make sure the user has books to lend
   if($("#lendBookDropdown option").length == 0){
       $('#lendButton').addClass('disabled');
   }else{
       $('#lendButton').removeClass('disabled');
   }
 
+  // Check to make sure the user has books to be returned
   if($("#returnBookDropdown option").length == 0){
       $('#returnButton').addClass('disabled');
   }else{
       $('#returnButton').removeClass('disabled');
   }
-
 }
 
+/**Remove a book from the users bookshelf**/
 async function removeBook(removeKey){
 
   console.log("removed " + removeKey);
-  let record_to_delete ={
+  let record_to_delete = {
       "tablename" : "book_table",
       "column_name" : "book_id",
       "value" : removeKey,
@@ -291,43 +331,53 @@ async function removeBook(removeKey){
 }
 
 async function addBook(){
-  let titleInput = $("#inputTitle").val();
-  let authorInput = $("#inputAuthor").val();
-  let isbnInput = $("#inputISBN").val();
-  let genreInput = $("#inputGenre").val();
-  //will need to get current user for owner_id
-  let owner = 90;
-  if (titleInput === "" || authorInput === "" || isbnInput === "" || genreInput === "Select Genre..."){
-    alert("All fields must be entered to add a book");
-    return;
-  }
-  const allBooks = await apiGetBookTable();
-  //getting the next Id for the book, since the DB is kind of weird it has to be done this way
-  let maxId = 0;
-  for(let book of allBooks){
-    if(parseInt(book.book_id) > maxId){
-      maxId = parseInt(book.book_id);
-    }
-  }
-  maxId = maxId + 1;
-  let bookToAdd = {
-    "bookid":maxId,
-    "title":titleInput,
-    "author":authorInput,
-    "isbn":isbnInput,
-    "genre":genreInput,
-    "owner_id":owner,
-    "borrowed_by":"null",
-    "due_date":"null"
-  };
-  apiAddRecordToTable(bookToAdd, 'book');
-  $("#inputTitle").val("");
-  $("#inputAuthor").val("");
-  $("#inputISBN").val("");
-  $("#inputGenre").val("Select Genre...");
+  // If a user's cookie exists, extract their user_id
+  if (document.cookie.split(';').filter((item) => item.trim().startsWith('user_id=')).length) {
 
-  $('#errorMessage').text("The book " + titleInput + " was added successfully!");
-  $('#alertDialog').modal('show');
+      let owner = document.cookie.replace(/(?:(?:^|.*;\s*)user_id\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+      let titleInput = $("#inputTitle").val();
+      let authorInput = $("#inputAuthor").val();
+      let isbnInput = $("#inputISBN").val();
+      let genreInput = $("#inputGenre").val();
+
+      if (titleInput === "" || authorInput === "" || isbnInput === "" || genreInput === "Select Genre..."){
+        alert("All fields must be entered to add a book");
+        return;
+      }
+      const allBooks = await apiGetBookTable();
+      //getting the next Id for the book, since the DB is kind of weird it has to be done this way
+      let maxId = 0;
+      for(let book of allBooks){
+        if(parseInt(book.book_id) > maxId){
+          maxId = parseInt(book.book_id);
+        }
+      }
+
+      maxId = maxId + 1;
+
+      let bookToAdd = {
+        "bookid":maxId,
+        "title":titleInput,
+        "author":authorInput,
+        "isbn":isbnInput,
+        "genre":genreInput,
+        "owner_id":owner,
+        "borrowed_by":"null",
+        "due_date":"null"
+      };
+
+      apiAddRecordToTable(bookToAdd, 'book');
+      $("#inputTitle").val("");
+      $("#inputAuthor").val("");
+      $("#inputISBN").val("");
+      $("#inputGenre").val("Select Genre...");
+
+      //make the new page up to date
+      populateShelf();
+
+      $('#errorMessage').text("The book " + titleInput + " was added successfully!");
+      $('#alertDialog').modal('show');
+    }
 }
 
 /************* Chat Functions **************/
@@ -382,16 +432,30 @@ async function returnABook(){
 
 async function populateMap()
 {
+  markers.deleteMarkers();
+  let userId = -1;
+  if (document.cookie.split(';').filter((item) => item.trim().startsWith('user_id')).length) {
+    userId = document.cookie.replace(/(?:(?:^|.*;\s*)user_id\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+  }
   const users = await apiGetUserTable();
 
   for(let userToAdd of users){
     // un-comment to see the record structure
     //console.log(userToAdd);
-    markers.addUserMarker(userToAdd);
+    //do not add the currently active user to the map
+    if(userToAdd.user_id === parseInt(userId)){
+      markers.addOwnLocation(userToAdd);
+    }
+    else{
+      markers.addUserMarker(userToAdd);
+    }
   }
 
   const books = await apiGetBookTable();
   for(let bookToAdd of books){
+    if(bookToAdd.owner_id === userId){
+      continue
+    }
     markers.addBookToUser(bookToAdd.owner_id, bookToAdd);
   }
 

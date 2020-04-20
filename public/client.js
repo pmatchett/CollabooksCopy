@@ -87,21 +87,40 @@ function chatFunctions() {
 
     //when a new room is added to the list
     socket.on("add room", function(rms){
-      Object.keys(rooms).push(rms);
+      rooms = rms
+      let roomDetails = Object.keys(rooms);
+      let numRooms = roomDetails.length;
       // Set the active room to the newly added room
-      activeRoom = Object.keys(rooms)[rooms.length-1];
-
+      activeRoom = roomDetails[numRooms-1];
+      console.log(activeRoom);
+        $(".list-group-item.active").removeClass('active');
+      $("#messages").empty();
       // Render message history for the active room
       rooms[activeRoom].history.forEach(function(msg) {
           renderMessage(msg);
       });
-
-
-      $('#chat-rooms').append($('<li class="list-group-item chat-room">').text(rms.roomLabel)
-          .attr("id", rms.id));
+      $('#chat-rooms').append($('<li class="list-group-item chat-room">').text(rooms[activeRoom].roomLabel)
+          .attr("id", rooms[activeRoom].id));
 
       // Renders a selection highlight on the active room, from Bootstrap
       $('#' + activeRoom).addClass('active');
+
+      $('#lendButton').val((rooms[parseInt(activeRoom)].visitorUserId).replace("user_",""));
+
+      // Change the active room based on what the user clicks on
+      $(".chat-room").on("click",function(){
+          $(".list-group-item.active").removeClass('active');
+          $(this).addClass('active');
+          activeRoom = $(".list-group-item.active").attr("id");
+
+          // Empty the message list and re-render with different history
+          $('#messages').empty();
+          rooms[parseInt(activeRoom)].history.forEach(function(msg) {
+              renderMessage(msg);
+          });
+
+          $('#lendButton').val((rooms[parseInt(activeRoom)].visitorUserId).replace("user_",""));
+      });
     });
 
     // Render a chat message object

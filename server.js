@@ -261,7 +261,7 @@ io.on('connection', async function(socket) {
       // Add the chat room to the chat room dictionary
       chatrooms[room.id] = room;
       socket.join(chatId);
-      socket.emit("add room", room);
+      socket.emit("add room", chatrooms);
     }
 
     // Resent the chat record to the client

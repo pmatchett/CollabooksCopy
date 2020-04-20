@@ -194,10 +194,10 @@ function initMarkers(){
                 if (val.toLowerCase().includes(searchword.toLowerCase() ) ) {
                   //console.log(val);
                   hideme = false;
-                  console.log(bookrecord);
+                  //console.log(bookrecord);
                     $('#booksidebar > tbody').append($('<tr>').html(
                         "<td>" + bookrecord.title + "</td>" +
-                        "<td>" + bookrecord.author + " (" + bookrecord.distance + "km away)</td>"
+                        "<td>" + bookrecord.author + "</td>"
                     ));
                   //
                 } else {

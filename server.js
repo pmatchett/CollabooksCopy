@@ -192,23 +192,28 @@ io.on('connection', async function(socket) {
 
         // Resend the chat record to the client
         updateHistory();
+        backupToDB(chatrooms[msg.roomID], msg.roomID);
     });
 
     socket.on('disconnect', async function() {
 
         // Parse the message history and write to the database
         for (var key in chatrooms) {
-            let hist = JSON.stringify(chatrooms[key].history);
-            let recordUpdate = {
-                "tablename" : "chat_table",
-                "cell_d" : "chat_history",
-                "cell_v" : hist,
-                "where_d" : "chat_id",
-                "where_v" : key
-            };
-            await axiosapicall.apiUpdateRecord(recordUpdate);
+            backupToDB(chatrooms[key], key);
         }
     });
+
+    async function backupToDB(chat, index){
+      let hist = JSON.stringify(chat.history);
+      let recordUpdate = {
+          "tablename" : "chat_table",
+          "cell_d" : "chat_history",
+          "cell_v" : hist,
+          "where_d" : "chat_id",
+          "where_v" : index
+      };
+      await axiosapicall.apiUpdateRecord(recordUpdate);
+    }
 
     //when a request for a new chat room is made
     socket.on("createRoom", async function(users){

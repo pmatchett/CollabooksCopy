@@ -39,7 +39,7 @@ function initMap(){
   }
   collabooksMap = new google.maps.Map(document.getElementById('map'), {
       center: mapCenter,
-      zoom: 10
+      zoom: 11
     });
     populateMap();
 }
@@ -510,7 +510,7 @@ async function populateBooksAround()
 
   /*console.log("cookie");
   console.log(document.cookie);
-  console.log("lon");  
+  console.log("lon");
   console.log(curr_lon);
   console.log("lat");
   console.log(curr_lat);*/

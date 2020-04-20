@@ -220,7 +220,6 @@ function loanHandler(identifier){
     $('.BookshelfPage').hide();
     $('.RequestsPage').show();
     $('.AdminPage').hide();
-    console.log("called loan handler asking to borrow book#"+identifier);
     chat.addRoom(currentId, ownerId);
   }
 }

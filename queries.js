@@ -7,7 +7,7 @@ Run the api.js with some test call func, it will trigger.
 note: postgresql does not accept dynamic SQL queries, they must be dynamically pre-made using pg-format
 
 * */
-
+require('dotenv').config();
 const Pool = require('pg').Pool;
 var format = require('pg-format');
 // https://www.npmjs.com/package/pg-format
@@ -15,11 +15,11 @@ var format = require('pg-format');
 // should put these into an env
 // make sure to squash/commit to remove this credential history
 const pool = new Pool({
-    user: 'api_user',
-    host: 'seng513db.co9s2dsktjiq.us-east-2.rds.amazonaws.com',
-    database: 'mydatabase',
-    password: 'api513password',
-    port: 5432,
+    user: process.env.USER_NAME,
+    host: process.env.HOST_ADD,
+    database: process.env.DATABASE_NAME,
+    password: process.env.SECRET_PASS,
+    port: process.env.PORT_NUM,
 });
 
 // GET user by ID ; This needs tweaking

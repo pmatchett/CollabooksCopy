@@ -18,7 +18,7 @@
                           Created On: 06/04/2020
                         Last revision: 19/04/2020
 ****************************************************************************/
-
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();

@@ -197,6 +197,44 @@ io.on('connection', async function(socket) {
         }
     });
 
+    socket.on("createRoom", async function(users){
+      user1 = "user_"+users.userOne;
+      user2 = "user_"+users.userTwo;
+      //if a chat already exists for these users do not create a new one
+      nextId = 0;
+      for(chat of allChats){
+        if((chat.first_participant_username === user1 && chat.second_participant_username === user2)||
+            (chat.first_participant_username === user2 && chat.second_participant_username === user1)){
+              return;
+        }
+        if(parseInt(chat.chat_id)>nextId){
+          nextId = parseInt(chat.chat_id);
+        }
+      }
+      //getting the next id
+      nextId = nextId + 1;
+      //creating the new chat
+      let momentTimestamp = moment().format("h:mm:ss a");
+      let firstMessage = [{
+          name: "Automated Message",
+          messageLabel: "Automated Message",
+          text: "Start of conversation",
+          timestamp: momentTimestamp
+      }];
+      let messageToSend = JSON.stringify(firstMessage);
+      newChat = {
+        "chatid":nextId,
+        "firstpname":user1,
+        "secondpname":user2,
+        "hist": messageToSend
+      };
+      console.log("adding a new chat");
+      console.log(newChat);
+      axiosapicall.apiAddRecordChatTable(newChat);
+
+
+    });
+
     // Resent the chat record to the client
     function updateHistory() {
         io.emit('update history', chatrooms);

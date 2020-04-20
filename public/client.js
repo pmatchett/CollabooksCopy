@@ -9,7 +9,7 @@
  *  Last revision: 19/04/2020
  ********************************************/
 
-$(function () {
+function chatFunctions() {
 
     var socket = io();
     var activeRoom; // ID of active rendered chat room
@@ -137,4 +137,9 @@ $(function () {
         rooms = rms;
     });
 
-});
+    function addRoom(currentUser, otherUser){
+          socket.emit("createRoom", {userOne:currentUser, userTwo:otherUser});
+    }
+
+    return {addRoom};
+}

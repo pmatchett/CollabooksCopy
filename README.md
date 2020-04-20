@@ -13,7 +13,7 @@ Members:
 How to install:
 
 1) Deploy package to selected destination
-2) go to root of project
+2) go to root of project and run ```npm install```
 3) in console, type ```node server.js```
 The application should be running and listening
 on port 3000 as default

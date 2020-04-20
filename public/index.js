@@ -39,7 +39,7 @@ function initMap(){
   }
   collabooksMap = new google.maps.Map(document.getElementById('map'), {
       center: mapCenter,
-      zoom: 13
+      zoom: 10
     });
     populateMap();
 }
@@ -464,9 +464,16 @@ async function populateMap()
   }
   const users = await apiGetUserTable();
 
+  let bannedUsers = [];
+
   for(let userToAdd of users){
     // un-comment to see the record structure
     //console.log(userToAdd);
+    //do not add the user if they are banned
+    if(userToAdd.status === "banned"){
+      bannedUsers.push(userToAdd.user_id);
+      continue;
+    }
     //do not add the currently active user to the map
     if(userToAdd.user_id === parseInt(userId)){
       markers.addOwnLocation(userToAdd);
@@ -475,10 +482,16 @@ async function populateMap()
       markers.addUserMarker(userToAdd);
     }
   }
-
   const books = await apiGetBookTable();
   for(let bookToAdd of books){
-    if(bookToAdd.owner_id === userId){
+    let banned = false;
+    //check if the user that this book belongs to is banned
+    for(let bannedUserId of bannedUsers){
+      if(parseInt(bookToAdd.owner_id) === bannedUserId){
+        banned = true;
+      }
+    }
+    if(bookToAdd.owner_id === userId || banned){
       continue
     }
     markers.addBookToUser(bookToAdd.owner_id, bookToAdd);

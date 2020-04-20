@@ -505,8 +505,16 @@ async function populateBooksAround()
   const allBooks = await apiGetBookTable();
   const allUsers = await apiGetUserTable();
 
-  var curr_lon = parseFloat((((document.cookie.split(';'))[1]).split('='))[1]);
-  var curr_lat = parseFloat((((document.cookie.split(';'))[2]).split('='))[1]);
+  var curr_lon = parseFloat((((document.cookie.split(';'))[3]).split('='))[1]);
+  var curr_lat = parseFloat((((document.cookie.split(';'))[2]).split('='))[1])
+
+  /*console.log("cookie");
+  console.log(document.cookie);
+  console.log("lon");  
+  console.log(curr_lon);
+  console.log("lat");
+  console.log(curr_lat);*/
+
 
   //Only show 10 books alternatively allBooks.length
   for(let key = 0; key < allBooks.length; key++){
@@ -518,8 +526,9 @@ async function populateBooksAround()
       return obj.user_id == owned_by
     });
 
-    book_lat = curr_owner[0].user_lat;
-    book_lon = curr_owner[0].user_lon;
+    /*These are flipped on purpose, they're in the db wrong*/
+    book_lon = curr_owner[0].user_lat;
+    book_lat = curr_owner[0].user_lon;
 
     //Calculate the distance, Haversine method, accurate within .5%, then add the property
     var r = 6371000;
@@ -535,12 +544,6 @@ async function populateBooksAround()
     spacingInKilometers = (r*c)/1000;
     allBooks[key].distance = spacingInKilometers.toFixed(1);
 
-    /*console.log("TEST");
-    console.log(curr_lat);
-    console.log(curr_lon);
-    console.log(book_lat);
-    console.log(book_lon);
-    console.log(spacingInKilometers);*/
   }
 
   allBooks.sort(function(a, b){

@@ -466,8 +466,7 @@ async function populateBooksAround()
 {
   const allBooks = await apiGetBookTable();
   const allUsers = await apiGetUserTable();
-
-  console.log("COOKIE");
+  
   var curr_lon = parseFloat((((document.cookie.split(';'))[1]).split('='))[1]);
   var curr_lat = parseFloat((((document.cookie.split(';'))[2]).split('='))[1]);
 

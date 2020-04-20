@@ -1,14 +1,23 @@
-/********** SENG513 Final Project **********
- *  Members: Jasmine Cronin
- *           Brandt Davis
- *           Patrick Matchett
- *           Ashley Millette
- *           Siobhan O’Dell
- *           Kent Wong
- *  Created On: 06/04/2020
- *  Last revision: 19/04/2020
- ********************************************/
+/************************** SENG513 Final Project ***************************
+       _____ ____  _      _               ____   ____   ____  _  __ _____
+     / ____/ __ \| |    | |        /\   |  _ \ / __ \ / __ \| |/ // ____|
+    | |   | |  | | |    | |       /  \  | |_) | |  | | |  | | ' /| (___
+    | |   | |  | | |    | |      / /\ \ |  _ <| |  | | |  | |  <  \___ \
+    | |___| |__| | |____| |____ / ____ \| |_) | |__| | |__| | . \ ____) |
+    \_____\____/|______|______/_/    \_|____/ \____/ \____/|_|\_|_____/
 
+            ______......-----~~~~~~~--..__   __..--~~~~~~~-----......______
+          //   Members:                   `V'                            \\
+        //        Jasmine Cronin          |           Ashley Millette    \\
+      //       Brandt Davis              |         Siobhan O’Dell        \\
+    //     Patrick Matchett             |        Kent Wong               \\
+  //_______......------~~~~~~~~--..__  | __..--~~~~~~~~-----......_______\\
+//_______..........------~~~~~~...__\ | /__...~~~~~~------........_______\\
+===================================\\|//===================================
+                                  `----`
+                          Created On: 06/04/2020
+                        Last revision: 19/04/2020
+****************************************************************************/
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -125,9 +134,11 @@ io.on('connection', async function(socket) {
     var adminChatrooms = {};
     for (var key in allChats) {
 
+      // Get users ids for the chat room list
         var user1 = allChats[key].first_participant_username;
         var user2 = allChats[key].second_participant_username;
 
+        // Build the admin chat room object
         var room = {
             name: user1 + " and " + user2,
             user1Id: user1,
@@ -135,6 +146,8 @@ io.on('connection', async function(socket) {
             id: allChats[key].chat_id,
             history: JSON.parse(allChats[key].chat_history)
         }
+
+        // Add the chat room to the chat room dictionary
         adminChatrooms[room.id] = room;
     }
 

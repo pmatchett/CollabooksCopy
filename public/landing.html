@@ -66,6 +66,11 @@
                 <span class="input-group-btn">
                   <button type="button" class="btn btn-primary btn-md" onclick="searchQuery()">Search</button>
                 </span>
+                <span class="input-group-btn">
+                  <div id="ffclear">
+                    <button type="button" class="btn btn-primary btn-md" onclick="fieldReset()">Clear</button>
+                  </div>
+                </span>
               </div>
 
               <div id="map"></div>
@@ -171,7 +176,7 @@
                     <th>Author</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody id="tb">
                 <!-- /******** Books Added Here ********/ -->
                 </tbody>
               </table>

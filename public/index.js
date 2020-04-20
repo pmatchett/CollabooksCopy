@@ -1,13 +1,23 @@
-/********** SENG513 Final Project **********
-*  Members: Jasmine Cronin
-*           Brandt Davis
-*           Patrick Matchett
-*           Ashley Millette
-*           Siobhan O’Dell
-*           Kent Wong
-*  Created On: 11/03/2020
-*  Last revision: 19/04/2020
-********************************************/
+/************************** SENG513 Final Project ***************************
+       _____ ____  _      _               ____   ____   ____  _  __ _____
+     / ____/ __ \| |    | |        /\   |  _ \ / __ \ / __ \| |/ // ____|
+    | |   | |  | | |    | |       /  \  | |_) | |  | | |  | | ' /| (___
+    | |   | |  | | |    | |      / /\ \ |  _ <| |  | | |  | |  <  \___ \
+    | |___| |__| | |____| |____ / ____ \| |_) | |__| | |__| | . \ ____) |
+    \_____\____/|______|______/_/    \_|____/ \____/ \____/|_|\_|_____/
+
+            ______......-----~~~~~~~--..__   __..--~~~~~~~-----......______
+          //   Members:                   `V'                            \\
+        //        Jasmine Cronin          |           Ashley Millette    \\
+      //       Brandt Davis              |         Siobhan O’Dell        \\
+    //     Patrick Matchett             |        Kent Wong               \\
+  //_______......------~~~~~~~~--..__  | __..--~~~~~~~~-----......_______\\
+//_______..........------~~~~~~...__\ | /__...~~~~~~------........_______\\
+===================================\\|//===================================
+                                  `----`
+                          Created On: 11/03/2020
+                        Last revision: 19/04/2020
+****************************************************************************/
 
 /*************Global Variables**************/
 let collabooksMap;
@@ -33,12 +43,11 @@ function initMap(){
     populateMap();
 }
 
-//on document load do
+//on document load, do these fucntions
 $(document).ready(function(){
   populateShelf();
   populateBooksAround();
   initMap();
-
 
   //check if admin, show admin tab if they are
   if (document.cookie.split(';').filter((item) => item.trim().startsWith('user_type=')).length) {
@@ -50,7 +59,6 @@ $(document).ready(function(){
         admin = false;
       }
   }
-
 });
 
 /************* Google maps functions ********/
@@ -330,6 +338,7 @@ async function removeBook(removeKey){
   populateShelf();
 }
 
+/**Add a book from the users bookshelf**/
 async function addBook(){
   // If a user's cookie exists, extract their user_id
   if (document.cookie.split(';').filter((item) => item.trim().startsWith('user_id=')).length) {
@@ -345,7 +354,7 @@ async function addBook(){
         return;
       }
       const allBooks = await apiGetBookTable();
-      //getting the next Id for the book, since the DB is kind of weird it has to be done this way
+      // Getting the next Id for the book, since the DB is kind of weird it has to be done this way
       let maxId = 0;
       for(let book of allBooks){
         if(parseInt(book.book_id) > maxId){
@@ -382,10 +391,12 @@ async function addBook(){
 
 /************* Chat Functions **************/
 
+/**Lend a book from the users bookshelf to the current chatrooms other user**/
 async function lendABook(){
-
+  // If there are books that can be lent
   if($("#lendBookDropdown option").length > 0){
 
+    // Get the information from the UI
     let bookToLendTitle = $("#lendBookDropdown option:selected" ).text();
     let bookToLend = $("#lendBookDropdown option:selected" ).val();
     let personWhoBorrows = $("#lendButton").val();
@@ -407,9 +418,10 @@ async function lendABook(){
 
 //***Returns the selected book back to the current user***
 async function returnABook(){
-
+  // If there are books that can be returned
   if($("#returnBookDropdown option").length > 0){
 
+    // Get the information from the UI
     let bookToReturnTitle = $("#returnBookDropdown option:selected" ).text();
     let bookToReturn = $("#returnBookDropdown option:selected" ).val();
 
@@ -536,6 +548,8 @@ $('input[type=search]').on('search', function () {
 });
 
 /************* Admin Functions **************/
+
+//**Checks if a user is banned or not**
 async function checkIfNotBanned(idToCheck)
 {
   const allUsers = await apiGetUserTable();
@@ -551,14 +565,15 @@ async function checkIfNotBanned(idToCheck)
   }
 }
 
+//**Ban/Unbans the User on the left**
 async function banUserA()
 {
   let idToBan = $(banFirstUser).val();
 
-  //if the user is not banned
+  // If the user is not banned
   if($('#banFirstUser').text().search("Unban") === -1){
 
-    //Change status in the DB
+    // Change status in the DB
     let updateuserrecord = { "tablename" : "user_table",
         "cell_d" : "status",
         "cell_v" : 'banned',
@@ -568,11 +583,11 @@ async function banUserA()
 
     await apiUpdateRecord(updateuserrecord);
 
-    //update the screen
+    // Update the screen
     $('#banFirstUser').text("Unban user_" + idToBan);
   }else{
 
-    //Change status in the DB
+    // Change status in the DB
     let updateuserrecord = { "tablename" : "user_table",
         "cell_d" : "status",
         "cell_v" : 'active',
@@ -582,19 +597,20 @@ async function banUserA()
 
     await apiUpdateRecord(updateuserrecord);
 
-    //update the screen
+    / Update the screen
     $('#banFirstUser').text("Ban user_" + idToBan);
   }
 }
 
+//**Ban/Unbans the User on the right**
 async function banUserB()
 {
   let idToBan = $(banSecondUser).val();
 
-  //if the user is not banned
+  // If the user is not banned
   if($('#banSecondUser').text().search("Unban") === -1){
 
-    //Change status in the DB
+    // Change status in the DB
     let updateuserrecord = { "tablename" : "user_table",
         "cell_d" : "status",
         "cell_v" : 'banned',
@@ -604,10 +620,10 @@ async function banUserB()
 
     await apiUpdateRecord(updateuserrecord);
 
-    //update the screen
+    // Update the screen
     $('#banSecondUser').text("Unban user_" + idToBan);
   }else{
-    //Change status in the DB
+    // Change status in the DB
     let updateuserrecord = { "tablename" : "user_table",
         "cell_d" : "status",
         "cell_v" : 'active',
@@ -617,7 +633,7 @@ async function banUserB()
 
     await apiUpdateRecord(updateuserrecord);
 
-    //update the screen
+    // Update the screen
     $('#banSecondUser').text("Ban user_" + idToBan);
   }
 }

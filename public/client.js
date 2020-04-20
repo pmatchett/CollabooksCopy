@@ -1,13 +1,23 @@
-/********** SENG513 Final Project **********
- *  Members: Jasmine Cronin
- *           Brandt Davis
- *           Patrick Matchett
- *           Ashley Millette
- *           Siobhan O’Dell
- *           Kent Wong
- *  Created On: 06/04/2020
- *  Last revision: 19/04/2020
- ********************************************/
+/************************** SENG513 Final Project ***************************
+       _____ ____  _      _               ____   ____   ____  _  __ _____
+     / ____/ __ \| |    | |        /\   |  _ \ / __ \ / __ \| |/ // ____|
+    | |   | |  | | |    | |       /  \  | |_) | |  | | |  | | ' /| (___
+    | |   | |  | | |    | |      / /\ \ |  _ <| |  | | |  | |  <  \___ \
+    | |___| |__| | |____| |____ / ____ \| |_) | |__| | |__| | . \ ____) |
+    \_____\____/|______|______/_/    \_|____/ \____/ \____/|_|\_|_____/
+
+            ______......-----~~~~~~~--..__   __..--~~~~~~~-----......______
+          //   Members:                   `V'                            \\
+        //        Jasmine Cronin          |           Ashley Millette    \\
+      //       Brandt Davis              |         Siobhan O’Dell        \\
+    //     Patrick Matchett             |        Kent Wong               \\
+  //_______......------~~~~~~~~--..__  | __..--~~~~~~~~-----......_______\\
+//_______..........------~~~~~~...__\ | /__...~~~~~~------........_______\\
+===================================\\|//===================================
+                                  `----`
+                          Created On: 06/04/2020
+                        Last revision: 19/04/2020
+****************************************************************************/
 
 $(function () {
 
@@ -92,33 +102,46 @@ $(function () {
         $('#messages li:last').append($('<div class="msg">').text(msg.text));
     }
 
+    // Render the all chat rooms to the admin
     socket.on('admin populate rooms',function(rms) {
         adminRooms = rms;
+
+        // Set the active room to the first room in the list
         activeAdminRoom = Object.keys(adminRooms)[0];
+
+        // Render message history for the active room
         adminRooms[activeAdminRoom].history.forEach(function(msg) {
             renderAdminMessage(msg);
         });
+
+        // Set the ids of all the html tags for the chat rooms
         for (var key in adminRooms) {
             $('#admin-chat-rooms').append($('<li class="list-group-item chat-room">').text(adminRooms[key].name)
                 .attr("id", adminRooms[key].id));
         }
+
+        // Renders a selection highlight on the active room, from Bootstrap
         $('#' + activeAdminRoom).addClass('active');
 
+        // Change the active room based on what the user clicks on
         $(".list-group-item").on("click", async function(){
             $(".list-group-item.active").removeClass('active');
             $(this).addClass('active');
             activeAdminRoom = $(".list-group-item.active").attr("id");
 
+            // Get the status of the user
             const statusU1 = await checkIfNotBanned((adminRooms[parseInt(activeAdminRoom)].user1Id).replace("user_",""));
             const statusU2 = await checkIfNotBanned((adminRooms[parseInt(activeAdminRoom)].user2Id).replace("user_",""));
 
+            // Change the button text based on if they are banned or not
             $('#banFirstUser').text( statusU1 + " " + adminRooms[parseInt(activeAdminRoom)].user1Id);
             $('#banSecondUser').text( statusU2 + " " + adminRooms[parseInt(activeAdminRoom)].user2Id);
 
-            //associate the users id as a value
+            // Associate the users id as a value
             $('#banFirstUser').val((adminRooms[parseInt(activeAdminRoom)].user1Id).replace("user_",""));
             $('#banSecondUser').val((adminRooms[parseInt(activeAdminRoom)].user2Id).replace("user_",""));
 
+            // Empty the message list and re-render with different history
             $('#adminMessages').empty();
             adminRooms[parseInt(activeAdminRoom)].history.forEach(function(msg) {
                 renderAdminMessage(msg);
@@ -126,6 +149,7 @@ $(function () {
         });
     });
 
+    // Render an admin message object
     function renderAdminMessage(msg) {
         $('#adminMessages').append($('<li class="list-group-item">').text(msg.timestamp));
         $('#adminMessages li:last').append($('<div class="name">').text(msg.name));

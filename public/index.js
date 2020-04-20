@@ -193,6 +193,11 @@ function initMarkers(){
                 if (val.toLowerCase().includes(searchword.toLowerCase() ) ) {
                   //console.log(val);
                   hideme = false;
+                  console.log(bookrecord);
+                    $('#booksidebar > tbody').append($('<tr>').html(
+                        "<td>" + bookrecord.title + "</td>" +
+                        "<td>" + bookrecord.author + " (" + bookrecord.distance + "km away)</td>"
+                    ));
                   //
                 } else {
                   //console.log(val+': this val does not have the search word');
@@ -212,7 +217,7 @@ function initMarkers(){
 
 
   return {
-    addUserMarker, addBookToUser, setInfoWindows, removeMarker, modifyBook, removeBook, clearMap, deleteMarkers,
+    addUserMarker, addBookToUser, setInfoWindows, removeMarker, modifyBook, removeBook, clearMap,
     setMapOnAll, clearMarkers, deleteMarkers, selectiveHide, addOwnLocation
   };
 }
@@ -537,15 +542,29 @@ async function populateBooksAround()
 
 function searchQuery(){
   let query = document.getElementById('searchInput').value;
+  //clear table
+  $('#tb').empty();
   // console.log(query);
   markers.selectiveHide(query);
 }
 
-// this function will be executed on click of X (clear button)
+// this function will be executed on click of X (clear button) - only for chrome/safari
 $('input[type=search]').on('search', function () {
   populateMap();
-
+  populateBooksAround();
 });
+// universal clear button (works on all browsers)
+function fieldReset(){
+    var fieldval = document.getElementById("searchInput");
+    //clear the table
+    $('#tb').empty();
+
+    if(fieldval){
+        fieldval.value = '';
+    }
+    populateMap();
+    populateBooksAround();
+}
 
 /************* Admin Functions **************/
 

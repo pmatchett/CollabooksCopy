@@ -478,7 +478,7 @@ async function populateBooksAround()
 {
   const allBooks = await apiGetBookTable();
   const allUsers = await apiGetUserTable();
-  
+
   var curr_lon = parseFloat((((document.cookie.split(';'))[1]).split('='))[1]);
   var curr_lat = parseFloat((((document.cookie.split(';'))[2]).split('='))[1]);
 
@@ -597,7 +597,7 @@ async function banUserA()
 
     await apiUpdateRecord(updateuserrecord);
 
-    / Update the screen
+    // Update the screen
     $('#banFirstUser').text("Ban user_" + idToBan);
   }
 }

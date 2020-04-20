@@ -85,6 +85,25 @@ function chatFunctions() {
 
     });
 
+    //when a new room is added to the list
+    socket.on("add room", function(rms){
+      Object.keys(rooms).push(rms);
+      // Set the active room to the newly added room
+      activeRoom = Object.keys(rooms)[rooms.length-1];
+
+      // Render message history for the active room
+      rooms[activeRoom].history.forEach(function(msg) {
+          renderMessage(msg);
+      });
+
+
+      $('#chat-rooms').append($('<li class="list-group-item chat-room">').text(rms.roomLabel)
+          .attr("id", rms.id));
+
+      // Renders a selection highlight on the active room, from Bootstrap
+      $('#' + activeRoom).addClass('active');
+    });
+
     // Render a chat message object
     function renderMessage(msg) {
         $('#messages').append($('<li class="list-group-item">').text(msg.timestamp));

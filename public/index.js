@@ -479,9 +479,9 @@ async function populateBooksAround()
   const allBooks = await apiGetBookTable();
   const allUsers = await apiGetUserTable();
 
-  /*HARDCODED LAT AND LON. GET FROM COOKIES TODO*/
-  const curr_lon = 50.93974967;
-  const curr_lat = -113.9596893;
+  console.log("COOKIE");
+  var curr_lon = parseFloat((((document.cookie.split(';'))[1]).split('='))[1]);
+  var curr_lat = parseFloat((((document.cookie.split(';'))[2]).split('='))[1]);
 
   //Only show 10 books alternatively allBooks.length
   for(let key = 0; key < allBooks.length; key++){

@@ -15,11 +15,11 @@ var format = require('pg-format');
 // should put these into an env
 // make sure to squash/commit to remove this credential history
 const pool = new Pool({
-    user: process.env.USER_NAME,
-    host: process.env.HOST_ADD,
-    database: process.env.DATABASE_NAME,
-    password: process.env.SECRET_PASS,
-    port: process.env.PORT_NUM,
+    user: "postgres",
+    host: "localhost",
+    database: "Collabboks", //made a typo when creating DB
+    password: "PostDBAccessCodes",
+    port: 5432,
 });
 
 // GET user by ID ; This needs tweaking
@@ -69,6 +69,17 @@ function getUserTable(request,response) {
         }
         // console.log(results);
         response.status(200).json(results.rows)
+    })
+}
+
+function getUserByEmail(request,response){
+  const req = request.body;
+  pool.query("SELECT * FROM user_table WHERE email = $1",[req.email],
+    (error, results) => {
+      if(error){
+        throw error
+      }
+      response.status(200).json(results.rows);
     })
 }
 
@@ -219,5 +230,6 @@ module.exports = {
     getARecord,
     delARecord,
     getUserLookUp,
-    addRecordChat
+    addRecordChat,
+    getUserByEmail
 };

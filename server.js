@@ -26,6 +26,7 @@ const db = require('./queries');
 const port = 3000;
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
+const path = require('path');
 
 var moment = require("moment");
 
@@ -47,9 +48,10 @@ app.use(
 
 // on a get request, return json
 // simple test localhost:3000/get
-app.get('/get', (request, response) => {
-    response.json({ info: 'postgres node api' })
-});
+//app.get('/get', (request, response) => {
+  //  response.json({ info: 'postgres node api' })
+//});
+
 
 // DATABASE API END POINTS
 // ADD AN END POINT HERE AND CORRESPONDING CALL IN PUBLIC/api.js
@@ -65,7 +67,57 @@ app.put('/tables/uprecord/', db.updateRecord);
 app.get('/tables/getrecord/', db.getARecord);
 app.delete('/tables/delrecord/', db.delARecord);
 app.get('/tables/useridlookup/', db.getUserLookUp);
+app.get('/tables/useremaillookup/', db.getUserByEmail);
 // end of API end points
+
+//login end point
+app.post('/login', loginHandler);
+
+//TODO: set up a method so that if no cookies always go to login screen, if cookies skip login screen
+//bellow is an example of testing for a cookie before sending the file
+/*app.get('/home', function(request, response) {
+	if (request.session.loggedin) {
+		response.send('Welcome back, ' + request.session.username + '!');
+	} else {
+		response.send('Please login to view this page!');
+	}
+	response.end();
+});*/
+
+//TODO: set a large random number instead of user id as the cookie
+async function loginHandler(request, response){
+  const req = request.body;
+  let users = await axiosapicall.apiGetUserEmail(req.email);
+  //found a user with the given email
+  if(users.length !== 0){
+    let user = users[0];
+    if(user.password === req.password){
+      if(user.user_status === 'a'){
+        //setting the cookies
+        response.cookie("user_id", user.user_id);
+        response.cookie("user_lat", user.user_lat);
+        response.cookie("user_lon", user.user_lon);
+        response.cookie("user_type", user.user_type);
+        let destination = "http://localhost:3000/landing.html";
+        response.status(200).json({"result" : "success", "location" : destination});
+        //will not work if using ajax
+        //response.redirect(302, '/landing.html');
+      }
+      //user is banned
+      else{
+        response.status(200).json({"result" : "banned"});
+      }
+    }
+    //invalid password
+    else{
+      response.status(200).json({"result" : "login failed"});
+    }
+  }
+  //no user with the given email
+  else{
+    response.status(200).json({"result":"login failed"});
+  }
+}
 
 io.on('connection', async function(socket) {
 

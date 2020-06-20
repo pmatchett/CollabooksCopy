@@ -62,6 +62,18 @@ async function apiAddRecordChatTable(record) {
     let res = await axios.post('http://localhost:3000/tables/addrecord/chat', params);
 }
 
+async function apiGetUserEmail(email){
+  let params = email;
+  let res = await axios({
+    method: 'get',
+    url: "http://localhost:3000/tables/useremaillookup/",
+    data: {
+      email: params
+    }
+  });
+  return res.data;
+}
+
 // only for testing
 async function testBarrage(){
     //     apiUpdateRecord(
@@ -98,5 +110,6 @@ module.exports = {
     apiGetChatTable,
     apiUpdateRecord,
     apiGetUserLookUp,
-    apiAddRecordChatTable
+    apiAddRecordChatTable,
+    apiGetUserEmail
 };

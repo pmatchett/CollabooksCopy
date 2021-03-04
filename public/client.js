@@ -19,7 +19,7 @@
                         Last revision: 19/04/2020
 ****************************************************************************/
 
-function chatFunctions() {
+function socketSetup() {
 
     var socket = io();
     var activeRoom; // ID of active rendered chat room
@@ -58,7 +58,6 @@ function chatFunctions() {
     // Render the given list of chat rooms and chat message history
     socket.on('populate rooms', function(rms) {
         rooms = rms;
-
         // Set the active room to the first room in the list
         activeRoom = Object.keys(rooms)[0];
 
@@ -199,9 +198,5 @@ function chatFunctions() {
         rooms = rms;
     });
 
-    function addRoom(currentUser, otherUser){
-          socket.emit("createRoom", {userOne:currentUser, userTwo:otherUser});
-    }
-
-    return {addRoom};
+    return socket;
 }

@@ -27,6 +27,8 @@ const port = 3000;
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const path = require('path');
+const cookieParser = require("cookie-parser");
+app.use(cookieParser());
 
 var moment = require("moment");
 
@@ -68,21 +70,37 @@ app.get('/tables/getrecord/', db.getARecord);
 app.delete('/tables/delrecord/', db.delARecord);
 app.get('/tables/useridlookup/', db.getUserLookUp);
 app.get('/tables/useremaillookup/', db.getUserByEmail);
+app.get('/tables/booktitle/', db.getBookTitle);
+app.get('/tables/bookauthor/', db.getBookAuthor)
 // end of API end points
 
 //login end point
 app.post('/login', loginHandler);
 
+//setup list of currently logged in users
+//TODO: add method of detecting users who disconnect and remove the id from the list (maybe have a timeout if no logout request sent)
+let activeUsers = [];
+
+async function loggedIn(userId){
+  for(id of activeUsers){
+    if(id === userId){
+      return true;
+    }
+  }
+  return false;
+}
+
 //TODO: set up a method so that if no cookies always go to login screen, if cookies skip login screen
 //bellow is an example of testing for a cookie before sending the file
-/*app.get('/home', function(request, response) {
-	if (request.session.loggedin) {
-		response.send('Welcome back, ' + request.session.username + '!');
+app.get('/landing.html', async function(request, response) {
+	if (await loggedIn(parseInt(request.cookies.user_id))) {
+    console.log("they good");
+		response.sendFile(path.join(__dirname + "/protected/landing.html"));
 	} else {
-		response.send('Please login to view this page!');
+    console.log("to the login");
+		response.sendFile(path.join(__dirname + "/public/index.html"));
 	}
-	response.end();
-});*/
+});
 
 //TODO: set a large random number instead of user id as the cookie
 async function loginHandler(request, response){
@@ -98,6 +116,7 @@ async function loginHandler(request, response){
         response.cookie("user_lat", user.user_lat);
         response.cookie("user_lon", user.user_lon);
         response.cookie("user_type", user.user_type);
+        activeUsers.push(user.user_id);
         let destination = "http://localhost:3000/landing.html";
         response.status(200).json({"result" : "success", "location" : destination});
         //will not work if using ajax
@@ -133,10 +152,11 @@ io.on('connection', async function(socket) {
     // Get the table containing chat histories
     const allChats = await axiosapicall.apiGetChatTable();
 
+    //TODO: use DB queries to find chats for the active user
     for (var key in allChats) {
 
-        var user1 = allChats[key].first_participant_username;
-        var user2 = allChats[key].second_participant_username;
+        var user1 = allChats[key].firstp_id;
+        var user2 = allChats[key].secondp_id;
 
         var roomname; // Name of chat room to be displayed
 
@@ -178,17 +198,20 @@ io.on('connection', async function(socket) {
     for (var key in chatrooms) {
         socket.join(chatrooms[key].id);
     }
-
-    // Tell the client to render the list of chat rooms and their message history
-    socket.emit('populate rooms', chatrooms);
+    //if the user has atleast 1 chat send the message
+    if(chatrooms.length > 0){
+      // Tell the client to render the list of chat rooms and their message history
+      socket.emit('populate rooms', chatrooms);
+    }
 
     //---ADMIN---
+    //TODO: make it so this is only sent to admins, not everyone and then hidden on client side
     var adminChatrooms = {};
     for (var key in allChats) {
 
       // Get users ids for the chat room list
-        var user1 = allChats[key].first_participant_username;
-        var user2 = allChats[key].second_participant_username;
+        var user1 = allChats[key].firstp_id;
+        var user2 = allChats[key].secondp_id;
 
         // Build the admin chat room object
         var room = {
@@ -202,8 +225,10 @@ io.on('connection', async function(socket) {
         // Add the chat room to the chat room dictionary
         adminChatrooms[room.id] = room;
     }
-
-    socket.emit('admin populate rooms', adminChatrooms);
+    //if there are any chatrooms to be sent to the admins
+    if(adminChatrooms.length > 0){
+      socket.emit('admin populate rooms', adminChatrooms);
+    }
     //^^^ADMIN^^^
 
     // When user submits text through the chat box
@@ -274,8 +299,8 @@ io.on('connection', async function(socket) {
       //if a chat already exists for these users do not create a new one
       nextId = 0;
       for(chat of allChats){
-        if((chat.first_participant_username === user1 && chat.second_participant_username === user2)||
-            (chat.first_participant_username === user2 && chat.second_participant_username === user1)){
+        if((chat.firstp_id === user1 && chat.secondp_id === user2)||
+            (chat.firstp_id === user2 && chat.secondp_id === user1)){
               return;
         }
         if(parseInt(chat.chat_id)>nextId){
@@ -342,5 +367,5 @@ io.on('connection', async function(socket) {
 
 // NOT app.listen
 http.listen(port, () => {
-    console.log(`App running on ${port}.`)
+    console.log(`App running on ${port}.`);
 });

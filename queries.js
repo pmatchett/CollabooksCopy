@@ -50,6 +50,32 @@ function getBookTable(request,response) {
     })
 }
 
+//should be working now
+function getBookTitle(request, response){
+  const req = request.query;
+  let title = req.title;
+  let queryData = "%"+title+"%";
+  pool.query("SELECT * FROM book_table WHERE title ILIKE $1", [queryData], (error, results)=>{
+    if (error){
+      throw error;
+    }
+    response.status(200).json(results.rows);
+  });
+}
+
+//also working
+function getBookAuthor(request, response){
+  const req = request.query;
+  let author = req.author;
+  let queryData = "%"+author+"%";
+  pool.query("SELECT * FROM book_table WHERE author ILIKE $1", [queryData], (error, results)=>{
+    if (error){
+      throw error;
+    }
+    response.status(200).json(results.rows);
+  });
+}
+
 // currently works
 function getChatTable(request,response) {
     pool.query('SELECT * FROM chat_table ORDER BY chat_id ASC', (error, results) => {
@@ -231,5 +257,7 @@ module.exports = {
     delARecord,
     getUserLookUp,
     addRecordChat,
-    getUserByEmail
+    getUserByEmail,
+    getBookTitle,
+    getBookAuthor
 };

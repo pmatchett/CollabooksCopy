@@ -32,10 +32,18 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <!-- Our CSS -->
     <link rel="stylesheet" type="text/css" href="style.css" >
-    <!-- Our Javascript -->
-    <script src="index.js"></script>
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <!-- NodeJS server-side code -->
+    <script src="/socket.io/socket.io.js"></script>
     <!-- Database API code -->
     <script src="ajaxapi.js"></script>
+    <!-- Our client side code -->
+    <script src="client.js"></script>
+    <!-- Our Javascript -->
+    <script src="index.js"></script>
     <!-- Google maps API -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA0jKdGvYL9u06FRU55gBhpBL2r9CR9WNw&callback=initMap" async defer></script>
   </head>
@@ -58,6 +66,7 @@
             <li><a href="#">Requests</a></li>
             <li><a href="#" style="display:none;">Admin</a></li>
           </ul>
+          <a href="#" type="button" class="btn navbar-btn pull-right" id="logout">Logout</a>
         </div>
       </div>
     </nav>
@@ -80,6 +89,10 @@
                 <span class="input-group-btn">
                   <button type="button" class="btn btn-primary btn-md" onclick="searchQuery()">Search</button>
                 </span>
+                <select class="form-control" id="searchDropdown">
+                  <option>By Title</option>
+                  <option>By Author</option>
+                </select>
                 <span class="input-group-btn">
                   <div id="ffclear">
                     <button type="button" class="btn btn-primary btn-md" onclick="fieldReset()">Clear</button>
@@ -284,17 +297,6 @@
       </div>
     </div>
 
-    <!-- jQuery library -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <!-- Latest compiled JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-    <!-- NodeJS server-side code -->
-    <script src="/socket.io/socket.io.js"></script>
-    <!-- Database API code -->
-    <script src="ajaxapi.js"></script>
-    <!-- Client-side code -->
-    <script src="client.js"></script>
-    <!-- Our Javascript -->
-    <script src="index.js"></script>
+
   </body>
 </html>

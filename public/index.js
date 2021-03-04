@@ -16,14 +16,14 @@
 ===================================\\|//===================================
                                   `----`
                           Created On: 11/03/2020
-                        Last revision: 19/04/2020
+                        Last revision: 29/06/2020
 ****************************************************************************/
 
 /*************Global Variables**************/
 let collabooksMap;
 let markers = initMarkers();
 let admin = false;
-let chat = chatFunctions();
+let socket = socketSetup();
 
 /************* Initializations **************/
 function initMap(){
@@ -48,7 +48,7 @@ function initMap(){
 $(document).ready(function(){
   populateShelf();
   populateBooksAround();
-  initMap();
+  //initMap();
 
   //check if admin, show admin tab if they are
   if (document.cookie.split(';').filter((item) => item.trim().startsWith('user_type=')).length) {
@@ -107,7 +107,7 @@ function initMarkers(){
       infoString = infoString + "<hr><b>Title: </b>"+currentBook.title+"<br><b>Author: </b>"+currentBook.author
                               +"<br><b>Genre: </b>"+currentBook.genre;
       //Only adding the button to rent a book if it is currently available
-      if(currentBook.borrowed_by === "null"){
+      if(currentBook.borrowed_by === null){
         //when the button is pressed it will call the function loanHandler with the book identifiers as an argument
         infoString = infoString + "<br><b>Availability:</b> Available"+ "<br><button type='button' onclick='loanHandler("
                                 +currentBook.owner_id+")' class='loanButton'>Ask to loan</button>";
@@ -191,6 +191,7 @@ function initMarkers(){
               //console.log(typeof bookrecordvalues)
               //console.log(bookrecordvalues);
               for (const val of bookrecordvalues) {
+                //TODO: getting error saying toLowerCase is not a function
                 if (val.toLowerCase().includes(searchword.toLowerCase() ) ) {
                   //console.log(val);
                   hideme = false;
@@ -223,6 +224,94 @@ function initMarkers(){
   };
 }
 
+/************* Main Page Functions **************/
+
+async function populateMap()
+{
+  markers.deleteMarkers();
+  let userId = -1;
+  if (document.cookie.split(';').filter((item) => item.trim().startsWith('user_id')).length) {
+    userId = document.cookie.replace(/(?:(?:^|.*;\s*)user_id\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+    userId = parseInt(userId);
+  }
+  const users = await apiGetUserTable();
+
+
+  let bannedUsers = [];
+
+  for(let userToAdd of users){
+    // un-comment to see the record structure
+    //console.log(userToAdd);
+    //do not add the user if they are banned
+    if(userToAdd.user_status === "b"){
+      bannedUsers.push(userToAdd.user_id);
+      continue;
+    }
+    //do not add the currently active user to the map
+    if(userToAdd.user_id === parseInt(userId)){
+      markers.addOwnLocation(userToAdd);
+    }
+    else{
+      markers.addUserMarker(userToAdd);
+    }
+  }
+
+  const books = await apiGetBookTable();
+  for(let bookToAdd of books){
+    let banned = false;
+    //check if the user that this book belongs to is banned
+    for(let bannedUserId of bannedUsers){
+      if(parseInt(bookToAdd.owner_id) === bannedUserId){
+        banned = true;
+      }
+    }
+    if(bookToAdd.owner_id === userId || banned){
+      continue
+    }
+    markers.addBookToUser(bookToAdd.owner_id, bookToAdd);
+  }
+
+  markers.setInfoWindows();
+}
+
+async function searchQuery(){
+  let query = document.getElementById('searchInput').value;
+  let queryType = $("#searchDropdown").val();
+  console.log(queryType);
+  //clear table
+  $('#tb').empty();
+  let searchBooks;
+  if(queryType === "By Title"){
+    const searchBooks = await apiGetBookTitle(query);
+  }
+  else if(queryType === "By Author"){
+    const searchBooks = await apiGetBookAuthor(query);
+  }
+
+  markers.clearMarkers();
+  //TODO: write function to show only markers with the searched books and only those books
+  // console.log(query);
+  //markers.selectiveHide(query);
+}
+
+// this function will be executed on click of X (clear button) - only for chrome/safari
+$('input[type=search]').on('search', function () {
+  populateMap();
+  populateBooksAround();
+});
+// universal clear button (works on all browsers)
+function fieldReset(){
+    var fieldval = document.getElementById("searchInput");
+    //clear the table
+    $('#tb').empty();
+
+    if(fieldval){
+        fieldval.value = '';
+    }
+    populateMap();
+    populateBooksAround();
+}
+
 /************* Event Handling functions *****/
 //this function currently has placeholder functionality
 function loanHandler(identifier){
@@ -233,7 +322,7 @@ function loanHandler(identifier){
     $('.BookshelfPage').hide();
     $('.RequestsPage').show();
     $('.AdminPage').hide();
-    chat.addRoom(currentId, ownerId);
+    socket.emit("createRoom", {userOne:currentId, userTwo:ownerId});
   }
 }
 
@@ -269,6 +358,22 @@ $(document).on('click','.nav li', function (e) {
     }
 
 } );
+/** Logout button handler **/
+$(document).on("click", "#logout", function(e){
+  console.log("loging out");
+  //deleting the cookies from the current user
+  //TODO: date.toString() not correctly converting date to string style document.cookie expects,
+  //  try to change to use current date instead f fixed date so no system time change shenanigans
+  //let date = Date.now();
+  //date = date.toString();
+  //console.log(date);
+  document.cookie = "user_id=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+  document.cookie = "user_lat=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+  document.cookie = "user_lon=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+  document.cookie = "user_type=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+  window.location.assign("http://localhost:3000/index.html");
+
+});
 
 /************* Bookshelf Functions **************/
 
@@ -453,52 +558,7 @@ async function returnABook(){
   }
 }
 
-/************* Main Page Functions **************/
 
-async function populateMap()
-{
-  markers.deleteMarkers();
-  let userId = -1;
-  if (document.cookie.split(';').filter((item) => item.trim().startsWith('user_id')).length) {
-    userId = document.cookie.replace(/(?:(?:^|.*;\s*)user_id\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-  }
-  const users = await apiGetUserTable();
-
-  let bannedUsers = [];
-
-  for(let userToAdd of users){
-    // un-comment to see the record structure
-    //console.log(userToAdd);
-    //do not add the user if they are banned
-    if(userToAdd.status === "banned"){
-      bannedUsers.push(userToAdd.user_id);
-      continue;
-    }
-    //do not add the currently active user to the map
-    if(userToAdd.user_id === parseInt(userId)){
-      markers.addOwnLocation(userToAdd);
-    }
-    else{
-      markers.addUserMarker(userToAdd);
-    }
-  }
-  const books = await apiGetBookTable();
-  for(let bookToAdd of books){
-    let banned = false;
-    //check if the user that this book belongs to is banned
-    for(let bannedUserId of bannedUsers){
-      if(parseInt(bookToAdd.owner_id) === bannedUserId){
-        banned = true;
-      }
-    }
-    if(bookToAdd.owner_id === userId || banned){
-      continue
-    }
-    markers.addBookToUser(bookToAdd.owner_id, bookToAdd);
-  }
-
-  markers.setInfoWindows();
-}
 
 async function populateBooksAround()
 {
@@ -564,31 +624,7 @@ async function populateBooksAround()
   }
 }
 
-function searchQuery(){
-  let query = document.getElementById('searchInput').value;
-  //clear table
-  $('#tb').empty();
-  // console.log(query);
-  markers.selectiveHide(query);
-}
 
-// this function will be executed on click of X (clear button) - only for chrome/safari
-$('input[type=search]').on('search', function () {
-  populateMap();
-  populateBooksAround();
-});
-// universal clear button (works on all browsers)
-function fieldReset(){
-    var fieldval = document.getElementById("searchInput");
-    //clear the table
-    $('#tb').empty();
-
-    if(fieldval){
-        fieldval.value = '';
-    }
-    populateMap();
-    populateBooksAround();
-}
 
 /************* Admin Functions **************/
 

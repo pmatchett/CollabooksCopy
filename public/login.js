@@ -44,50 +44,6 @@ $(document).ready(function(){
             console.log(destination);
             window.location.replace(destination);
           }
-
-
-
-          /*let record = await getRecord(inputEmail);
-
-          // Determines if the record with the input email exists or not
-          if(record === false){
-              loginFailed();
-              return;
-          }
-
-          // It is probably terrible style to store this here
-          let userPass = record.password;  // Used for authentication
-          let userStatus = record.user_status;  // Used for authentication
-
-          let userID = record.user_id;     // Used for cookie
-          let userLat = record.user_lon;   // Used for cookie
-          let userLon = record.user_lat;   // Used for cookie
-          let userType = record.user_type; // Used for cookie
-
-
-          // Check if password matches email
-          if(userPass !== inputPass){
-              console.log("password failed");
-              loginFailed();
-              return;
-          }
-          // Check if user is blocked
-          else if(userStatus !== 'a'){
-              console.log("active failed");
-              loginFailed();
-              return;
-          }
-
-          // **** BAD CONVENTION ****
-          // on my local system, I renamed login.html to index.html
-          // and then I changed index.html to index1.html
-          // ************************
-          else {
-              $('#loginAlertMessage').text("Login was successful!\nPlease click the \"Sign In\" button again to complete sign in");
-              $('#loginAlertDialog').modal('show');
-              await buildCookies(userID, userLat, userLon, userType);
-              newPage.setAttribute("href", "landing.html");
-          }*/
   });
 
   async function sendLoginRequest(email, pass){
@@ -125,26 +81,4 @@ $(document).ready(function(){
     $("#passwordInput").val("");
   }
 
-  /*async function getRecord(inputEmail) {
-      let get_user_record = {
-        tablename: 'user_table',
-        column_name: 'email',
-        value: inputEmail
-      };
-
-      let result = await apiGetRecord(get_user_record);
-      console.log("got data from DB");
-
-      if(result.length === 0){
-          return false;
-      }
-      return result[0];
-  }*/
-
-  /*async function buildCookies(userID, userLat, userLon, userType){
-      document.cookie = "user_id=" + userID + ";";
-      document.cookie = "user_lat=" + userLat + ";";
-      document.cookie = "user_lon=" + userLon + ";";
-      document.cookie = "user_type=" + userType + ";";
-  }*/
 });

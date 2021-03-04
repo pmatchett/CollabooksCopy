@@ -54,6 +54,39 @@ async function apiGetBookTable() {
     )
 }
 
+async function apiGetBookTitle(title){
+  let titleData = {"title":title};
+  return(
+      $.ajax({
+          url: 'http://localhost:3000/tables/booktitle',
+          type: "GET",
+          dataType: "json",
+          data: titleData,
+          success: function (results) {
+          },
+          fail: function () {
+              console.log("Encountered an error")
+          }
+      })
+  )
+}
+
+async function apiGetBookAuthor(author){
+  return(
+      $.ajax({
+          url: 'http://localhost:3000/tables/bookauthor',
+          type: "GET",
+          dataType: "json",
+          data: {"author":author},
+          success: function (results) {
+          },
+          fail: function () {
+              console.log("Encountered an error")
+          }
+      })
+  )
+}
+
 async function apiGetChatTable() {
     console.log('api GetChatTable called, performing GET request');
     return(

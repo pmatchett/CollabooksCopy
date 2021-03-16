@@ -367,6 +367,7 @@ $(document).on("click", "#logout", function(e){
   //let date = Date.now();
   //date = date.toString();
   //console.log(date);
+  //TODO: Notify server that user has logged out
   document.cookie = "user_id=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
   document.cookie = "user_lat=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
   document.cookie = "user_lon=;expires=Thu, 01 Jan 1970 00:00:00 GMT";

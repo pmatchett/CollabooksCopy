@@ -17,7 +17,7 @@ var format = require('pg-format');
 const pool = new Pool({
     user: "postgres",
     host: "localhost",
-    database: "Collabboks", //made a typo when creating DB
+    database: "Collabooks",
     password: "PostDBAccessCodes",
     port: 5432,
 });

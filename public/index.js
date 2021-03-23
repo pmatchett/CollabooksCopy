@@ -69,7 +69,7 @@ function initMarkers(){
   //list of markers, needed to keep track of them
   let markers = [];
   function addUserMarker(user){
-    let markerPosition = {lat:user.user_lon, lng:user.user_lat};
+    let markerPosition = {lat:user.user_lat, lng:user.user_lon};
     let marker = new google.maps.Marker({position:markerPosition, map:collabooksMap, icon: bookIcon});
     //This string will change once we know more about what information we want to show
     let userInfo = "<b>User Id:</b> " + user.user_id;
@@ -81,7 +81,7 @@ function initMarkers(){
   }
 
   function addOwnLocation(user){
-    let markerPosition = {lat:user.user_lon, lng:user.user_lat};
+    let markerPosition = {lat:user.user_lat, lng:user.user_lon};
     let marker = new google.maps.Marker({position:markerPosition, map:collabooksMap});
     //This string will change once we know more about what information we want to show
     let userInfo = "<h3>Your Location</h3>";
@@ -228,6 +228,7 @@ function initMarkers(){
 
 async function populateMap()
 {
+  console.log("running populateMap");
   markers.deleteMarkers();
   let userId = -1;
   if (document.cookie.split(';').filter((item) => item.trim().startsWith('user_id')).length) {
@@ -235,6 +236,8 @@ async function populateMap()
     userId = parseInt(userId);
   }
   const users = await apiGetUserTable();
+
+  console.log(users);
 
 
   let bannedUsers = [];
@@ -252,6 +255,7 @@ async function populateMap()
       markers.addOwnLocation(userToAdd);
     }
     else{
+      console.log("adding marker");
       markers.addUserMarker(userToAdd);
     }
   }
@@ -322,6 +326,8 @@ function loanHandler(identifier){
     $('.BookshelfPage').hide();
     $('.RequestsPage').show();
     $('.AdminPage').hide();
+    //TODO: set navbar for requests to active (this method gives active to the entire requests page)
+    //$('.RequestsPage').addClass('active').siblings().removeClass('active');
     socket.emit("createRoom", {userOne:currentId, userTwo:ownerId});
   }
 }

@@ -1,0 +1,5 @@
+Modify DB queries to be more specific to use (ie don't send password when populating the map (or ever)) (leftover from time crunch to finish project)
+setup a .env for db access and put it in a gitignore to hide db access info
+setup map to be more responsive (book added or changed immediately change the map)
+Notify server when a user logs out
+Fix bug where socket fails when accessing request page from the ask to loan button

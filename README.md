@@ -1,6 +1,9 @@
 # SENG513
+
+/*************************Personal Version of Final Project of experimentation/ practice *******/
+
 /************************** SENG513 Final Project ***************************
- hosted: https://github.com/kentwongg/SENG513
+
  
 Members:                   
 * Jasmine Cronin

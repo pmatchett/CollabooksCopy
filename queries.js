@@ -147,15 +147,15 @@ function addRecordChat(request, response) {
     //console.log(request);
     const rec = request.body;
     //console.log(rec);
-
-    pool.query('INSERT INTO chat_table VALUES ($1, $2, $3, $4)',
-        [rec.chatid, rec.firstpname, rec.secondpname, rec.hist],
+    //return the id of the chat that was just created
+    pool.query('INSERT INTO chat_table(firstp_id, secondp_id, chat_history) VALUES ($1, $2, $3) RETURNING chat_id',
+        [rec.firstpname, rec.secondpname, rec.hist],
         (error, results) => {
             if (error) {
                 throw error
             }
             // console.log(results);
-            response.status(201).send('Row added')
+            response.status(200).json(results.rows)
         })
 }
 

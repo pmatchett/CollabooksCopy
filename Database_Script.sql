@@ -79,7 +79,7 @@ CREATE TABLE public.chat_table (
     chat_id integer NOT NULL,
     firstp_id integer NOT NULL,
     secondp_id integer NOT NULL,
-    chat_history character varying(100)[] NOT NULL
+    chat_history text NOT NULL
 );
 
 

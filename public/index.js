@@ -321,7 +321,8 @@ function fieldReset(){
 function loanHandler(identifier){
   if (document.cookie.split(';').filter((item) => item.trim().startsWith('user_id')).length) {
     let ownerId = identifier;
-    let currentId = document.cookie.replace(/(?:(?:^|.*;\s*)user_id\s*\=\s*([^;]*).*$)|^.*$/, "$1");;
+    let currentId = document.cookie.replace(/(?:(?:^|.*;\s*)user_id\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+    currentId = parseInt(currentId);
     $('.HomePage').hide();
     $('.BookshelfPage').hide();
     $('.RequestsPage').show();

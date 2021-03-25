@@ -159,23 +159,26 @@ io.on('connection', async function(socket) {
         var user2 = allChats[key].secondp_id;
 
         var roomname; // Name of chat room to be displayed
+        let userid;
 
         // Get all chats that the current user has participated in
         if (username === user1) {
             roomname = user2;
+            // Get user ids for user table
+            userid = user2;
         } else if (username === user2) {
             roomname = user1;
+            // Get user ids for user table
+            userid = user1;
         } else {
             continue;
         }
 
-        // Get user ids for user table
-        var userid = roomname.substring(5);
+
+        // Get user's real name for the chat room list
         var record = {
             "user_id_value" : userid
         }
-
-        // Get user's real name for the chat room list
         var result = await axiosapicall.apiGetUserLookUp(record);
         let firstname = result[0].first_name;
         let lastname = result[0].last_name;
@@ -191,7 +194,7 @@ io.on('connection', async function(socket) {
         }
 
         // Add the chat room to the chat room dictionary
-        chatrooms[room.id] = room;
+        chatrooms[allChats[key].chat_id] = room;
     }
 
     // Join the user to all their chats
@@ -223,7 +226,7 @@ io.on('connection', async function(socket) {
         }
 
         // Add the chat room to the chat room dictionary
-        adminChatrooms[room.id] = room;
+        adminChatrooms[allChats[key].chat_id] = room;
     }
     //if there are any chatrooms to be sent to the admins
     if(adminChatrooms.length > 0){
@@ -237,7 +240,7 @@ io.on('connection', async function(socket) {
         var momentTimestamp = moment().format("h:mm:ss a");
 
         // Get real name of user for message rendering
-        var userid = username.substring(5);
+        var userid = username;
         var record = {
             "user_id_value" : userid
         }
@@ -294,21 +297,15 @@ io.on('connection', async function(socket) {
 
     //when a request for a new chat room is made
     socket.on("createRoom", async function(users){
-      user1 = "user_"+users.userOne;
-      user2 = "user_"+users.userTwo;
+      user1 = users.userOne;
+      user2 = users.userTwo;
       //if a chat already exists for these users do not create a new one
-      nextId = 0;
       for(chat of allChats){
         if((chat.firstp_id === user1 && chat.secondp_id === user2)||
             (chat.firstp_id === user2 && chat.secondp_id === user1)){
               return;
         }
-        if(parseInt(chat.chat_id)>nextId){
-          nextId = parseInt(chat.chat_id);
-        }
       }
-      //getting the next id
-      nextId = nextId + 1;
       //creating the new chat
       let momentTimestamp = moment().format("h:mm:ss a");
       let firstMessage = [{
@@ -319,21 +316,22 @@ io.on('connection', async function(socket) {
       }];
       let messageToSend = JSON.stringify(firstMessage);
       let newChat = {
-        "chatid":nextId,
         "firstpname":user1,
         "secondpname":user2,
         "hist": messageToSend
       };
       console.log("adding a new chat");
       console.log(newChat);
-      axiosapicall.apiAddRecordChatTable(newChat);
-      updateChatList(nextId, user2, messageToSend);
+      let newId = await axiosapicall.apiAddRecordChatTable(newChat);
+      newId = newId.chat_id;
+      console.log(newId);
+      updateChatList(newId, user2, messageToSend);
     });
 
     async function updateChatList(chatId, secondUser, chatHistory){
       var roomname = secondUser;
       // Get user ids for user table
-      var userid = roomname.substring(5);
+      var userid = roomname;
       var record = {
           "user_id_value" : userid
       }

@@ -60,6 +60,7 @@ async function apiGetUserLookUp(userid){
 async function apiAddRecordChatTable(record) {
     params = record;
     let res = await axios.post('http://localhost:3000/tables/addrecord/chat', params);
+    return res.data;
 }
 
 async function apiGetUserEmail(email){

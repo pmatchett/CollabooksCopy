@@ -1,5 +1,10 @@
-Modify DB queries to be more specific to use (ie don't send password when populating the map (or ever)) (leftover from time crunch to finish project)
+Modify DB queries to be more specific to use (ie don't send password when populating the map (or ever)) (leftover from time crunch to finish projectImprove search function to actually search the DB and not just the local stuff (maybe not necessary if properly updating map in real time works first))
 setup a .env for db access and put it in a gitignore to hide db access info
 setup map to be more responsive (book added or changed immediately change the map)
 Notify server when a user logs out
 Fix bug where socket fails when accessing request page from the ask to loan button
+Improve search function to actually search the DB and not just the local stuff (maybe not necessary if properly updating map in real time works first)
+Create user functionality
+improve Admin ban/monitoring functionality
+Convert to TypeScript
+If a user goes to the login with the correct cookies bring them to the landing page

@@ -14,12 +14,13 @@ var format = require('pg-format');
 
 // should put these into an env
 // make sure to squash/commit to remove this credential history
-const pool = new Pool({
-    user: "postgres",
-    host: "localhost",
-    database: "Collabooks",
-    password: "PostDBAccessCodes",
-    port: 5432,
+const pool = new Pool(
+  {
+    user: process.env.PGUSER,
+    host: process.env.HOST_ADD,
+    database: process.env.DATABASE_NAME,
+    password: process.env.SECRET_PASS,
+    port: process.env.PORT_NUM,
 });
 
 // GET user by ID ; This needs tweaking

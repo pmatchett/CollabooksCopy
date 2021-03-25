@@ -111,7 +111,7 @@ CREATE TABLE public.user_table (
     password character varying(30) NOT NULL,
     user_lon double precision NOT NULL,
     user_lat double precision NOT NULL,
-    user_type "char" NOT NULL,
+    user_type character varying(30) NOT NULL,
     user_status "char" NOT NULL,
     first_name character varying(30) NOT NULL,
     last_name character varying(30) NOT NULL

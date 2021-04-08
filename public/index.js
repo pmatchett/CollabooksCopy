@@ -228,7 +228,6 @@ function initMarkers(){
 
 async function populateMap()
 {
-  console.log("running populateMap");
   markers.deleteMarkers();
   let userId = -1;
   if (document.cookie.split(';').filter((item) => item.trim().startsWith('user_id')).length) {
@@ -236,8 +235,6 @@ async function populateMap()
     userId = parseInt(userId);
   }
   const users = await apiGetUserTable();
-
-  console.log(users);
 
 
   let bannedUsers = [];
@@ -255,7 +252,6 @@ async function populateMap()
       markers.addOwnLocation(userToAdd);
     }
     else{
-      console.log("adding marker");
       markers.addUserMarker(userToAdd);
     }
   }

@@ -24,3 +24,5 @@ If a user goes to the login with the correct cookies bring them to the landing p
 Hide google maps API key in .env
 
 Improve DB queries to be done by postgres instead of getting all data then using a for loop (such as in server.js when getting all the active chats for a user)
+
+Fix Logout to actually work

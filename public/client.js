@@ -58,6 +58,7 @@ function socketSetup() {
     // Render the given list of chat rooms and chat message history
     socket.on('populate rooms', function(rms) {
         rooms = rms;
+        console.log(rooms);
         // Set the active room to the first room in the list
         activeRoom = Object.keys(rooms)[0];
 

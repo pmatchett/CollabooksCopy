@@ -141,97 +141,100 @@ async function loginHandler(request, response){
 io.on('connection', async function(socket) {
 
     // To build the chat history for the current user
-    var username = "user_";
-    var chatrooms = {};
-
-    // Get the user_id from the client's cookie and create the username
-    socket.on('login', async function(userID) {
-        username += userID;
-    });
-
+    var username = -1;
+    var chatrooms = [];
     // Get the table containing chat histories
     const allChats = await axiosapicall.apiGetChatTable();
 
-    //TODO: use DB queries to find chats for the active user
-    for (var key in allChats) {
+    // Get the user_id from the client's cookie and create the username
+    socket.on('login', async function(userID) {
+        username = parseInt(userID);
 
-        var user1 = allChats[key].firstp_id;
-        var user2 = allChats[key].secondp_id;
+        //TODO: use DB queries to find chats for the active user
+        for (var key in allChats) {
 
-        var roomname; // Name of chat room to be displayed
-        let userid;
+            var user1 = allChats[key].firstp_id;
+            var user2 = allChats[key].secondp_id;
 
-        // Get all chats that the current user has participated in
-        if (username === user1) {
-            roomname = user2;
-            // Get user ids for user table
-            userid = user2;
-        } else if (username === user2) {
-            roomname = user1;
-            // Get user ids for user table
-            userid = user1;
-        } else {
-            continue;
+            var roomname; // Name of chat room to be displayed
+            let userid;
+
+            // Get all chats that the current user has participated in
+            if (username === user1) {
+                roomname = user2;
+                // Get user ids for user table
+                userid = user2;
+            } else if (username === user2) {
+                roomname = user1;
+                // Get user ids for user table
+                userid = user1;
+            } else {
+                continue;
+            }
+
+
+            // Get user's real name for the chat room list
+            var record = {
+                "user_id_value" : userid
+            }
+            var result = await axiosapicall.apiGetUserLookUp(record);
+            let firstname = result[0].first_name;
+            let lastname = result[0].last_name;
+            var realname = firstname + " " + lastname;
+
+            // Build the chat room object
+            var room = {
+                name: roomname,
+                roomLabel: realname,
+                visitorUserId: roomname,
+                id: allChats[key].chat_id,
+                history: JSON.parse(allChats[key].chat_history)
+            }
+
+            // Add the chat room to the chat room dictionary
+            chatrooms[allChats[key].chat_id] = room;
+        }
+
+        // Join the user to all their chats
+        for (var key in chatrooms) {
+            socket.join(chatrooms[key].id);
+        }
+        console.log(chatrooms.length);
+        //if the user has atleast 1 chat send the message
+        if(chatrooms.length > 0){
+          console.log("sending message to populate rooms");
+          // Tell the client to render the list of chat rooms and their message history
+          socket.emit('populate rooms', chatrooms);
         }
 
 
-        // Get user's real name for the chat room list
-        var record = {
-            "user_id_value" : userid
+
+        //---ADMIN---
+        //TODO: make it so this is only sent to admins, not everyone and then hidden on client side
+        var adminChatrooms = {};
+        for (var key in allChats) {
+
+          // Get users ids for the chat room list
+            var user1 = allChats[key].firstp_id;
+            var user2 = allChats[key].secondp_id;
+
+            // Build the admin chat room object
+            var room = {
+                name: user1 + " and " + user2,
+                user1Id: user1,
+                user2Id: user2,
+                id: allChats[key].chat_id,
+                history: JSON.parse(allChats[key].chat_history)
+            }
+
+            // Add the chat room to the chat room dictionary
+            adminChatrooms[allChats[key].chat_id] = room;
         }
-        var result = await axiosapicall.apiGetUserLookUp(record);
-        let firstname = result[0].first_name;
-        let lastname = result[0].last_name;
-        var realname = firstname + " " + lastname;
-
-        // Build the chat room object
-        var room = {
-            name: roomname,
-            roomLabel: realname,
-            visitorUserId: roomname,
-            id: allChats[key].chat_id,
-            history: JSON.parse(allChats[key].chat_history)
+        //if there are any chatrooms to be sent to the admins
+        if(adminChatrooms.length > 0){
+          socket.emit('admin populate rooms', adminChatrooms);
         }
-
-        // Add the chat room to the chat room dictionary
-        chatrooms[allChats[key].chat_id] = room;
-    }
-
-    // Join the user to all their chats
-    for (var key in chatrooms) {
-        socket.join(chatrooms[key].id);
-    }
-    //if the user has atleast 1 chat send the message
-    if(chatrooms.length > 0){
-      // Tell the client to render the list of chat rooms and their message history
-      socket.emit('populate rooms', chatrooms);
-    }
-
-    //---ADMIN---
-    //TODO: make it so this is only sent to admins, not everyone and then hidden on client side
-    var adminChatrooms = {};
-    for (var key in allChats) {
-
-      // Get users ids for the chat room list
-        var user1 = allChats[key].firstp_id;
-        var user2 = allChats[key].secondp_id;
-
-        // Build the admin chat room object
-        var room = {
-            name: user1 + " and " + user2,
-            user1Id: user1,
-            user2Id: user2,
-            id: allChats[key].chat_id,
-            history: JSON.parse(allChats[key].chat_history)
-        }
-
-        // Add the chat room to the chat room dictionary
-        adminChatrooms[allChats[key].chat_id] = room;
-    }
-    //if there are any chatrooms to be sent to the admins
-    if(adminChatrooms.length > 0){
-      socket.emit('admin populate rooms', adminChatrooms);
-    }
+    });
     //^^^ADMIN^^^
 
     // When user submits text through the chat box
@@ -297,6 +300,7 @@ io.on('connection', async function(socket) {
 
     //when a request for a new chat room is made
     socket.on("createRoom", async function(users){
+      console.log("in createRoom");
       user1 = users.userOne;
       user2 = users.userTwo;
       //if a chat already exists for these users do not create a new one
@@ -323,8 +327,7 @@ io.on('connection', async function(socket) {
       console.log("adding a new chat");
       console.log(newChat);
       let newId = await axiosapicall.apiAddRecordChatTable(newChat);
-      newId = newId.chat_id;
-      console.log(newId);
+      newId = newId[0].chat_id;
       updateChatList(newId, user2, messageToSend);
     });
 

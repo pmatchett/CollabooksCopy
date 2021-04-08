@@ -60,7 +60,8 @@ function socketSetup() {
         rooms = rms;
         console.log(rooms);
         // Set the active room to the first room in the list
-        activeRoom = Object.keys(rooms)[0];
+        activeRoom = 0;
+        console.log(activeRoom);
 
         // Render message history for the active room
         rooms[activeRoom].history.forEach(function(msg) {
@@ -70,13 +71,14 @@ function socketSetup() {
         // Set the ids of all the html tags for the chat rooms
         for (var key in rooms) {
             $('#chat-rooms').append($('<li class="list-group-item chat-room">').text(rooms[key].roomLabel)
-                .attr("id", rooms[key].id));
+                .attr("id", key));
         }
 
         // Renders a selection highlight on the active room, from Bootstrap
         $('#' + activeRoom).addClass('active');
 
-        $('#lendButton').val((rooms[parseInt(activeRoom)].visitorUserId).replace("user_",""));
+        //TODO: not sure what this function (also at line 95) is supposed to do but javascript says it is not a valid functino
+        //$('#lendButton').val((rooms[parseInt(activeRoom)].visitorUserId).replace("user_",""));
 
         // Change the active room based on what the user clicks on
         $(".chat-room").on("click",function(){
@@ -90,7 +92,7 @@ function socketSetup() {
                 renderMessage(msg);
             });
 
-            $('#lendButton').val((rooms[parseInt(activeRoom)].visitorUserId).replace("user_",""));
+            //$('#lendButton').val((rooms[parseInt(activeRoom)].visitorUserId).replace("user_",""));
         });
 
     });

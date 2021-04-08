@@ -149,6 +149,9 @@ io.on('connection', async function(socket) {
     // Get the user_id from the client's cookie and create the username
     socket.on('login', async function(userID) {
         username = parseInt(userID);
+        //the array of rooms to send to the user (to avoid null rooms)
+        let roomsToSend = [];
+        let index = 0;
 
         //TODO: use DB queries to find chats for the active user
         for (var key in allChats) {
@@ -193,6 +196,7 @@ io.on('connection', async function(socket) {
 
             // Add the chat room to the chat room dictionary
             chatrooms[allChats[key].chat_id] = room;
+            roomsToSend.push(room);
         }
 
         // Join the user to all their chats
@@ -201,16 +205,17 @@ io.on('connection', async function(socket) {
         }
         console.log(chatrooms.length);
         //if the user has atleast 1 chat send the message
-        if(chatrooms.length > 0){
+        if(roomsToSend.length > 0){
           console.log("sending message to populate rooms");
           // Tell the client to render the list of chat rooms and their message history
-          socket.emit('populate rooms', chatrooms);
+          socket.emit('populate rooms', roomsToSend);
         }
 
 
 
         //---ADMIN---
         //TODO: make it so this is only sent to admins, not everyone and then hidden on client side
+        //TODO: set admins to use the same structure as regular users above
         var adminChatrooms = {};
         for (var key in allChats) {
 

@@ -1,8 +1,8 @@
-# SENG513
+
 
 /*************************Personal Version of Final Project of experimentation/ practice *******/
 
-/************************** SENG513 Final Project ***************************
+/************************** Final Project ***************************
 
  
 Members:                   
